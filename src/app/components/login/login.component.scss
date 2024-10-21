@@ -1,0 +1,173 @@
+:host::ng-deep {
+  .ic_wrap {
+    backdrop-filter: blur(4px);
+
+    .required_field {
+      font-family: "poppins";
+      color: #e95554;
+    }
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px rgb(34 37 39) inset !important;
+  }
+
+  input:-webkit-autofill {
+    -webkit-text-fill-color: #fff !important;
+    color: #fff !important;
+  }
+
+  .icon {
+    color: #fff;
+  }
+
+  input.input-field {
+    font-family: "poppins";
+    font-size: 14px;
+    caret-color: #08c873;
+    border: 1px solid #77797a;
+
+    &.ng-touched.ng-invalid {
+      border: 1px solid #e95554;
+    }
+
+    &::placeholder {
+      font-family: "poppins";
+      font-size: 16px;
+      color: #b3b3b4 !important;
+      font-weight: 400;
+    }
+  }
+
+  mat-option.mat-mdc-option.mdc-list-item:first-of-type {
+    border-top: none;
+  }
+
+  input {
+    &:-webkit-autofill::first-line {
+      font-size: 17px;
+      font-weight: 500;
+      color: #fff;
+    }
+  }
+
+  input.form-control {
+    background: transparent !important;
+    color: #fff !important;
+  }
+
+  input::placeholder {
+    font-size: 16px;
+    font-weight: 500;
+    color: #b3b3b4 !important;
+  }
+
+  input:-internal-autofill-selected {
+    color: #fff !important;
+  }
+
+  input:focus {
+    border: solid 1px #b3b3b4;
+  }
+
+  select {
+    color: #fff;
+  }
+
+  ::placeholder {
+    color: #b3b3b4;
+    opacity: 1;
+  }
+
+  :-ms-input-placeholder {
+    color: #b3b3b4;
+  }
+
+  ::-ms-input-placeholder {
+    color: #b3b3b4;
+  }
+
+  ::-webkit-input-placeholder {
+    color: #b3b3b4;
+  }
+
+  button.s-button {
+    font-family: "poppins";
+    color: #151718 !important;
+    height: 52px;
+    letter-spacing: 0.8px;
+    background-color: #08c873;
+  }
+
+  button.s-button[disabled] {
+    background-color: #99a8a1;
+  }
+
+  .labels {
+    // font-family: 'poppins';
+    color: #fff;
+    margin-bottom: 6px !important;
+  }
+
+  .bottom_wrap {
+    background-color: rgba(18, 19, 19, 0.8);
+    width: 600px;
+  }
+
+  .slogan {
+    color: #cecece;
+    font-family: "poppins";
+    font-size: 4em;
+  }
+
+  :host {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    vertical-align: middle;
+    margin: 0px auto;
+  }
+
+  .login-page {
+    font-family: "poppins";
+    background-repeat: repeat;
+    background-image: url("../../../assets/images/photos/cam-back.jpg");
+    // background-position-x: center;
+    // background-position-y: center;
+    background-attachment: inherit;
+  }
+
+  .tello-version {
+    font-family: "poppins";
+    font-size: 1.3em;
+    color: var(--grey-light-grey);
+  }
+
+  .login_mobile_wrapper {
+    position: absolute;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    background-color: var(--back_login);
+  }
+}
+
+@media (max-width: 1250px) {
+  .bottom_wrap {
+    max-width: 100vw;
+    max-height: 100vh;
+    overflow: auto;
+  }
+}
+
+@media (max-width: 490px) {
+
+    .slogan  {
+        font-size: 44px;
+    }
+  }
+  

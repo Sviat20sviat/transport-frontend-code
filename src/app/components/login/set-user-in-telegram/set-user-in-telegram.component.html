@@ -1,0 +1,14 @@
+<div class="flex flex-col p-6">
+    <div class="text-xl items-center">ВНИМАНИЕ!</div>
+    <div class="text-lg mt-3">Для лучшей коммуникации с нашим сервисом предлагаем Вам авторизироваться через мессенджер
+        Телеграм в нашем боте. Это позволит Вам быстрее узнавать об обновлениях и ускорить взаимодействие!</div>
+    <div class="text-lg mt-3">Для этого введите Боту, открывшемуся после нажатия на кнопку "Авторизироваться через
+        Телеграм" ваш ID, предоставленный ниже.</div>
+    <div class="text-lg font-bold cursor-pointer flex justify-center mt-3">{{currentUser?.id}}</div>
+    <div class="text-lg flex justify-center mt-3">
+        <button mat-raised-button class="s-button h-[52px] w-full text-base mx-auto uppercase mb-2.5 mt-4 font-semibold"
+            (click)="assignToTg()">
+            Зарегистрироваться
+        </button>
+    </div>
+</div>

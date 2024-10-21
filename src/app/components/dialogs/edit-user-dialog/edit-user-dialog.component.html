@@ -1,0 +1,82 @@
+<div class="flex flex-col p-6">
+    <div class="text-xl flex items-center mb-3">
+        Редактировать Пользователя
+    </div>
+    <div class="flex flex-col" [formGroup]="form">
+        <!-- <div class="flex flex-row justify-between mb-3">
+            <div class="inline-flex mr-10">Онлайн</div>
+            <div class="flex">
+                <input class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                placeholder="Имя" />
+            </div>
+        </div> -->
+        <div class="flex flex-row justify-between mb-3">
+            <div class="inline-flex mr-10">Никнейм</div>
+            <div class="flex">
+                <input formControlName="nickname" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                placeholder="Имя" />
+            </div>
+        </div>
+        <div class="flex flex-row justify-between mb-3">
+            <div class="inline-flex mr-10">Имя </div>
+            <div class="flex">
+                <input formControlName="firstName" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                placeholder="Введите Имя" />
+            </div>
+        </div>
+        <div class="flex flex-row justify-between mb-3">
+            <div class="inline-flex mr-10">Фамилия</div>
+            <div class="flex">
+                <input formControlName="lastName" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                placeholder="Введите Фамилию" />
+            </div>
+        </div>
+        <div class="flex flex-row justify-between mb-3">
+            <div class="inline-flex mr-10">Email</div>
+            <div class="flex">
+                <input formControlName="email" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                placeholder="email" />
+            </div>
+        </div>
+        <div class="flex flex-row justify-between mb-3">
+            <div class="inline-flex mr-10">Телефон</div>
+            <div class="flex">
+                <input formControlName="phoneNumber" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                placeholder="Введите номер" />
+            </div>
+        </div>
+        <div class="flex flex-row justify-between mb-3">
+            <div class="inline-flex mr-10">Роли</div>
+            <div class="flex">
+                <mat-form-field>
+                    <mat-label>Выберите роли</mat-label>
+                    <mat-select  formControlName="roles" multiple>
+                      @for (role of roles; track role.id) {
+                        <mat-option [value]="role.value">{{role.value}}</mat-option>
+                      }
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="flex flex-row justify-between mb-3">
+            <div class="inline-flex mr-10">Блокировка пользователя</div>
+            <!-- <div class="flex">
+                <input class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                placeholder="Введите номер" />
+            </div> -->
+        </div>
+        <!-- <div class="flex flex-row justify-between mb-3">
+            <div class="inline-flex mr-10">Пароль</div>
+            <div class="flex">
+                <input formControlName="password" type="password" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                placeholder="" />
+            </div>
+        </div> -->
+        <div class="flex justify-center">
+            <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold" (click)="update()">
+                Сохранить
+            </button>
+        </div>
+    </div>
+</div>
+<ngx-ui-loader [fgsColor]="'#ffffff'" [loaderId]="loaderId" [fgsType]="'three-bounce'"></ngx-ui-loader>

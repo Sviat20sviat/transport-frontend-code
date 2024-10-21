@@ -1,0 +1,93 @@
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px rgb(34 37 39) inset !important;
+}
+
+input:-webkit-autofill {
+    -webkit-text-fill-color: #fff !important;
+    color: #fff !important;
+}
+
+.icon {
+    color: #fff;
+}
+
+input.input-field {
+    font-family: 'poppins';
+    font-size: 14px;
+    caret-color: #08c873;
+    border: 1px solid #77797a;
+
+    &.ng-touched.ng-invalid {
+        border: 1px solid #E95554;
+    }
+
+    &::placeholder {
+        font-family: 'poppins';
+        font-size: 16px;
+        color: #B3B3B4 !important;
+        font-weight: 400;
+    }
+}
+
+mat-option.mat-mdc-option.mdc-list-item:first-of-type {
+    border-top: none;
+}
+
+input {
+    &:-webkit-autofill::first-line {
+        font-size: 17px;
+        font-weight: 500;
+        color: #fff;
+    }
+}
+
+input.form-control {
+    background: transparent !important;
+    color: #fff !important;
+}
+
+input.main-input {
+    background: transparent !important;
+    color: #181818 !important;
+}
+
+input::placeholder {
+    font-size: 16px;
+    font-weight: 500;
+    color: #B3B3B4 !important;
+}
+
+input:-internal-autofill-selected {
+    color: #fff !important;
+}
+
+input:focus {
+    border: solid 1px #B3B3B4;
+}
+
+select {
+    color: #fff;
+}
+
+::placeholder {
+    color: #B3B3B4;
+    opacity: 1;
+}
+
+:-ms-input-placeholder {
+    color: #B3B3B4;
+}
+
+::-ms-input-placeholder {
+    color: #B3B3B4;
+}
+
+::-webkit-input-placeholder {
+    color: #B3B3B4;
+}
+button.btn-danger {
+    background-color: #9d1818 !important;
+}

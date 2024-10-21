@@ -1,0 +1,27 @@
+<div class="flex flex-col p-6 items-center">
+    <div class="flex flex-row mb-4">
+        <div class="flex text-xl mr-8">
+            Имя Пользователя
+        </div>
+        <div class="flex text-xl font-bold">
+            {{currentUser.firstName || "Пользователь"}}
+        </div>
+    </div>
+    <div class="flex flex-row mb-4">
+        <div class="flex text-xl mr-8">
+            Email Пользователя
+        </div>
+        <div class="flex text-xl font-bold">
+            {{currentUser.email}}
+        </div>
+    </div>
+
+    <div class="flex flex-row mb-4">
+        <div class="flex text-xl mr-8">
+            Роль Пользователя:
+        </div>
+        <div class="flex text-xl font-bold">
+            {{currentUser.roles[0].value}}
+        </div>
+    </div>
+</div>

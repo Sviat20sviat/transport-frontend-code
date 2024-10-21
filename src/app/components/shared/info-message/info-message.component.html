@@ -1,0 +1,51 @@
+<div class="p relative h-full">
+    <div class="block_main flex flex-col items-center p-6 min-h-[206px] justify-center">
+        <div class="w-8 h-8">
+            <!-- <img class="w-8 h-8" *ngIf="data?.imgSrc" [src]="'assets/images/icons/svg/' + data.imgSrc + '.svg'"
+                alt="action" /> -->
+            <img class="w-8 h-8"  src="assets/images/icons/svg/iinfo.svg" alt="action" />
+        </div>
+        <div class="flex flex-col my-6" [ngStyle]="{ 'text-align':  'center' }">
+            <p class="dialog-title text-white">
+                {{ data.message }}
+            </p>
+            <!-- <div *ngIf="data?.subTitle" class="grey-light-grey-color text-sm mt-3">
+                {{data?.subTitle}}
+            </div> -->
+        </div>
+        @if (!data?.isConfirm) {
+            <div class="flex w-full justify-evenly">
+                <button type="reset" mat-raised-button class="btn-primary no-border white sm" (click)="dialogRef.close()">
+                    <span>Понятно</span>
+                </button>
+                
+                <!-- <button type="submit" mat-raised-button
+                    [ngClass]="{'btn-general': (data?.yesNo || data?.resolve), 'btn-danger': (!data?.yesNo && !data?.resolve) }"
+                    class="black sm" (click)="dialogRef.close(true)">
+                    <span *ngIf="data?.resolve || data?.yesNo">{{data?.resolve ? ("main.registerDiviceDialog.resolve" |
+                        translate) : ("main.yes" | translate) }}</span>
+                    <span *ngIf="!data?.resolve && !data?.yesNo">{{"main.SAMtab.delete" | translate}}</span>
+                </button> -->
+            </div>
+        }
+
+        @if (data?.isConfirm) {
+            <div class="flex w-full justify-between">
+                <button mat-raised-button class="btn-primary btn-danger no-border white sm" (click)="dialogRef.close(true)">
+                    <span>Да</span>
+                </button>
+                <button mat-raised-button class="btn-primary no-border white sm" (click)="dialogRef.close(false)">
+                    <span>Нет</span>
+                </button>
+            </div>
+        }
+
+        <!-- <ng-template #infoControl>
+            <div class="flex w-[85%] mx-auto justify-center">
+                <button type="submit" (click)="dialogRef.close()" mat-raised-button
+                    class="search-button text-base w-full h-[42px] uppercase font-semibold trans">{{'main.ok' |
+                    translate}}</button>
+            </div>
+        </ng-template> -->
+    </div>
+</div>

@@ -1,0 +1,320 @@
+<div class="flex flex-col p-6">
+    <div class="text-xl flex items-center mb-3">
+        Просмотр/редактирование Объявления
+    </div>
+    <div class="flex flex-col max-h-[78vh] overflow-auto" [formGroup]="form">
+        <div class="flex flex-row justify-between">
+            <div class="flex flex-col justify-between mb-3 max-w-[50%]">
+                <div class="inline-flex font-medium mr-10">Заголовок</div>
+                <div class="flex">
+                    <!-- <input formControlName="nickname" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                    placeholder="Имя" /> -->
+                    @if(isEdit) {
+                        <input formControlName="title" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                        placeholder="Введите заголовок" />
+                    } @else {
+                        <div class="text-black break-words">
+                            {{post?.title}}
+                        </div>
+                    }
+
+                </div>
+            </div>
+            <div class="flex flex-col">
+                <div class="inline-flex font-medium justify-end">Создано</div>
+                <div class="flex">{{post?.createdAt | date: 'medium'}}</div>
+            </div>
+        </div>
+
+        <div class="flex flex-col justify-between mb-3">
+            <div class="inline-flex font-medium mr-10">Описание</div>
+            <div class="flex">
+                <!-- <input formControlName="nickname" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                placeholder="Введите заголовок" /> -->
+                @if(isEdit) {
+                    <textarea formControlName="content" name="text" id="textarea" placeholder="Описание" class="w-full p-2 rounded-lg"></textarea>
+                } @else {
+                    <div class="text-black">
+                        {{post?.content}}
+                    </div>
+                }
+
+            </div>
+        </div>
+        <div class="flex flex-col justify-between mb-3">
+            <div class="inline-flex font-medium mr-10">Адрес, откуда</div>
+            <div class="flex">
+                <!--  -->
+                @if(isEdit) {
+                    <input formControlName="addressFrom" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                    placeholder="" />
+                } @else {
+                    <div class="text-black">
+                        {{post?.addressFrom}}
+                    </div>
+                }
+
+            </div>
+        </div>
+        <div class="flex flex-col justify-between mb-3">
+            <div class="inline-flex font-medium mr-10">Адрес, куда</div>
+            <div class="flex">
+                <!-- <input formControlName="nickname" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                placeholder="Имя" /> -->
+                @if(isEdit) {
+                    <input formControlName="addressTo" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                    placeholder="" />
+                } @else {
+                    <div class="text-black">
+                        {{post?.addressTo}}
+                    </div>
+                }
+
+            </div>
+        </div>
+        <div class="flex flex-col justify-between mb-3">
+            <div class="inline-flex font-medium mr-10">На склад (если на склад)</div>
+            <div class="flex">
+                <!-- <input formControlName="nickname" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                placeholder="Имя" /> -->
+                @if(isEdit) {
+                    <input formControlName="warehouse" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                    placeholder="" />
+                } @else {
+                    <div class="text-black">
+                        {{post?.warehouse || '--'}}
+                    </div>
+                }
+
+            </div>
+        </div>
+        <div class="flex flex-col justify-between mb-3">
+            <div class="inline-flex font-medium mr-10">Водитель</div>
+            <div class="flex">
+                <!--  -->
+                @if(isEdit) {
+                    <!-- <input formControlName="nickname" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                    placeholder="Имя" /> -->
+                } @else {
+
+                }
+                <div class="text-black">
+                    {{post?.driver || '--'}}
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-col justify-between mb-3">
+            <div class="inline-flex font-medium mr-10">Стоимость перевозки</div>
+            <div class="flex">
+                <!-- <input formControlName="nickname" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                placeholder="Имя" /> -->
+                @if(isEdit) {
+                    <input formControlName="price" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                    placeholder="" />
+                } @else {
+                    <div class="text-black">
+                        {{post?.price || '--'}}
+                    </div>
+                }
+
+            </div>
+        </div>
+        <div class="flex flex-col justify-between mb-3">
+            <div class="inline-flex font-medium mr-10">Коммиссия</div>
+            <div class="flex">
+                <!-- <input formControlName="nickname" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                placeholder="Имя" /> -->
+                @if(isEdit) {
+                    <input formControlName="commission" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                    placeholder="" />
+                } @else {
+                    <div class="text-black">
+                        {{post?.commission || '--'}}
+                    </div>
+                }
+
+            </div>
+        </div>
+        <div class="flex flex-col justify-between mb-3">
+            <div class="inline-flex font-medium mr-10">Сумма </div>
+            <div class="flex">
+                <!-- <input formControlName="nickname" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                placeholder="Имя" /> -->
+                @if(isEdit) {
+                    <input formControlName="summ" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                    placeholder="" />
+                } @else {
+                    <div class="text-black">
+                        {{post?.summ || '--'}}
+                    </div>
+                }
+
+            </div>
+        </div>
+        <div class="flex flex-col justify-between mb-3">
+            <div class="inline-flex font-medium mr-10">Оплачено </div>
+            <div class="flex">
+                <!-- <input formControlName="nickname" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                placeholder="Имя" /> -->
+                @if(isEdit) {
+                    <input formControlName="paid" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                    placeholder="" />
+                } @else {
+                    <div class="text-black">
+                        {{post?.paid || '--'}}
+                    </div>
+                }
+
+            </div>
+        </div>
+        <div class="flex flex-col justify-between mb-3">
+            <div class="inline-flex font-medium mr-10">К оплате </div>
+            <div class="flex">
+                <!-- <input formControlName="nickname" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                placeholder="Имя" /> -->
+                <!-- @if(isEdit) {
+
+                } @else {
+
+                } -->
+                <div class="text-black">
+                    {{post?.paid - post?.summ}}
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-col justify-between mb-3">
+            <div class="inline-flex font-medium mr-10">Статус</div>
+            <div class="flex justify-between">
+                <!-- <input formControlName="nickname" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                placeholder="Имя" /> -->
+                <div class="text-black">
+                    <mat-form-field>
+                        <mat-label>Статус</mat-label>
+                        <mat-select formControlName="status">
+                          @for (status of statuses; track status.id) {
+                            <mat-option [value]="status.value">{{status.value}}</mat-option>
+                          }
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <!-- <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold" (click)="save()">
+                    Сохранить статус
+                </button> -->
+            </div>
+        </div>
+        <div class="flex flex-col justify-between mb-3">
+            <div class="inline-flex font-medium mr-10">Автор</div>
+            <div class="flex flex-col ml-8">
+                <!-- <input formControlName="nickname" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                placeholder="Имя" /> -->
+                <div class="flex flex-row justify-between mb-3">
+                    <div class="inline-flex mr-10">Имя</div>
+                    <div class="flex">
+                        <!-- <input formControlName="nickname" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                        placeholder="Имя" /> -->
+                        <div class="text-black">
+                            {{post?.author?.firstName}}
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-row justify-between mb-3">
+                    <div class="inline-flex mr-10">Фамилия</div>
+                    <div class="flex">
+                        <!-- <input formControlName="nickname" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                        placeholder="Имя" /> -->
+                        <div class="text-black">
+                            {{post?.author?.lastName}}
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-row justify-between mb-3">
+                    <div class="inline-flex mr-10">Телефон</div>
+                    <div class="flex">
+                        <!-- <input formControlName="nickname" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                        placeholder="Имя" /> -->
+                        <div class="text-black">
+                            {{post?.author?.phoneNumber}}
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-row justify-between mb-3">
+                    <div class="inline-flex mr-10">Email</div>
+                    <div class="flex">
+                        <!-- <input formControlName="nickname" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                        placeholder="Имя" /> -->
+                        <div class="text-black">
+                            {{post?.author?.email}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-col justify-between mb-3">
+            <div class="inline-flex font-medium mr-10">Водитель</div>
+            <div class="flex flex-col ml-8">
+                <!-- <input formControlName="nickname" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                placeholder="Имя" /> -->
+                <div class="flex flex-row justify-between mb-3">
+                    <div class="inline-flex mr-10">Имя</div>
+                    <div class="flex">
+                        <!-- <input formControlName="nickname" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                        placeholder="Имя" /> -->
+                        <div class="text-black">
+                            {{driver?.firstName}}
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-row justify-between mb-3">
+                    <div class="inline-flex mr-10">Фамилия</div>
+                    <div class="flex">
+                        <!-- <input formControlName="nickname" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                        placeholder="Имя" /> -->
+                        <div class="text-black">
+                            {{driver?.lastName}}
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-row justify-between mb-3">
+                    <div class="inline-flex mr-10">Телефон</div>
+                    <div class="flex">
+                        <!-- <input formControlName="nickname" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                        placeholder="Имя" /> -->
+                        <div class="text-black">
+                            {{driver?.phoneNumber}}
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-row justify-between mb-3">
+                    <div class="inline-flex mr-10">Email</div>
+                    <div class="flex">
+                        <!-- <input formControlName="nickname" class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
+                        placeholder="Имя" /> -->
+                        <div class="text-black">
+                            {{driver?.email}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-center">
+
+        </div>
+    </div>
+    <div class="flex justify-center">
+        @if( isAdmin() || post.userId == currentUser.id) {
+            @if(isEdit) {
+                <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold" (click)="save()">
+                    Сохранить
+                 </button>
+            } @else {
+                <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold" (click)="edit()">
+                    Редактировать
+                </button>
+            }
+        }
+
+
+
+    </div>
+</div>
+<ngx-ui-loader [fgsColor]="'#ffffff'" [loaderId]="loaderId" [fgsType]="'three-bounce'"></ngx-ui-loader>

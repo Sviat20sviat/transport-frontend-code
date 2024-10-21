@@ -1,0 +1,77 @@
+:host::ng-deep {
+    .left-menu {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 60px;
+        background-color: #00774f;
+
+        transition: .5s;
+
+        &.left-opened {
+            width: 400px;
+        }
+    }
+
+    .post-item {
+        background-color: #cecece;
+    }
+
+    .table-header {
+        background-color: #00774f;
+        border-bottom: 1px solid black;
+        tr {
+            th {
+                text-align: start;
+            }
+        }
+    }
+
+    .table-body {
+        
+        // border-bottom-right-radius: 15px;
+        tr {
+            border-bottom: 1px solid #cecece;
+            border-left: 1px solid #cecece;
+            border-right: 1px solid #cecece;
+        }
+    }
+
+    table thead tr th:first-child {
+        border-top-left-radius: 8px;
+    }
+
+    table thead tr th:last-child {
+        border-top-right-radius: 8px;
+    }
+    .executing-status-badge {
+        background-color: #cecece;
+        border-radius: 4px;
+        display: inline-flex;
+        padding: 0 6px;
+        .status-0 {
+            background-color: #cecece;
+        }
+        &.status-1 {
+            background-color: #2DCCFF;
+        }
+        &.status-2 {
+            background-color: #FCE83A;
+        }
+        &.status-3 {
+            background-color: #56F000;
+        }
+        &.status-4 {
+            background-color: #FF3838;
+        }
+    }
+    .text-container {
+        max-width: 720px;
+        max-height: 28px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+        white-space: nowrap;
+    }
+}

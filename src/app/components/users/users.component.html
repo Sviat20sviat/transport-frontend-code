@@ -1,0 +1,95 @@
+<div class="text-xl flex items-center mb-4">
+    Пользователи
+</div>
+<div class="flex flex-col">
+    <!-- @for (user of users; track user.id; let i = $index) {
+        <div class="flex user-item items-center mb-3">
+            <div class="font-bold mr-4">
+                {{i +1}}
+            </div>
+            <div class="mr-4">{{user.email}}</div>
+            <div class="">Количество постов:{{user.posts?.length}}</div>
+        </div>
+    } -->
+    <table class="w-full">
+        <thead class="table-header">
+            <tr class="sam_row px-2">
+                <th class="py-3">
+                    <span class="font-medium text-white pl-2">Номер</span>
+                </th>
+                <th class="py-3">
+                    <span class="font-medium text-white">Email</span>
+                </th>
+                <th class="py-3">
+                    <span class="font-medium text-white">Дата регистрации</span>
+                </th>
+                <th class="py-3">
+                    <span class="font-medium text-white">Количество постов</span>
+                </th>
+                <th class="py-3">
+                    <span class="font-medium text-white">Заблокирован</span>
+                </th>
+                <th class="py-3">
+                    <span class="font-medium text-white">Роли</span>
+                </th>
+                <!-- <th class="py-3">
+                    <span class="font-medium text-white">Статус</span>
+                </th> -->
+                <th class="py-3">
+                    <span class="font-medium text-white">Действия</span>
+                </th>
+
+            </tr>
+        </thead>
+        <tbody class="table-body">
+            @for (user of users; track user.id; let index = $index) {
+            <tr class="cursor-pointer">
+                <td class="pl-2 py-3">
+                    {{index + 1}}
+                </td>
+                <td class="py-3">
+                    {{user?.email}}
+                </td>
+                <td class="py-3">
+                    {{user?.createdAt | date: 'shortDate'}}
+                </td>
+                <td class="py-3">
+                    {{user?.posts?.length}}
+                </td>
+                <td class="py-3">
+                    <div class="user-banned-badge" [ngClass]="{'banned': user?.banned}">{{user?.banned ? "Да" : "Нет"}}
+                    </div>
+
+                </td>
+                <td class="py-3">
+                    <div class="flex flex-row">
+                        @for (role of user.roles; track role.id) {
+                        <div class="inline-flex user-role-badge">{{role.value}}</div>
+
+                        }
+                    </div>
+
+                </td>
+                <!-- <td class="py-3">
+                    <div class="executing-status-badge" [ngClass]="'status-' +( post?.status + index)">
+                        {{getPostExecutingStatus((post?.status + index))}}</div>
+
+                </td> -->
+                <td class="pr-2 py-3">
+                    <div class="flex">
+
+                        <div class="flex bg-green-800 rounded">
+                            <img src="/assets/images/icons/svg/edit__.svg" alt="i" class="cursor-pointer w-6 h-6"
+                                (click)="editUser(user)">
+                        </div>
+                        <img src="/assets/images/icons/svg/delete_.svg" alt="i" class="cursor-pointer w-6 h-6 ml-3"
+                            (click)="deleteUser(user)">
+                    </div>
+
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<ngx-ui-loader [fgsColor]="'#ffffff'" [loaderId]="loaderId" [fgsType]="'three-bounce'"></ngx-ui-loader>

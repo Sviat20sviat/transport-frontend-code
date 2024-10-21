@@ -1,0 +1,27 @@
+:host::ng-deep {
+    .user-item {
+        padding: 8px;
+        background-color: #cecece;
+        border-radius: 8px;
+    }
+
+    .user-role-badge {
+        border-radius: 5px;
+        background-color: #cecece;
+        padding: 0 6px;
+    }
+    .user-role-badge:not(:last-child) {
+        margin-right: 4px;
+    }
+
+    .user-banned-badge {
+        border-radius: 5px;
+        background-color: #56F000;
+        padding: 0 6px;
+        display: inline-flex;
+
+        &.banned {
+            background-color: #FF3838;
+        }
+    }
+}

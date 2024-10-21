@@ -1,0 +1,4 @@
+<svg id="mapPin" width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M16 4.936v.01m0 6.99-3.5-5a4 4 0 1 1 7 0l-3.5 5z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M8.5 3.687 7 2.937l-6 3v13l6-3 6 3 6-3v-2m-12-11v13m6-2v5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
