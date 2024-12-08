@@ -29,8 +29,17 @@ export class UserService {
   createUser(createUserDto: createUserDto) {
     return this.http.post(this.server.serverAddress + '/users', createUserDto);
   }
+
   getUserById(userId: string) {
     return this.http.post(this.server.serverAddress + '/users/getUserById', {userId});
+  }
+
+  getFilteredUsers(roleId?, status?) {
+    return this.http.post(this.server.serverAddress + '/users/getFiltered', {roleId, status});
+  }
+
+  setUserBalance(userId: string, balance: number) {
+    return this.http.post(this.server.serverAddress + '/users/setBalance', {userId, balance});
   }
 }
 

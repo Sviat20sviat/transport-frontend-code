@@ -21,6 +21,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   users;
   unsubscribeAll$: Subject<any> = new Subject();
   loaderId: string = 'user-component';
+  selectedUseTypeTabIndex = 1;
   constructor(
     private userService: UserService,
     private dialogsManager: DialogsManagerService,
@@ -74,4 +75,9 @@ export class UsersComponent implements OnInit, OnDestroy {
       
     })
   }
+
+  selectUserTypeTab(index: number) {
+    this.selectedUseTypeTabIndex = index;
+  }
+
 }

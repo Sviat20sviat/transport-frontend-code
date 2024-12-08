@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { createUserDto } from './user.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,8 @@ export class AuthService {
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private server: ServerService,
-    private http: HttpClient
+    private http: HttpClient,
+    private router: Router
   ) { 
     
   }
@@ -48,6 +50,7 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('accessToken');
+    this.router.navigateByUrl('/login');
   }
 
   register(dto: createUserDto) {

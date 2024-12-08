@@ -1,0 +1,91 @@
+<div class="flex flex-col h-full">
+    <div class="flex justify-between px-6 pt-6 dialog-header">
+        <div class="text-xl flex items-center mb-3">
+            @if(document?.id) {
+                ДОКУМЕНТ № {{document?.id}}
+            } @else {
+                СОЗДАТЬ ДОКУМЕНТ
+            }
+            
+        </div>
+        @if (document?.id) {
+            <div class="flex flex-col">
+                <div class="flex justify-between">
+                    <div class="inline-flex font-medium justify-end mr-4">Создано</div>
+                    <div class="flex">{{document?.createdAt | date: 'medium'}}</div>
+                </div>
+                @if(document?.updatedAt && document?.updatedAt !== document?.createdAt) {
+                    <div class="flex justify-between">
+                        <div class="inline-flex font-medium justify-end mr-4">Изменено</div>
+                        <div class="flex">{{document?.updatedAt | date: 'medium'}}</div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="flex flex-col m-3 h-full">
+        <div class="flex flex-col max-h-[84vh] overflow-auto p-3 h-full" [formGroup]="form">
+            <div class="flex flex-row justify-between gap-3 flex-wrap">
+                <div class="flex flex-col justify-center mb-3 max-w-full w-full col-items-1">
+                    <div class="text-lg flex items-center justify-center mb-3">
+                        Данные по Документу
+                    </div>
+                </div>
+                <div class="flex flex-row justify-between gap-3 flex-wrap col-items-1">
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <select-field [label]="'Тип Документа'" [options]="doctypes"formControlName="docType" ></select-field>
+                    </div>
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Сумма'" formControlName="sum"></custom-input-field>
+                    </div>
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Адрес, откуда'" formControlName="addresFrom"></custom-input-field>
+                    </div>
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Адрес, куда'" formControlName="addresTo"></custom-input-field>
+                    </div>
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <!-- <custom-input-field [label]="'Клиент'" formControlName="clientId"></custom-input-field> -->
+                        <select-field [label]="'Клиент'" [options]="clients" [nameKey]="'email'" formControlName="clientId" ></select-field>
+                    </div>
+                    <!-- <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Курьер'" formControlName="recipient"></custom-input-field>
+                    </div> -->
+                    <!-- <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Статус'" formControlName="stutus"></custom-input-field>
+                    </div> -->
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Комментарии'" formControlName="comment" [isTextarea]="true"></custom-input-field>
+                    </div>
+
+                </div>
+                <!-- <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                    <custom-input-field [label]="'Характер груза'" [isTextarea]="true"
+                        formControlName="warehouse"></custom-input-field>
+                </div>
+                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                    <custom-input-field [label]="'Комментарий'" [isTextarea]="true"
+                        formControlName="warehouse"></custom-input-field>
+                </div>
+                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                    <custom-input-field [label]="'Размер, В*Ш*Г'" formControlName="warehouse"></custom-input-field>
+                </div>
+                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                    <mat-checkbox formControlName="" class="example-ripple-checkbox">Жидкий/хрупкий</mat-checkbox>
+                </div>
+                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                    <custom-input-field [label]="'Вес, в кг'" formControlName="warehouse"></custom-input-field>
+                </div> -->
+            </div>
+        </div>
+        <div class="flex justify-center">
+            <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold" (click)="createDocument()">
+                Редактировать
+            </button>
+
+
+        </div>
+    </div>
+</div>
+<ngx-ui-loader [fgsColor]="'#ffffff'" [loaderId]="loaderId" [fgsType]="'three-bounce'"></ngx-ui-loader>

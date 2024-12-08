@@ -1,0 +1,19 @@
+<mat-form-field class="example-full-width" [ngClass]="{'teatarea-inp': isTextarea}">
+  <mat-label>{{label}}</mat-label>
+
+  @if(!isTextarea) {
+    <input #input matInput [placeholder]="placeholder" [formControl]="formControl" [matAutocomplete]="auto" [(ngModel)]="model" (input)="filter()">
+  } @else {
+    <textarea matInput [placeholder]="placeholder" [formControl]="formControl"></textarea>
+  }
+  <!-- @if(matAutoCompleteOptions?.length) { -->
+    <mat-autocomplete #auto="matAutocomplete">
+      @for (option of matAutoCompleteOptionsFiltered;  track option) {
+        <mat-option [value]="option[matAutoCompleteOptionValueKey]">
+          <span>{{option[matAutoCompleteOptionKey]}}</span> |
+          <span>{{option[matAutoCompleteOptionValueKey]}}</span>
+        </mat-option>
+      }
+    </mat-autocomplete>
+  <!-- } -->
+</mat-form-field>

@@ -1,0 +1,95 @@
+<div class="flex flex-col">
+    <div class="flex justify-between px-6 pt-6 dialog-header">
+        <div class="text-xl flex items-center mb-3">
+            @if(address?.id) {
+            Адрес № {{address?.id}}
+            } @else {
+            НОВЫЙ АДРЕС
+            }
+
+        </div>
+        @if(address?.id) {
+            <div class="flex">
+                <div class="inline-flex font-medium justify-end mr-4">Создано</div>
+                <div class="flex">{{address?.createdAt | date: 'medium'}}</div>
+            </div>
+        }
+
+    </div>
+
+    <div class="flex flex-col m-3">
+        <div class="flex flex-col max-h-[84vh] overflow-auto p-3">
+            <div class="flex flex-row justify-between gap-3 flex-wrap">
+
+
+                <ng-container [formGroup]="form">
+                    <div class="flex flex-col justify-center mb-3 max-w-full w-full col-items-1">
+                        <div class="text-lg flex items-center justify-center mb-3">
+                            Данные по Адресу
+                        </div>
+                    </div>
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Организация'" formControlName="organization"></custom-input-field>
+                    </div>
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Город/местность'" formControlName="district"></custom-input-field>
+                    </div>
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Название ПВЗ'" formControlName="name"></custom-input-field>
+                    </div>
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Адрес'" formControlName="address"></custom-input-field>
+                    </div>
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Находится в здании/обособлено'" formControlName="build"></custom-input-field>
+                    </div>
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Координаты'" formControlName="coordinates"></custom-input-field>
+                    </div>
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Телефон'" formControlName="phone"></custom-input-field>
+                    </div>
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Статус адресов'" formControlName="addressStatus"></custom-input-field>
+                    </div>
+
+    
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Комментарий'" [isTextarea]="true"
+                            formControlName="comment"></custom-input-field>
+                    </div>
+                    <!-- <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Вид доставки'" formControlName="deliveryType"></custom-input-field>
+                    </div> -->
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <datepicker-field formControlName="updatedAt" [label]="'Изменен'"></datepicker-field>
+                    </div>
+                </ng-container>
+            </div>
+
+            <div class="flex flex-col justify-between mb-3">
+                <div class="flex">
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-center">
+
+            @if(address?.id) {
+            <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
+                (click)="edit()" [disabled]="!form?.valid">
+                Редактировать
+            </button>
+            } @else {
+                <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
+                (click)="create()" [disabled]="!form?.valid">
+                Создать
+            </button>  
+            }
+
+
+
+        </div>
+    </div>
+
+</div>
+<ngx-ui-loader [fgsColor]="'#ffffff'" [loaderId]="loaderId" [fgsType]="'three-bounce'"></ngx-ui-loader>

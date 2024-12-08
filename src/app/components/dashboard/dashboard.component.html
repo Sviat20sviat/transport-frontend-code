@@ -26,6 +26,34 @@
             </div>
             }
 
+            @if (isDriver()) {
+            <div class="flex mt-6 cursor-pointer" (click)="showDriverPosts()">
+                <img src="assets/images/icons/delivery.png" alt="del" class="w-[30px] h-[30px] ml-4" matTooltip="Ваши Заказы">
+                <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Ваши Заказы</span>
+            </div>
+            }
+            <div class="flex mt-6 cursor-pointer" (click)="showDocuments()">
+                <img src="assets/images/icons/svg/file.svg" alt="del" class="w-[30px] h-[30px] ml-4" matTooltip="Документы">
+                <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Документы</span>
+            </div>
+            <div class="flex mt-6 cursor-pointer" (click)="showOutAddresses()">
+                <img src="assets/images/icons/svg/map_pin.svg" alt="del" class="w-[30px] h-[30px] ml-4" matTooltip="Адреса внешние">
+                <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Адреса внешние</span>
+            </div>
+            <div class="flex mt-6 cursor-pointer" (click)="showInAddresses()">
+                <img src="assets/images/icons/svg/map_pin.svg" alt="del" class="w-[30px] h-[30px] ml-4" matTooltip="Адреса внутренние">
+                <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Адреса внутренние</span>
+            </div>
+            <div class="flex mt-6 cursor-pointer" (click)="showMutualSettlements()">
+                <img class="ml-3 cursor-pointer w-8 h-8" src="/assets/images/icons/svg/EventsView.svg" alt="i" matTooltip="Взаиморасчеты">
+                <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Взаиморасчеты</span>
+            </div>
+            <!-- <div class="flex mt-6 cursor-pointer" (click)="showMap()">
+                <img src="assets/images/icons/svg/map.svg" alt="del" class="w-[30px] h-[30px] ml-4">
+                <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Карта</span>
+            </div> -->
+
+
             <div class="flex mt-6 cursor-pointer" (click)="showSettings()">
                 <img class="ml-4 cursor-pointer w-6 h-6" src="/assets/images/icons/svg/cog-settings.svg" alt="i">
                 <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Настройки пользователя</span>
@@ -63,6 +91,24 @@
         @case('ProfileDetails') {
         <profile-details></profile-details>
         }
+        @case('DriverDeliveries') {
+        <driver-info></driver-info>
+        }
+        @case('Documents') {
+        <documents></documents>
+        }
+        @case('Map') {
+            <ng-container *ngTemplateOutlet="map"></ng-container>
+        }
+        @case('InAddresses') {
+            <address-in></address-in>
+        }
+        @case('OutAddresses') {
+            <address-out></address-out>
+        }
+        @case('MutualSettlements') {
+            <mutual-settlements></mutual-settlements>
+        }
         @default {
         <ng-container *ngTemplateOutlet="dashboard"></ng-container>
         }
@@ -70,152 +116,28 @@
     </div>
 
     <ng-template #dashboard>
-        <div class="flex flex-row justify-between mb-2">
-            <div class="text-xl flex items-center">
-                Объявления пользователей
+        <div class="tab-group-header flex">
+            <div class="flex tab-group-header-item cursor-pointer p-3"
+                [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 1}" (click)="selectPostTypeTab(1)">Ожидают
+                водителя</div>
+            <div class="flex tab-group-header-item cursor-pointer p-3"
+                [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 0}" (click)="selectPostTypeTab(0)">В работе
             </div>
-            <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
-                (click)="createPost()">
-                Создать объявление
-            </button>
+            <div class="flex tab-group-header-item cursor-pointer p-3"
+                [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 2}" (click)="selectPostTypeTab(2)">Неодобренные
+            </div>
+            <div class="flex tab-group-header-item cursor-pointer p-3"
+                [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 3}" (click)="selectPostTypeTab(3)">Завершенные
+            </div>
+            <div class="flex tab-group-header-item cursor-pointer p-3"
+                [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 4}" (click)="selectPostTypeTab(4)">Отмененные
+            </div>
+            <div class="flex tab-group-header-item cursor-pointer p-3"
+                [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 5}" (click)="selectPostTypeTab(5)">ЧП</div>
+            <div class="flex tab-group-header-item cursor-pointer p-3"
+                [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 6}" (click)="selectPostTypeTab(6)">Все</div>
         </div>
-
-        <div class="content overflow-auto w-full">
-            <!-- @for (post of allPosts; track post.id) {
-                <div class="flex flex-row justify-between rounded-lg post-item cursor-pointer w-full p-2 mb-2">
-                    <div class="flex">
-                        <img [src]="serverAddress+ '/' + post.image" alt="i" class="w-10 h-10 mr-2">
-                        <div class="flex items-center mr-2">{{post?.title}}</div>
-                        <div class="flex items-center mr-2"> <span class="font-medium">Aвтор:</span> {{post?.author?.email}}</div>
-                        <div class="flex items-center mr-2"><span class="font-medium">Создано:</span>{{post?.createdAt | date: 'shortDate'}}</div>
-                        <div class="flex items-center mr-2"><span class="font-medium">Описание:</span>{{post?.content}}</div>
-                    </div>
-                    <div class="flex items-center">
-                        <img src="/assets/images/icons/svg/delete_.svg" alt="i"class="cursor-pointer w-6 h-6" (click)="deletePost(post)">
-                    </div>
-                </div>
-            } -->
-            <table class="w-full">
-                <thead class="table-header">
-                    <tr class="sam_row px-2">
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white pl-2">Номер</span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">Aвтор</span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">Создано</span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">Откуда, адрес</span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">Куда, адрес</span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">Описание</span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">На склад</span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">Водитель</span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">Стоимость перевозки</span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">Коммиссия</span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">Сумма</span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">Оплачено</span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">К оплате</span>
-                        </th>
-
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">Статус</span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">Действия</span>
-                        </th>
-
-                    </tr>
-                </thead>
-                <tbody class="table-body">
-                    @for (post of allPosts; track post.id; let index = $index) {
-                    <tr class="cursor-pointer" (click)="openPostDialog(post)">
-                        <td class="pl-2 py-3">
-                            {{index + 1}}
-                        </td>
-                        <td class="py-3 px-1">
-                            {{post?.author?.email}}
-                        </td>
-                        <td class="py-3 px-1">
-                            {{post?.createdAt | date: 'medium'}}
-                        </td>
-                        <td class="py-3 px-1">
-                            {{post?.addressFrom}}
-                        </td>
-                        <td class="py-3 px-1">
-                            {{post?.addressTo}}
-                        </td>
-                        <td class="py-3 px-1">
-                            <div class="text-container">{{post?.content}}</div>
-                        </td>
-
-                        <td class="py-3 px-1">
-                            <div class="text-container">{{post?.warehouse || '--'}}</div>
-                        </td>
-                        <td class="py-3 px-1">
-                            <div class="text-container">{{post?.driver || '--'}}</div>
-                        </td>
-
-                        <td class="py-3 px-1">
-                            <div class="text-container">{{post?.price || '--'}}</div>
-                        </td>
-
-                        <td class="py-3 px-1">
-                            <div class="text-container">{{post?.commission || '--'}}</div>
-                        </td>
-
-                        <td class="py-3 px-1">
-                            <div class="text-container">{{post?.summ || '--'}}</div>
-                        </td>
-
-                        <td class="py-3 px-1">
-                            <div class="text-container">{{post?.paid || '--'}}</div>
-                        </td>
-
-                        <td class="py-3 px-1">
-                            <div class="text-container">{{post?.paid - post?.summ}}</div>
-                        </td>
-
-
-
-
-                        <td class="py-3">
-                            <div class="executing-status-badge" [ngClass]="'status-' +(post?.status)">
-                                {{getPostExecutingStatus((post?.status))}}</div>
-
-                        </td>
-                        <td class="pr-2 py-3">
-
-
-                            <img src="/assets/images/icons/svg/delete_.svg" alt="i" class="cursor-pointer w-6 h-6"
-                                (click)="deletePost(post)">
-                        </td>
-                    </tr>
-                    }
-                </tbody>
-            </table>
-
-        </div>
+        <posts-table [currentUser]="currentUser" [posts]="allPosts"></posts-table>
     </ng-template>
     <ng-template #usersDashboard>
         <div class="flex flex-row justify-between mb-2">
@@ -277,10 +199,14 @@
                     @for (post of checkedPosts; track post.id; let index = $index) {
                     <tr class="cursor-pointer" (click)="openPostDialog(post)">
                         <td class="pl-2 py-3">
-                            {{index + 1}}
+                            {{post?.id}}
                         </td>
                         <td class="py-3">
-                            {{post?.author?.email}}
+                            <!-- {{post?.author?.email}} -->
+                            <button mat-raised-button
+                                class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold">
+                                Открыть
+                            </button>
                         </td>
                         <td class="py-3">
                             {{post?.createdAt | date: 'short'}}
@@ -304,7 +230,7 @@
                             @if(isDriver()) {
                             <button mat-raised-button [disabled]="post?.status > 1"
                                 class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
-                                (click)="$event.stopPropagation(); setInProgressByDriver()">
+                                (click)="$event.stopPropagation(); setInProgressByDriver(post)">
                                 Взять объявление
                             </button>
                             }
@@ -314,6 +240,23 @@
                 </tbody>
             </table>
 
+        </div>
+    </ng-template>
+
+    <ng-template #map>
+        <div class="container">
+            <!-- <y-map
+              [props]="{
+                location: {
+                  center: [-0.127696, 51.507351],
+                  zoom: 10,
+                },
+                theme: 'light',
+              }"
+            >
+              <y-map-default-scheme-layer />
+            </y-map> -->
+            <div id="map" style="width: 100%; height: 400px;"></div>
         </div>
     </ng-template>
 </div>

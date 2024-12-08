@@ -1,4 +1,4 @@
-import { ApplicationConfig, LOCALE_ID, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, LOCALE_ID, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -8,6 +8,14 @@ import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@a
 import { JwtInterceptor } from './interceptors/http.interceptor';
 import { CommonModule, registerLocaleData } from '@angular/common';
 import localeRu from '@angular/common/locales/ru';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { MatNativeDateModule } from '@angular/material/core';
+import { provideYConfig, YConfig } from 'angular-yandex-maps-v3';
+
+const config: YConfig = {
+  apikey: 'abeb35e1-d8ef-4e4d-9cdb-e89c194bf8ad',
+};
+
 registerLocaleData(localeRu);
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,6 +23,8 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes), 
     provideClientHydration(), 
     provideAnimationsAsync(),
+    provideAnimations(),
+    importProvidersFrom(MatNativeDateModule),
     provideHttpClient(withInterceptorsFromDi()),
     {
       provide: HTTP_INTERCEPTORS,
@@ -25,6 +35,7 @@ export const appConfig: ApplicationConfig = {
       provide: CommonModule,
       useClass: CommonModule
     },
-    { provide: LOCALE_ID, useValue: 'ru' }
+    { provide: LOCALE_ID, useValue: 'ru' }, provideAnimationsAsync(), provideAnimationsAsync(),
+    provideYConfig(config)
   ]
 };

@@ -38,11 +38,11 @@
         }
     }
 
-    table thead tr th:first-child {
+    table thead tr:first-child th:first-child {
         border-top-left-radius: 8px;
     }
 
-    table thead tr th:last-child {
+    table thead tr:first-child th:last-child {
         border-top-right-radius: 8px;
     }
     .executing-status-badge {
@@ -63,11 +63,14 @@
             background-color: #56F000;
         }
         &.status-4 {
-            background-color: #FF3838;
+            background-color: #ffa238;
+        }
+        &.status-5 {
+            background-color: #ff1e1e;
         }
     }
     .text-container {
-        max-width: 720px;
+        max-width: 165px;
         max-height: 28px;
         overflow: hidden;
         text-overflow: ellipsis;

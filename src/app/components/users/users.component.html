@@ -1,16 +1,21 @@
+
 <div class="text-xl flex items-center mb-4">
     Пользователи
 </div>
 <div class="flex flex-col">
-    <!-- @for (user of users; track user.id; let i = $index) {
-        <div class="flex user-item items-center mb-3">
-            <div class="font-bold mr-4">
-                {{i +1}}
-            </div>
-            <div class="mr-4">{{user.email}}</div>
-            <div class="">Количество постов:{{user.posts?.length}}</div>
+    <div class="tab-group-header flex mb-4">
+        <div class="flex tab-group-header-item cursor-pointer p-3"
+            [ngClass]="{'selected-tab': selectedUseTypeTabIndex == 1}" (click)="selectUserTypeTab(1)">Администраторы</div>
+        <div class="flex tab-group-header-item cursor-pointer p-3"
+            [ngClass]="{'selected-tab': selectedUseTypeTabIndex == 0}" (click)="selectUserTypeTab(0)">Заказчики
         </div>
-    } -->
+        <div class="flex tab-group-header-item cursor-pointer p-3"
+            [ngClass]="{'selected-tab': selectedUseTypeTabIndex == 2}" (click)="selectUserTypeTab(2)">Водители
+        </div>
+        <div class="flex tab-group-header-item cursor-pointer p-3"
+            [ngClass]="{'selected-tab': selectedUseTypeTabIndex == 3}" (click)="selectUserTypeTab(3)">Операторы
+        </div>
+    </div>
     <table class="w-full">
         <thead class="table-header">
             <tr class="sam_row px-2">
@@ -18,11 +23,27 @@
                     <span class="font-medium text-white pl-2">Номер</span>
                 </th>
                 <th class="py-3">
+                    <span class="font-medium text-white">Дата регистрации</span>
+                </th>
+                <th class="py-3">
+                    <span class="font-medium text-white">Фамилия</span>
+                </th>
+                <th class="py-3">
+                    <span class="font-medium text-white">Имя</span>
+                </th>
+                <th class="py-3">
+                    <span class="font-medium text-white">Отчество</span>
+                </th>
+                <th class="py-3">
                     <span class="font-medium text-white">Email</span>
                 </th>
                 <th class="py-3">
-                    <span class="font-medium text-white">Дата регистрации</span>
+                    <span class="font-medium text-white">Телефон</span>
                 </th>
+                <th class="py-3">
+                    <span class="font-medium text-white">Доп.телефон</span>
+                </th>
+
                 <th class="py-3">
                     <span class="font-medium text-white">Количество постов</span>
                 </th>
@@ -43,15 +64,30 @@
         </thead>
         <tbody class="table-body">
             @for (user of users; track user.id; let index = $index) {
-            <tr class="cursor-pointer">
+            <tr class="cursor-pointer" (click)="editUser(user)">
                 <td class="pl-2 py-3">
-                    {{index + 1}}
+                    {{user?.id}}
+                </td>
+                <td class="py-3">
+                    {{user?.createdAt | date: 'shortDate'}}
+                </td>
+                <td class="py-3">
+                    {{user?.firstName}}
+                </td>
+                <td class="py-3">
+                    {{user?.lastName}}
+                </td>
+                <td class="py-3">
+                    {{user?.surName}}
                 </td>
                 <td class="py-3">
                     {{user?.email}}
                 </td>
                 <td class="py-3">
-                    {{user?.createdAt | date: 'shortDate'}}
+                    {{user?.phoneNumber}}
+                </td>
+                <td class="py-3">
+                    {{user?.phoneNumberSec}}
                 </td>
                 <td class="py-3">
                     {{user?.posts?.length}}

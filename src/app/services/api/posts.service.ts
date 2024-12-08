@@ -27,7 +27,8 @@ export class PostsService {
 
   createPost(data: any, user) {
     console.log('createPost!',data,user);
-    return this.http.post(this.server.serverAddress + '/posts', {title: data?.title, content: data?.content, addressFrom: data?.addressFrom, addressTo: data?.addressTo, userId: user.id});
+    data.userId = user?.id;
+    return this.http.post(this.server.serverAddress + '/posts', data);
   }
 
   setStatus(data) {
@@ -40,5 +41,9 @@ export class PostsService {
 
   updatePost(data) {
     return this.http.post(this.server.serverAddress + '/posts/update', data);
+  }
+
+  getFilteredPosts(filter: {userId?: number, driverId?: number,  status?: number}) {
+    return this.http.post(this.server.serverAddress + '/posts/getFilteredPosts', filter);
   }
 }

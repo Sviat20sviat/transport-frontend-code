@@ -1,0 +1,176 @@
+<div class="flex flex-row justify-between mb-2"
+    [ngClass]="{'justify-between' :  isShowTitle, 'justify-end' :  !isShowTitle}">
+    @if(isShowTitle) {
+    <div class="text-xl flex items-center">
+        {{title}}
+    </div>
+    }
+
+    <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
+        (click)="createPost()">
+        Создать объявление
+    </button>
+</div>
+
+<div class="content overflow-auto w-full">
+    <table class="w-full">
+        <thead class="table-header">
+            <tr class="sam_row px-2">
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white pl-2">Номер</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Aвтор</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Контрагент</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Создано</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Откуда, адрес</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Куда, адрес</span>
+                </th>
+
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">На склад</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Водитель</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Стоимость перевозки</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Коммиссия</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Сумма</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Оплачено</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">К оплате</span>
+                </th>
+
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Статус</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Статус груза</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">План. дата постаки</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Вид доставки</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Комментарий</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Изменен</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Действия</span>
+                </th>
+
+            </tr>
+        </thead>
+        <tbody class="table-body">
+            @for (post of posts; track post.id; let index = $index) {
+            <tr class="cursor-pointer" (click)="openPostDialog(post)">
+                <td class="pl-2 py-3">
+                    {{post?.id}}
+                </td>
+                <td class="py-3 px-1">
+                    <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold">
+                        Показать
+                    </button>
+                </td>
+                <td class="py-3 px-1">
+                    <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold">
+                        Показать
+                    </button>
+                </td>
+                <td class="py-3 px-1">
+                    {{post?.createdAt | date: 'medium'}}
+                </td>
+                <td class="py-3 px-1">
+                    {{post?.addressFrom}}
+                </td>
+                <td class="py-3 px-1">
+                    {{post?.addressTo}}
+                </td>
+
+
+                <td class="py-3 px-1">
+                    <div class="text-container">{{post?.warehouse || '--'}}</div>
+                </td>
+                <td class="py-3 px-1">
+                    <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold">
+                        Показать
+                    </button>
+                </td>
+
+                <td class="py-3 px-1">
+                    <div class="text-container">{{post?.price || '--'}}</div>
+                </td>
+
+                <td class="py-3 px-1">
+                    <div class="text-container">{{post?.commission || '--'}}</div>
+                </td>
+
+                <td class="py-3 px-1">
+                    <div class="text-container">{{post?.summ || '--'}}</div>
+                </td>
+
+                <td class="py-3 px-1">
+                    <div class="text-container">{{post?.paid || '--'}}</div>
+                </td>
+
+                <td class="py-3 px-1">
+                    <div class="text-container">{{post?.paid - post?.summ}}</div>
+                </td>
+
+
+
+
+                <td class="py-3">
+                    <div class="executing-status-badge" [ngClass]="'status-' +(post?.status)">
+                        {{getPostExecutingStatus((post?.status))}}
+                    </div>
+
+                </td>
+                <td class="py-3 px-1">
+                    <div class="text-container">{{post?.cargoStatus || 0}}</div>
+                </td>
+                <td class="py-3 px-1">
+                    <div class="text-container">{{post?.deliveryDate}}</div>
+                </td>
+                <td class="py-3 px-1">
+                    <div class="text-container">Вид 1</div>
+                </td>
+                <td class="py-3 px-1">
+                    <div class="text-container">{{post?.content}}</div>
+                </td>
+                <td class="py-3 px-1">
+                    {{post?.updatedAt | date: 'medium'}}
+                </td>
+                <td class="pr-2 py-3">
+
+
+                    <img src="/assets/images/icons/svg/delete_.svg" alt="i" class="cursor-pointer w-6 h-6"
+                        (click)="deletePost(post)">
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+<ngx-ui-loader [fgsColor]="'#ffffff'" [loaderId]="loaderId" [fgsType]="'three-bounce'"></ngx-ui-loader>

@@ -4,6 +4,8 @@ import { RouterOutlet } from '@angular/router';
 import { jwtDecode } from "jwt-decode";
 import { StateService } from './services/state.service';
 import { UserService } from './services/api/user.service';
+import { AuthService } from './services/api/auth.service';
+import { DialogsManagerService } from './services/dialogs-manager.service';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -17,18 +19,22 @@ export class AppComponent {
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private stateService: StateService,
-    private userService: UserService
+    private userService: UserService,
+    private authService: AuthService,
+    private dialogsManager: DialogsManagerService
   ) {
     const localStorage = this.document.defaultView?.localStorage;
     const jwt_token = localStorage?.getItem('accessToken');
     if (jwt_token) {
-      console.log('jwt_token!',jwt_token);
+      console.log('USER ASSIGNED');
       const user = jwtDecode(jwt_token);
-      console.log('jwtDecode!',user);
       if (user) {
-        this.userService.getUserById((user as any).id).subscribe(res => {
-          if(res) {
+        this.userService.getUserById((user as any)?.id).subscribe((res: any) => {
+          if(res?.id) {
             this.stateService.currentUser$.next(res);
+          } else {
+            dialogsManager.openInfoMessageDialog("Сессия истелка, пожалуйста авторизируйтесь заново!");
+            authService.logout();
           };
         });
       }

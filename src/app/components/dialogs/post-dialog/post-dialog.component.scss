@@ -1,0 +1,15 @@
+:host::ng-deep {
+    .dialog-header {
+        background-color: #00774f;
+        color: #ffffff;
+    }
+    .col-items-2 {
+        flex: 0 0 49%;
+    }
+    .col-items-1 {
+        flex: 0 0 100%;
+    }
+    .post-container {
+        max-height: calc(100% - 80px) !important;
+    }
+}

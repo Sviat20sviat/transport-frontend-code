@@ -1,0 +1,106 @@
+<div class="flex flex-row justify-between mb-2">
+    <div class="text-xl flex items-center">
+        Адреса Внешние
+    </div>
+
+    <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
+        (click)="createAddress()">
+        Добавить адрес
+    </button>
+</div>
+
+<div class="content overflow-auto w-full">
+    <table class="w-full">
+        <thead class="table-header">
+            <tr class="sam_row px-2">
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white pl-2">Номер</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Время</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Организация</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Город/местность</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Название ПВЗ</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Адрес</span>
+                </th>
+
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Находится в здании</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Координаты</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Телефон</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Статус адресов</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Комментарий</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Изменен</span>
+                </th>
+            </tr>
+        </thead>
+        <tbody class="table-body">
+            @for (address of addresses; track address.id; let index = $index) {
+            <tr class="cursor-pointer" (click)="openAddressDialog(address)">
+                <td class="pl-2 py-3">
+                    {{address?.id}}
+                </td>
+                <td class="py-3 px-1">
+                    {{address?.createdAt | date: 'medium'}}
+                </td>
+                <td class="py-3 px-1">
+                    {{address?.organization}}
+                </td>
+                <td class="py-3 px-1">
+                    {{address?.district}}
+                </td>
+                <td class="py-3 px-1">
+                    {{address?.name}}
+                </td>
+                <td class="py-3 px-1">
+                    {{address?.address}}
+                </td>
+
+                <td class="py-3 px-1">
+                    {{address?.build}}
+                </td>
+                <td class="py-3 px-1">
+                    {{address?.coordinates}}
+                </td>
+
+                <td class="py-3 px-1">
+                    {{address?.phone}}
+                </td>
+
+                <td class="py-3 px-1">
+                    {{address?.addressStatus}}
+                </td>
+
+                <td class="py-3 px-1">
+                    {{address?.comment}}
+                </td>
+
+                <td class="py-3 px-1">
+                    {{address?.updatedAt | date: 'medium'}}
+                </td>
+
+            </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+<ngx-ui-loader [fgsColor]="'#ffffff'" [loaderId]="loaderId" [fgsType]="'three-bounce'"></ngx-ui-loader>

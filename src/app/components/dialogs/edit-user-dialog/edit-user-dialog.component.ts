@@ -5,10 +5,14 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RolesService } from '../../../services/api/roles.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import * as bcrypt from "bcrypt";
 import { UserService } from '../../../services/api/user.service';
 import { DialogsManagerService } from '../../../services/dialogs-manager.service';
 import { NgxUiLoaderModule, NgxUiLoaderService } from 'ngx-ui-loader';
+import { DatepickerFieldComponent } from '../../shared/datepicker-field/datepicker-field.component';
+import { SelectFieldComponent } from '../../shared/select-field/select-field.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { InputFieldComponent } from '../../shared/input-field/input-field.component';
+import { MatButtonModule } from '@angular/material/button';
 @Component({
   selector: 'app-edit-user-dialog',
   standalone: true,
@@ -19,6 +23,11 @@ import { NgxUiLoaderModule, NgxUiLoaderService } from 'ngx-ui-loader';
     FormsModule,
     ReactiveFormsModule,
     NgxUiLoaderModule,
+    DatepickerFieldComponent,
+    SelectFieldComponent,
+    MatCheckboxModule, 
+    InputFieldComponent,
+    MatButtonModule,
   ],
   templateUrl: './edit-user-dialog.component.html',
   styleUrl: './edit-user-dialog.component.scss'
@@ -45,17 +54,29 @@ export class EditUserDialogComponent implements OnInit {
       nickname: this.fb.control(''),
       firstName: this.fb.control(''),
       lastName: this.fb.control(''),
+      surName: this.fb.control(''),
       email: this.fb.control('', [Validators.email]),
       phoneNumber: this.fb.control('', []),
-      roles: this.fb.control(''),
-
+      phoneNumberSec: this.fb.control('', []),
+      roles: this.fb.control([]),
     })
     this.rolesService.getAllRoles().subscribe((res) => {
       console.log('getAllRoles!',res);
       this.roles = res;
+      this.user.roles?.map(r => {
+        const rr = this.roles.find(rrr => rrr.id == r.id);
+        if(rr) {
+          r = rr
+        };
+        return r;
+        
+      })
     });
     this.form.patchValue(this.data.user);
-
+    console.log('this.form',this.form.value);
+    this.form.valueChanges.subscribe(value => {
+      console.log('console',value);
+    })
   }
 
   ngOnInit(): void {

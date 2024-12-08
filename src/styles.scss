@@ -115,3 +115,39 @@ select {
 [hidden] {
   display: none !important;
 }
+
+.tab-group-header {
+  border-radius: 8px;
+  overflow: hidden;
+  width: fit-content;
+  border: 1px solid #cecece;
+  height: 48px;
+}
+.tab-group-header-item {
+  transition: .3s;
+  &:hover {
+      background-color: #cecece;
+      transition: .3s;
+  }
+  &.selected-tab {
+      background-color: #9c9c9c;
+  }
+}
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+
+.dialog-header {
+  background-color: #00774f;
+  color: #ffffff;
+}
+.col-items-2 {
+  flex: 0 0 49%;
+}
+.col-items-1 {
+  flex: 0 0 100%;
+}
+.text-center {
+  text-align: center !important;
+}

@@ -1,27 +1,119 @@
-<div class="flex flex-col p-6 items-center">
-    <div class="flex flex-row mb-4">
-        <div class="flex text-xl mr-8">
-            Имя Пользователя
+<div class="flex flex-col w-full tab-group">
+    <div class="tab-group-header flex mb-4">
+        <div class="flex tab-group-header-item cursor-pointer p-3"
+            [ngClass]="{'selected-tab': selectedMainTabIndex == 1}" (click)="selectMainTab(1)">Данные Пользователя</div>
+        <div class="flex tab-group-header-item cursor-pointer p-3"
+            [ngClass]="{'selected-tab': selectedMainTabIndex == 2}" (click)="selectMainTab(2)">Объявления Пользователя
         </div>
-        <div class="flex text-xl font-bold">
-            {{currentUser.firstName || "Пользователь"}}
-        </div>
-    </div>
-    <div class="flex flex-row mb-4">
-        <div class="flex text-xl mr-8">
-            Email Пользователя
-        </div>
-        <div class="flex text-xl font-bold">
-            {{currentUser.email}}
-        </div>
-    </div>
 
-    <div class="flex flex-row mb-4">
-        <div class="flex text-xl mr-8">
-            Роль Пользователя:
+    </div>
+    <div class="overflow-auto">
+        @switch (selectedMainTabIndex) {
+        @case (1) {
+        <div class="flex flex-col max-w-[760px] w-full" [formGroup]="form">
+            <div class="text-4xl mb-2">Ваши данные</div>
+            <div class="flex flex-row justify-between gap-2 flex-wrap col-items-1 mb-4">
+                <div class="flex flex-col justify-between max-w-[50%] col-items-2">
+                    <custom-input-field [label]="'Имя'" formControlName="firstName"></custom-input-field>
+                </div>
+                <div class="flex flex-col justify-between max-w-[50%] col-items-2">
+                    <custom-input-field [label]="'Фамилия'" formControlName="lastName"></custom-input-field>
+                </div>
+                <div class="flex flex-col justify-between max-w-[50%] col-items-2">
+                    <custom-input-field [label]="'Номер Телефона 1'" formControlName="phoneNumber"></custom-input-field>
+                </div>
+                <div class="flex flex-col justify-between  max-w-[50%] col-items-2">
+                    <custom-input-field [label]="'Номер Телефона 2'"
+                        formControlName="phoneNumberSec"></custom-input-field>
+                </div>
+                <div class="flex flex-col justify-between  max-w-[50%] col-items-2">
+                    <custom-input-field [label]="'Email'"
+                        formControlName="email"></custom-input-field>
+                </div>
+                <div class="flex flex-col justify-between  max-w-[50%] col-items-2">
+                    <custom-input-field [label]="'Отображаемое имя'"
+                        formControlName="nickname"></custom-input-field>
+                </div>
+                <div class="flex flex-col justify-between  max-w-[50%] col-items-2">
+
+                </div>
+                <div class="flex flex-col justify-between  max-w-[50%] col-items-2">
+                    <button [disabled]="!form?.valid" mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold">
+                        Сохранить
+                    </button>
+                </div>
+            </div>
+            <div class="flex justify-between mb-3">
+                <div class="flex text-xl">Уникальный Номер Пользователя</div>
+                <div class="flex text-xl font-bold">{{currentUser?.id}}</div>
+            </div>
+            <div class="flex justify-between mb-3">
+                <div class="flex text-xl">Роль</div>
+                <div class="flex text-xl font-bold">{{currentUser?.roles[0].value}}</div>
+            </div>
+            <div class="flex justify-between mb-3">
+                <div class="flex text-xl font-bold">БАЛАНС</div>
+                <div class="flex">
+                    <div class="flex text-xl font-bold"
+                        [ngClass]="{'text-green-700': (currentUser?.balance || 0) >= 0, 'text-red-700': (currentUser?.balance || 0) < 0}">
+                        {{currentUser?.balance}}</div>
+                    <div class="flex text-xl ml-4">Руб</div>
+                </div>
+
+            </div>
+
         </div>
-        <div class="flex text-xl font-bold">
-            {{currentUser.roles[0].value}}
+        }
+        @case (2) {
+        <div class="flex w-full">
+            <div class="flex flex-col items-start mx-auto w-full">
+
+                <div class="flex justify-between w-full">
+                    <div class="text-4xl">Ваши объявления</div>
+                    <div class="flex">
+                        <!-- <div class="flex flex-col justify-center mr-3">
+                                    <div class="text-base">Баланс:{{"0"}}</div>
+                                </div>
+                                <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold">
+                                    Пополнить баланс
+                                </button> -->
+                    </div>
+                </div>
+                <div class="flex flex-col w-full mt-8 tab-group">
+                    <div class="tab-group-header flex">
+                        <div class="flex tab-group-header-item cursor-pointer p-3"
+                            [ngClass]="{'selected-tab': selectedTabIndex == 1}" (click)="selectTab(1)">Ожидают водителя
+                        </div>
+                        <div class="flex tab-group-header-item cursor-pointer p-3"
+                            [ngClass]="{'selected-tab': selectedTabIndex == 0}" (click)="selectTab(0)">В работе</div>
+                        <div class="flex tab-group-header-item cursor-pointer p-3"
+                            [ngClass]="{'selected-tab': selectedTabIndex == 2}" (click)="selectTab(2)">Неодобренные
+                        </div>
+                        <div class="flex tab-group-header-item cursor-pointer p-3"
+                            [ngClass]="{'selected-tab': selectedTabIndex == 3}" (click)="selectTab(3)">Завершенные</div>
+                        <div class="flex tab-group-header-item cursor-pointer p-3"
+                            [ngClass]="{'selected-tab': selectedTabIndex == 4}" (click)="selectTab(4)">Отмененные</div>
+                        <div class="flex tab-group-header-item cursor-pointer p-3"
+                            [ngClass]="{'selected-tab': selectedTabIndex == 5}" (click)="selectTab(5)">ЧП</div>
+
+                    </div>
+                    <div class="flex overflow-auto max-h-[800px]">
+                        <posts-table [currentUser]="currentUser" [posts]="posts" [isShowTitle]="false"></posts-table>
+                    </div>
+                </div>
+
+                <!-- <div class="flex flex-row mb-4">
+                            <div class="flex text-xl mr-8">
+                                Роль Пользователя:
+                            </div>
+                            <div class="flex text-xl font-bold">
+                                {{currentUser.roles[0].value}}
+                            </div>
+                        </div> -->
+            </div>
         </div>
+        }
+        }
+
     </div>
 </div>

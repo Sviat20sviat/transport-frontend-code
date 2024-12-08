@@ -1,0 +1,114 @@
+<div class="flex flex-row justify-between mb-2">
+    <!-- @if(isShowTitle) { -->
+    <div class="text-xl flex items-center">
+        {{"Документы"}}
+    </div>
+    <!-- } -->
+
+    <button mat-raised-button (click)="openDocumentDilaog()" class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold">
+        Создать документ
+    </button>
+</div>
+<div class="content overflow-auto w-full">
+    <table class="w-full">
+        <thead class="table-header">
+            <tr class="sam_row px-2">
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white pl-2">Номер</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Создано</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Тип документа</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Сумма</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Откуда, адрес</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Куда, адрес</span>
+                </th>
+
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Клиент</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Заказ-основание</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Документ-основание</span>
+                </th>
+                <!-- <th class="py-3 px-1">
+                    <span class="font-medium text-white">Курьер</span>
+                </th> -->
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Статус</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Комментарий</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Изменен</span>
+                </th>
+
+            </tr>
+        </thead>
+        <tbody class="table-body">
+            @for (document of documents; track document.id; let index = $index) {
+            <tr class="cursor-pointer"  (click)="openDocumentDilaog(document)">
+                <td class="pl-2 py-3">
+                    {{document?.id}}
+                </td>
+                <td class="py-3 px-1">
+                    {{document?.createdAt | date: 'medium'}}
+                </td>
+                <td class="py-3 px-1">
+                    <div class="text-container">{{ getDocType(document?.docType)}}</div>
+                </td>
+                <td class="py-3 px-1">
+                    {{document?.addressFrom}}
+                </td>
+                <td class="py-3 px-1">
+                    {{document?.addressTo}}
+                </td>
+
+
+
+
+                <td class="py-3 px-1">
+                    <div class="text-container">Клиент№ {{document?.clientId}}</div>
+                </td>
+
+                <td class="py-3 px-1">
+                    <div class="text-container">Оператор№ {{document?.recipientId || '--'}}</div>
+                </td>
+
+                <td class="py-3 px-1">
+                    <div class="text-container"> {{ document?.postBasisId ? ("Заказ№ " + document?.postBasisId) : '--'}}</div>
+                </td>
+
+                <td class="py-3 px-1">
+                    <div class="text-container">{{ document?.documentBasisId ? ('Документ№ ' + document?.documentBasisId) : '--'}}</div>
+                </td>
+
+                <td class="py-3 px-1">
+                    <div class="text-container">{{document?.comment || '--'}}</div>
+                </td>
+
+                <td class="py-3 px-1">
+                    <div class="text-container">{{document?.sum}}</div>
+                </td>
+
+                <td class="py-3 px-1">
+                    <div class="text-container">{{document?.updatedAt | date: 'medium'}}</div>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+<ngx-ui-loader [fgsColor]="'#ffffff'" [loaderId]="loaderId" [fgsType]="'three-bounce'"></ngx-ui-loader>

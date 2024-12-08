@@ -8,7 +8,7 @@ export class UserService {
   constructor() { }
 
   isUserAdmin(user): boolean {
-    console.log('isUserAdmin!',user);
+    // console.log('isUserAdmin!',user);
     if(user) {
       if(user?.roles?.some(role => role.value == 'Admin')) {
         return true;
@@ -33,6 +33,16 @@ export class UserService {
       if(user?.roles?.some(role => role.value == 'Driver')) {
         return true;
       }
+      return false;
+    };
+    return false;
+  }
+
+  isUserOperator(user) {
+    if(user) {
+      if(user?.roles?.some(role => role.value == 'Operator')) {
+        return true;
+      };
       return false;
     };
     return false;
