@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,6 +9,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { NgxUiLoaderModule } from 'ngx-ui-loader';
 import { DialogsManagerService } from '../../services/dialogs-manager.service';
 import { DocumentsService } from '../../services/api/documents.service';
+import { StateService } from '../../services/state.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'documents',
@@ -27,7 +29,7 @@ import { DocumentsService } from '../../services/api/documents.service';
   templateUrl: './documents.component.html',
   styleUrl: './documents.component.scss',
 })
-export class DocumentsComponent {
+export class DocumentsComponent implements OnDestroy {
   documents = [
     {
       id: 3743,
@@ -46,25 +48,35 @@ export class DocumentsComponent {
     },
   ];
   loaderId = 'document-component';
+  unsubscribeAll$: Subject<any> = new Subject();
   constructor(
     private dialogsManager: DialogsManagerService,
-    private documentsService: DocumentsService
+    private documentsService: DocumentsService,
+    private stateService: StateService
   ) {
     this.getAllDocuments();
+  }
+  ngOnDestroy(): void {
+    this.unsubscribeAll$.next(null);
+    this.unsubscribeAll$.complete();
   }
 
   openDocumentDilaog(doc?) {
     console.log('openDocumentDilaog');
-    this.dialogsManager.openDocumentDialog(doc);
+    this.dialogsManager.openDocumentDialog(doc).afterClosed().subscribe(res => {
+      if(res) {
+        this.stateService.loadDocuments();
+      };
+    });
   }
 
   getAllDocuments() {
-    this.documentsService.getAllDocuments().subscribe((res) => {
-      console.log('console', res);
-      if (res) {
-        this.documents = res;
-      }
-    });
+    this.stateService.documents$.pipe(takeUntil(this.unsubscribeAll$)).subscribe((data) => {
+      console.log('documents', data);
+      if (data) {
+        this.documents = data;
+      };
+    })
   }
 
   getDocType(index: documentType): string {

@@ -3,19 +3,32 @@
     Пользователи
 </div>
 <div class="flex flex-col">
-    <div class="tab-group-header flex mb-4">
-        <div class="flex tab-group-header-item cursor-pointer p-3"
-            [ngClass]="{'selected-tab': selectedUseTypeTabIndex == 1}" (click)="selectUserTypeTab(1)">Администраторы</div>
-        <div class="flex tab-group-header-item cursor-pointer p-3"
-            [ngClass]="{'selected-tab': selectedUseTypeTabIndex == 0}" (click)="selectUserTypeTab(0)">Заказчики
+    <div class="flex flex-row justify-between">
+        <div class="tab-group-header flex mb-4">
+            <div class="flex tab-group-header-item cursor-pointer p-3"
+                [ngClass]="{'selected-tab': selectedUseTypeTabIndex == 1}" (click)="selectUserTypeTab(1)">Администраторы</div>
+            <div class="flex tab-group-header-item cursor-pointer p-3"
+                [ngClass]="{'selected-tab': selectedUseTypeTabIndex == 0}" (click)="selectUserTypeTab(0)">Заказчики
+            </div>
+            <div class="flex tab-group-header-item cursor-pointer p-3"
+                [ngClass]="{'selected-tab': selectedUseTypeTabIndex == 2}" (click)="selectUserTypeTab(2)">Водители
+            </div>
+            <div class="flex tab-group-header-item cursor-pointer p-3"
+                [ngClass]="{'selected-tab': selectedUseTypeTabIndex == 3}" (click)="selectUserTypeTab(3)">Операторы
+            </div>
+            <div class="flex tab-group-header-item cursor-pointer p-3"
+            [ngClass]="{'selected-tab': selectedUseTypeTabIndex == 4}" (click)="selectUserTypeTab(4)">Все
         </div>
-        <div class="flex tab-group-header-item cursor-pointer p-3"
-            [ngClass]="{'selected-tab': selectedUseTypeTabIndex == 2}" (click)="selectUserTypeTab(2)">Водители
         </div>
-        <div class="flex tab-group-header-item cursor-pointer p-3"
-            [ngClass]="{'selected-tab': selectedUseTypeTabIndex == 3}" (click)="selectUserTypeTab(3)">Операторы
+        <div class="flex">
+            <custom-input-field [label]="'Введите для поиска...'" [formControl]="searchControl"></custom-input-field>
+            <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold ml-4"
+            (click)="searchUsers()">
+            Поиск
+        </button>
         </div>
     </div>
+
     <table class="w-full">
         <thead class="table-header">
             <tr class="sam_row px-2">

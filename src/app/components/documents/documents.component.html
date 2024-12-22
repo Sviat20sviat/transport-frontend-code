@@ -36,6 +36,9 @@
                     <span class="font-medium text-white">Клиент</span>
                 </th>
                 <th class="py-3 px-1">
+                    <span class="font-medium text-white">Оператор</span>
+                </th>
+                <th class="py-3 px-1">
                     <span class="font-medium text-white">Заказ-основание</span>
                 </th>
                 <th class="py-3 px-1">
@@ -44,9 +47,9 @@
                 <!-- <th class="py-3 px-1">
                     <span class="font-medium text-white">Курьер</span>
                 </th> -->
-                <th class="py-3 px-1">
+                <!-- <th class="py-3 px-1">
                     <span class="font-medium text-white">Статус</span>
-                </th>
+                </th> -->
                 <th class="py-3 px-1">
                     <span class="font-medium text-white">Комментарий</span>
                 </th>
@@ -67,6 +70,9 @@
                 </td>
                 <td class="py-3 px-1">
                     <div class="text-container">{{ getDocType(document?.docType)}}</div>
+                </td>
+                <td class="py-3 px-1">
+                    {{document?.sum}}
                 </td>
                 <td class="py-3 px-1">
                     {{document?.addressFrom}}
@@ -94,13 +100,15 @@
                     <div class="text-container">{{ document?.documentBasisId ? ('Документ№ ' + document?.documentBasisId) : '--'}}</div>
                 </td>
 
+                <!-- <td class="py-3 px-1">
+                    <div class="text-container">{{document?.status}}</div>
+                </td> -->
+
                 <td class="py-3 px-1">
                     <div class="text-container">{{document?.comment || '--'}}</div>
                 </td>
 
-                <td class="py-3 px-1">
-                    <div class="text-container">{{document?.sum}}</div>
-                </td>
+
 
                 <td class="py-3 px-1">
                     <div class="text-container">{{document?.updatedAt | date: 'medium'}}</div>

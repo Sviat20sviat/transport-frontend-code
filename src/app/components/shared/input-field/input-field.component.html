@@ -1,4 +1,4 @@
-<mat-form-field class="example-full-width" [ngClass]="{'teatarea-inp': isTextarea}">
+<mat-form-field class="example-full-width relative" [ngClass]="{'teatarea-inp': isTextarea}">
   <mat-label>{{label}}</mat-label>
 
   @if(!isTextarea) {
@@ -8,12 +8,22 @@
   }
   <!-- @if(matAutoCompleteOptions?.length) { -->
     <mat-autocomplete #auto="matAutocomplete">
-      @for (option of matAutoCompleteOptionsFiltered;  track option) {
-        <mat-option [value]="option[matAutoCompleteOptionValueKey]">
-          <span>{{option[matAutoCompleteOptionKey]}}</span> |
-          <span>{{option[matAutoCompleteOptionValueKey]}}</span>
-        </mat-option>
+      @for (group of matAutoCompleteOptionsFiltered; track group) {
+        <mat-optgroup [label]="group.name">
+          @for (option of group.items;  track option) {
+            <mat-option [value]="option[matAutoCompleteOptionValueKey] || option[matAutoCompleteOptionKey]">
+              <span>{{option[matAutoCompleteOptionKey]}}</span> |
+              <span>{{option[matAutoCompleteOptionValueKey]}}</span>
+            </mat-option>
+          }
+        </mat-optgroup>
       }
+      
+      
+
     </mat-autocomplete>
-  <!-- } -->
+    @if(isAddToFavorite && formControl?.value && !isAlreadyUsed) {
+      <img src="assets/images/star.png" alt="star" matTooltip="Добавить адрес в избранное" class="w-8 h-8 top-[7px] right-0 absolute cursor-pointer" (click)="addAddressToFavorites()">
+    }
+   <!-- } -->
 </mat-form-field>

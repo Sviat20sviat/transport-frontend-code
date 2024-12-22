@@ -48,9 +48,9 @@
             <table class="w-full">
                 <thead class="table-header">
                     <tr class="sam_row px-2">
-                        <!-- <th class="py-3 px-1">
-                            <span class="font-medium text-white pl-2">Номер</span>
-                        </th> -->
+                        <th class="py-3 px-1">
+                            <span class="font-medium text-white pl-2"></span>
+                        </th>
                         <th class="py-3 px-1">
                             <span class="font-medium text-white"></span>
                         </th>
@@ -71,6 +71,9 @@
                         </th>
                     </tr>
                     <tr>
+                        <th class="py-3 px-1">
+                            <span class="font-medium text-white">№</span>
+                        </th>
                         <th class="py-3 px-1">
                             <span class="font-medium text-white">Дата</span>
                         </th>
@@ -104,25 +107,81 @@
                     @for (settlement of mutualSettlements; track settlement.id; let index = $index) {
                     <tr class="cursor-pointer" (click)="openSettlementDialog(settlement)">
                         <td class="pl-2 py-3">
-                            {{settlement?.id}}
+                            {{index +1}}
                         </td>
-                        <td class="py-3 px-1">
-                            {{settlement?.createdAt}}
+                        <td class="pl-2 py-3">
+                            {{settlement.document?.createdAt | date: 'medium'}}
                         </td>
-                        <td class="py-3 px-1">
+                        <td class="py-3 px-1 text-link" (click)="$event.stopPropagation();openDocument()" matTooltip="Полная информация по Документу">
+                            Документ№ {{settlement?.document?.id}}
+                        </td>
+                        <td class="py-3 px-1 text-link" (click)="$event.stopPropagation();openUser()" matTooltip="Полная информация по Пользователю">
+                            {{settlement?.user?.email}}
+                        </td>
+                        @if (index == 0 || mutualSettlements[index -1]?.user?.documents[0].userBalanseBefore != settlement?.user?.documents[0].userBalanseBefore) {
+                            <td class="py-3 px-1 start-saldo text-red-600" [attr.rowspan]="calcUserDataLength(settlement?.user?.id)">
+                                @if(settlement?.user?.documents[0].userBalanseBefore < 0) {
+                                    {{settlement?.user?.documents[0].userBalanseBefore || 0}}
+                                } @else if(settlement?.user?.documents[0].userBalanseBefore >= 0) {
+                                    0
+                                }
+                                
+                            </td>
+                            <td class="py-3 px-1 start-saldo text-green-600" [attr.rowspan]="calcUserDataLength(settlement?.user?.id)">
+                                @if(settlement?.user?.documents[0].userBalanseBefore > 0) {
+                                    +{{settlement?.user?.documents[0].userBalanseBefore || 0}}
+                                } @else if(settlement?.user?.documents[0].userBalanseBefore <= 0) {
+                                    0
+                                }
+                            </td>
+                        }
+
+                        <td class="py-3 px-1 middle-saldo text-red-600">
+                            @if(settlement?.document?.docType == 1) {
+                                -{{settlement?.document?.sum}}
+                            } @else if(settlement?.document?.docType == 2) {
+                                0
+                            }
+                        </td>
+                        <td class="py-3 px-1 middle-saldo text-green-600">
+                            @if(settlement?.document?.docType == 2) {
+                                +{{settlement?.document?.sum}}
+                            } @else if(settlement?.document?.docType == 1) {
+                                0
+                            }
+                        </td>
+                        @if (index == 0 || mutualSettlements[index -1]?.user?.documents[settlement?.user?.documents?.length -1].userBalanseAfter != settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseAfter) {
+                            <td class="py-3 px-1 end-saldo text-red-600" [attr.rowspan]="calcUserDataLength(settlement?.user?.id)">
+                                @if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseAfter < 0) {
+                                    {{settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseAfter || 0}}
+                                } @else if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseAfter >= 0) {
+                                    0
+                                }
+                                
+                            </td>
+                            <td class="py-3 px-1 end-saldo text-green-600" [attr.rowspan]="calcUserDataLength(settlement?.user?.id)">
+                                @if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseAfter > 0) {
+                                    +{{settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseAfter || 0}}
+                                } @else if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseAfter <= 0) {
+                                    0
+                                }
+                            </td>
+                        }
+
+                        <!-- <td class="py-3 px-1">
                             {{settlement?.organization}}
-                        </td>
-                        <td class="py-3 px-1">
+                        </td> -->
+                        <!-- <td class="py-3 px-1">
                             {{settlement?.district}}
-                        </td>
-                        <td class="py-3 px-1">
+                        </td> -->
+                        <!-- <td class="py-3 px-1">
                             {{settlement?.name}}
-                        </td>
-                        <td class="py-3 px-1">
+                        </td> -->
+                        <!-- <td class="py-3 px-1">
                             {{settlement?.settlement}}
-                        </td>
+                        </td> -->
         
-                        <td class="py-3 px-1">
+                        <!-- <td class="py-3 px-1">
                             {{settlement?.build}}
                         </td>
                         <td class="py-3 px-1">
@@ -143,7 +202,7 @@
         
                         <td class="py-3 px-1">
                             {{settlement?.updatedAt | date: 'medium'}}
-                        </td>
+                        </td> -->
         
                     </tr>
                     }

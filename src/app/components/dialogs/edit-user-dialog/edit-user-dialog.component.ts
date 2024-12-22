@@ -13,6 +13,7 @@ import { SelectFieldComponent } from '../../shared/select-field/select-field.com
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { InputFieldComponent } from '../../shared/input-field/input-field.component';
 import { MatButtonModule } from '@angular/material/button';
+import { ValidatorsService } from '../../../services/validators.service';
 @Component({
   selector: 'app-edit-user-dialog',
   standalone: true,
@@ -46,18 +47,18 @@ export class EditUserDialogComponent implements OnInit {
     private userService: UserService,
     private dialogsManager: DialogsManagerService,
     private ngxService: NgxUiLoaderService,
-    
+    private validatorsService: ValidatorsService
   ) {
     this.user = data?.user;
     console.log('CONSOLE!',data);
+    const phoneMask = validatorsService.phoneMask;
     this.form = this.fb.group({
-      nickname: this.fb.control(''),
-      firstName: this.fb.control(''),
-      lastName: this.fb.control(''),
-      surName: this.fb.control(''),
+      nickname: this.fb.control('', [Validators.required]),
+      firstName: this.fb.control('', [Validators.required]),
+      lastName: this.fb.control('', [Validators.required]),
       email: this.fb.control('', [Validators.email]),
-      phoneNumber: this.fb.control('', []),
-      phoneNumberSec: this.fb.control('', []),
+      phoneNumber: this.fb.control('', [Validators.pattern(phoneMask)]),
+      phoneNumberSecond: this.fb.control('', [Validators.pattern(phoneMask)]),
       roles: this.fb.control([]),
     })
     this.rolesService.getAllRoles().subscribe((res) => {

@@ -85,3 +85,9 @@
 .mdc-text-field--invalid {
     border: 1px solid red!important;
 }
+
+.text-white {
+    .mdc-label {
+        color: white !important;
+    }
+}

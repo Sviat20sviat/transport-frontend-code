@@ -26,7 +26,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { UserService as UserApiServie } from '../../../services/api/user.service';
-import { Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, Subject, combineLatest, takeUntil } from 'rxjs';
 @Component({
   selector: 'post-dialog',
   standalone: true,
@@ -59,7 +59,7 @@ export class PostDialogComponent implements OnInit, OnDestroy {
   post;
   driver;
   isEdit: boolean = false;
-  
+
   statuses = [
     {
       id: 0,
@@ -90,28 +90,11 @@ export class PostDialogComponent implements OnInit, OnDestroy {
   clients;
   price = 2000;
 
-  addressesIn = [
-    {
-      name: "ООО РОМАШКА",
-      address: "Сухум, Государственная 31"
-    },
-    {
-      name: "ИП СИДОРОВ",
-      address: "Сухум, Государственная 23"
-    },
-    {
-      name: "ООО ЛАРИН",
-      address: "Сухум, Государственная 44"
-    },
-    {
-      name: "ФАО КИНГИЗ",
-      address: "Сухум, Государственная 34/2"
-    },
-    {
-      name: "НТП КГБ",
-      address: "Сухум, Мира 8"
-    },
-  ];
+  addressesIn = [];
+  addressesOut = [];
+  addressesInGroup = [];
+  addressesOutGroup = [];
+  addAddressToFavorite$: BehaviorSubject<any>
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { post },
     public dialogRef: MatDialogRef<PostDialogComponent>,
@@ -128,14 +111,24 @@ export class PostDialogComponent implements OnInit, OnDestroy {
     console.log('this.post', this.post);
 
     console.log('this.currentUser!', this.currentUser);
-    this.stateService.clients$.pipe(takeUntil(this.unsubscribeAll$)).subscribe((value) => {
-      this.clients = value;
-    });
-    this.stateService.currentUser$.pipe(takeUntil(this.unsubscribeAll$)).subscribe((value) => {
-      this.currentUser = value;
-      if(this.currentUser?.id) {
+
+    combineLatest({ 
+      clients: this.stateService.clients$,
+      currentUser: this.stateService.currentUser$,
+      addresesIn: this.stateService.addresesIn$,
+      addresesOut: this.stateService.addressesOut$
+    })
+    .pipe(takeUntil(this.unsubscribeAll$))
+    .subscribe((res) => {
+      this.clients = res.clients;
+      this.currentUser = res.currentUser;
+      this.addressesIn = res.addresesIn;
+      this.addressesOut = res.addresesOut
+      if (this.currentUser?.id) {
         this.setValidator();
       };
+      this.addressesInGroup = this.setAutocompleteAddresses(this.currentUser?.favoriteAddresses, this.addressesIn);
+      this.addressesOutGroup = this.setAutocompleteAddresses(this.currentUser?.favoriteAddresses, this.addressesOut);
     });
 
     // this.form = fb.group({
@@ -157,9 +150,9 @@ export class PostDialogComponent implements OnInit, OnDestroy {
     this.initUserFormGroup();
 
     this.form.patchValue(this.post);
-    if(this.post?.customer) {
+    if (this.post?.customer) {
       this.setUserDataFormValue(this.post?.customer);
-    };
+    }
     if (!this.userService.isUserAdmin(this.currentUser)) {
       console.log(
         'this.userService.isUserAdmin(this.currentUser)!',
@@ -170,34 +163,37 @@ export class PostDialogComponent implements OnInit, OnDestroy {
     this.form.get('status').valueChanges.subscribe((value) => {
       console.log('value!', value);
     });
-    this.form.get('cargoCharacterSize').valueChanges.subscribe((value: string) => {
-      if(this.form.get('cargoCharacterSize')?.valid) {
-        console.log('cargoCharacterSize',value);
-        let fd = value.split('*')[0];
-        let sd = value.split('*')[1];
-        let td = value.split('*')[2];
-        console.log('console',fd,sd,td);
-        let all = (+fd)*(+sd)*(+td);
-        console.log('console',all);
-        this.form.get('cargoCharacterSizeAll').setValue(all);
-      };
-    })
+    this.form
+      .get('cargoCharacterSize')
+      .valueChanges.subscribe((value: string) => {
+        if (this.form.get('cargoCharacterSize')?.valid) {
+          console.log('cargoCharacterSize', value);
+          let fd = value.split('*')[0];
+          let sd = value.split('*')[1];
+          let td = value.split('*')[2];
+          console.log('console', fd, sd, td);
+          let all = +fd * +sd * +td;
+          console.log('console', all);
+          this.form.get('cargoCharacterSizeAll').setValue(all);
+        }
+      });
   }
   ngOnDestroy(): void {
     this.unsubscribeAll$.next(null);
     this.unsubscribeAll$.complete();
   }
 
-
   ngOnInit(): void {
-    if(this.post?.author?.id) {
-      this.userApiService.getUserById(this.post?.author?.id).subscribe((res) => {
-        console.log('getUserById',res);
-        this.userDataForm.patchValue(res);
-        this.userDataForm.disable();
-      })
-    };
-    this.userApiService.getUsers
+    if (this.post?.author?.id) {
+      this.userApiService
+        .getUserById(this.post?.author?.id)
+        .subscribe((res) => {
+          console.log('getUserById', res);
+          this.userDataForm.patchValue(res);
+          this.userDataForm.disable();
+        });
+    }
+    this.userApiService.getUsers;
   }
 
   initForm() {
@@ -216,7 +212,13 @@ export class PostDialogComponent implements OnInit, OnDestroy {
       cargoPickupComment: [''],
       cargoCharacter: [''],
       cargoCharacterComment: [''],
-      cargoCharacterSize: ['', [Validators.required, Validators.pattern(/^\d{1,3}\*\d{1,3}\*\d{1,3}$/)]],
+      cargoCharacterSize: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^\d{1,3}\*\d{1,3}\*\d{1,3}$/),
+        ],
+      ],
       cargoCharacterSizeAll: [0],
       cargoCharacterWeight: [''],
       isFragile: [false],
@@ -229,54 +231,57 @@ export class PostDialogComponent implements OnInit, OnDestroy {
       additionalRecipientComment: [''],
       additionalFloor: [''],
       additionalFriagle: [false],
-      userId: [null],
-      customerId: ['', Validators.required],
+      userId: [null], //заказчик
+      customerId: [null, Validators.required], //фактический создатель
 
       price: [0, Validators.pattern('[0-9]*')],
       commission: [0, Validators.pattern('[0-9]*')],
       summ: [0, Validators.pattern('[0-9]*')],
       paid: [0, Validators.pattern('[0-9]*')],
-      createdAt: this.fb.control(''),
+      // createdAt: this.fb.control(''),
       status: this.fb.control(''),
-
-
     });
   }
 
   setValidator() {
-    if(this.currentUser?.roles?.some(role => role.value == 'Admin' || role.value == 'Operator')) {
+    if (
+      this.userService.isUserAdmin(this.currentUser) ||
+      this.userService.isUserOperator(this.currentUser)
+    ) {
       this.form.get('customerId')?.setValidators(Validators.required);
-    };
-
-    if(this.userService.isUserAdmin(this.currentUser) || this.userService.isUserOperator(this.currentUser)) {
-      this.form.get('price').setValidators(Validators.required);
-      this.form.get('commission').setValidators(Validators.required);
-      this.form.get('summ').setValidators(Validators.required);
+      this.form
+        .get('price')
+        .setValidators([Validators.required, Validators.minLength(2)]);
+      this.form
+        .get('commission')
+        .setValidators([Validators.required, Validators.minLength(2)]);
+      this.form
+        .get('summ')
+        .setValidators([Validators.required, Validators.minLength(2)]);
       this.form.get('paid').setValidators(Validators.required);
       this.setPriceCalc();
-    };
-
+    } else {
+      this.validateFormForUser();
+    }
   }
 
   setPriceCalc() {
-    this.form.get('price').valueChanges.subscribe(value => {
+    this.form.get('price').valueChanges.subscribe((value) => {
       const commission = this.form.get('commission').value;
-      console.log('commission',);
-      if(commission) {
-        this.form.get('summ').setValue((+commission) + (+value));
+      console.log('commission');
+      if (commission) {
+        this.form.get('summ').setValue(+commission + +value);
       }
     });
 
-    this.form.get('commission').valueChanges.subscribe(value => {
+    this.form.get('commission').valueChanges.subscribe((value) => {
       const price = this.form.get('price').value;
-      console.log('price',price);
-      if(price) {
-        this.form.get('summ').setValue((+price) + (+value));
+      console.log('price', price);
+      if (price) {
+        this.form.get('summ').setValue(+price + +value);
       }
     });
   }
-
-
 
   initUserFormGroup() {
     this.userDataForm = this.fb.group({
@@ -335,15 +340,77 @@ export class PostDialogComponent implements OnInit, OnDestroy {
   }
 
   create() {
-
     const values = this.form?.value;
-    console.log('values',values);
+    console.log('values', values);
+    if (
+      !this.userService.isUserAdmin(this.currentUser) &&
+      !this.userService.isUserOperator(this.currentUser)
+    ) {
+      values.customerId = this.currentUser.id;
+    }
 
+    this.postsService.createPost(values, this.currentUser).subscribe((res) => {
+      console.log('createPost', res);
+      if (!res) {
+        this.dialogsManager.openInfoMessageDialog('ОШИБКА СОДАНИЯ');
+        return;
+      }
+      this.dialogsManager.openInfoMessageDialog('Объявление успешно создано');
+      this.dialogRef.close(res);
+    });
+  }
 
-    this.postsService.createPost(values, this.currentUser).subscribe(res => {
-      console.log('createPost',res);
+  validateFormForUser() {
+    this.form.get('price').clearValidators();
+    this.form.get('commission').clearValidators();
+    this.form.get('summ').clearValidators();
+    this.form.get('paid').clearValidators();
+    this.form.get('customerId').clearValidators();
+  }
+
+  addAddressToFavorite(address) {
+    console.log('event addAddressToFavorite',event);
+    if(!this.currentUser?.id) {
+      return;
+    };
+    let addresses = [];
+    if(this.currentUser?.favoriteAddresses?.length) {
+      addresses = [...this.currentUser?.favoriteAddresses]
+    };
+    addresses = [...addresses, address];
+    this.userApiService.setUserFavoriteAddress(this.currentUser?.id, addresses).subscribe(res => {
+      console.log('setUserFavoriteAddress',res);
+      if(!res) {
+        this.dialogsManager.openInfoMessageDialog('Ошибка добавления адреса в избранное');
+        return;
+      };
+      this.currentUser = res;
+      this.dialogsManager.openInfoMessageDialog('Адрес добавлен успешно!');
+      this.addressesInGroup = this.setAutocompleteAddresses(this.currentUser?.favoriteAddresses, this.addressesIn);
+      this.addressesOutGroup = this.setAutocompleteAddresses(this.currentUser?.favoriteAddresses, this.addressesOut);
     })
+  }
 
+  setAutocompleteAddresses(userFavorites: string[] | null, addresses: string[] | null): any[] {
+    const groups = [];
+
+    if(userFavorites?.length) {
+      const group = {
+        name: 'Избранные Адреса',
+        items: userFavorites.map(item => {
+          return {name: item}
+        })
+      };
+      groups.push(group);
+    };
+    if(addresses?.length) {
+      const group = {
+        name: 'Возможные Адреса',
+        items: addresses
+      };
+      groups.push(group);
+    };
+    return groups;
   }
 }
 

@@ -1,159 +1,194 @@
 <div class="login-page flex items-center justify-center absolute h-screen w-screen">
-  <div fxLayout="row" fxLayout.xs="column" fxFlexFill> 
-    <div
-      fxFlex="42"
-      class="h-full"
-      fxFlex.xs="100"
-      fxFlexAlign="stretch"
-    >
+  <div fxLayout="row" fxLayout.xs="column" fxFlexFill>
+    <div fxFlex="42" class="h-full" fxFlex.xs="100" fxFlexAlign="stretch">
       <div class="h-full flex justify-between items-center">
         <div class="login_block bottom w-full flex items-center justify-center h-[85%]">
-          <div class="bottom_wrap z-10 px-[10%] pt-[10%] pb-[4%] rounded-md w-full h-full flex justify-between flex-col relative">
+          <div
+            class="bottom_wrap z-10 px-[10%] pt-[10%] pb-[4%] rounded-md w-full h-full flex justify-between flex-col relative">
 
             @if (!isRegistration) {
-              <div class="flex justify-center w-full">
-                <img class="max-w-[320px]"
-                  src="/assets/images/gg-logo.png"
-                  alt="logo"
-                />
+            <div class="flex justify-center w-full">
+              <img class="max-w-[320px]" src="/assets/images/gg-logo.png" alt="logo" />
+            </div>
+            <div>
+              <div class="slogan mb-4 font-semibold leading-none">Авторизация</div>
+              <div class="font-medium text-white">
+                Нет аккаунта? <span class="underline cursor-pointer" (click)="register()">зарегистрироваться</span>
               </div>
-              <div>
-                <div class="slogan mb-4 font-semibold leading-none">Авторизация</div>
-                <div class="font-medium text-white">
-                  Нет аккаунта? <span class="underline cursor-pointer" (click)="register()">зарегистрироваться</span>
-                </div>
-                <form class="flex flex-col login_view" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-                  <div class="flex flex-row justify-between mb-8 input-text-left">
-                    <div class="flex items-center relative w-full rem_pad">
-                    </div>
+              <form class="flex flex-col login_view" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                <div class="flex flex-row justify-between mb-8 input-text-left">
+                  <div class="flex items-center relative w-full rem_pad">
                   </div>
-                  <p class="labels text-base font-normal">username</p>
-                  <div class="flex items-center relative mb-8 w-full rounded-lg ic_wrap">
-                    <!-- <img *ngIf="loginForm.get('email').touched && loginForm.get('email').value" class="icon absolute mr-1 right-0 w-6 h-6 cursor-pointer text-center min-w-[50px]" (click)="clearUserName()" src="assets/images/icons/svg/close.svg" alt="clear" /> -->
-                    <input
-                      formControlName="email"
-                      class="form-control input-field h-[52px] rounded-lg pl-4 text-left w-full font-normal"
-                      aria-describedby="emailHelp"
-                      placeholder="username"
-                      id="myCheck"
-                    />
-                    <p
-                      class="required_field absolute top-14 left-1 text-xs font-normal"
-                      *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
-                    >
-                      <!-- <span *ngIf="loginForm.get('email')['errors']['required']">
+                </div>
+                <p class="labels text-base font-normal">username</p>
+                <div class="flex items-center relative mb-8 w-full rounded-lg ic_wrap">
+                  <!-- <img *ngIf="loginForm.get('email').touched && loginForm.get('email').value" class="icon absolute mr-1 right-0 w-6 h-6 cursor-pointer text-center min-w-[50px]" (click)="clearUserName()" src="assets/images/icons/svg/close.svg" alt="clear" /> -->
+                  <input formControlName="email"
+                    class="form-control input-field h-[52px] rounded-lg pl-4 text-left w-full font-normal"
+                    aria-describedby="emailHelp" placeholder="username" id="myCheck" />
+                  <p class="required_field absolute top-14 left-1 text-xs font-normal"
+                    *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+                    <!-- <span *ngIf="loginForm.get('email')['errors']['required']">
                         main.formLogin.userNameEmpty
                       </span> -->
-                    </p>
-                  </div>
-                  <p class="labels text-base font-normal">Пароль</p>
-                  <div class="flex items-center relative mb-8 w-full rounded-lg ic_wrap">
-                    <img class="icon absolute right-0 w-6 h-6 mr-1 cursor-pointer text-center min-w-[50px]" *ngIf="inputType == 'password'" (click)="inputType = 'text'" src="assets/images/icons/svg/eyee.svg" alt="clear" />
-                    <img class="icon absolute right-0 w-6 h-6 mr-1 cursor-pointer text-center min-w-[50px]" *ngIf="inputType == 'text'" (click)="inputType = 'password'" src="assets/images/icons/svg/eyeclosed.svg" alt="clear" />
-                    <input
-                      type="password" [type]="inputType"
-                      formControlName="password"
-                      class="form-control input-field h-[52px] rounded-lg pl-4 text-left w-full font-normal"
-                      placeholder="password"
-                    />
-                    <p
-                      class="required_field absolute top-14 left-1 text-xs font-normal"
-                      *ngIf="
-                        loginForm.get('password')?.invalid && loginForm.get('email')?.touched
-                      "
-                    >
-                      <!-- <span *ngIf="loginForm?.get('password')?.errors['required']">
-                        passwordEmpty
-                      </span> -->
-                    </p>
-                  </div>
-                  <button type="submit" mat-raised-button class="s-button h-[52px] w-full text-base mx-auto uppercase mb-2.5 mt-4 font-bold font-semibold">
-                    Авторизироваться
-                  </button>
-                </form>
-              </div>
-            } @else {
-              <div>
-                <div class="slogan mb-4 font-semibold leading-none">Регистрация</div>
-                <div class="font-medium text-white">
-                  Есть аккаунт? <span class="underline cursor-pointer" (click)="login()">авторизироваться</span>
+                  </p>
                 </div>
-                <form class="flex flex-col login_view" [formGroup]="registerForm">
-                  <p class="labels text-base font-normal">Email</p>
-                  <div class="flex items-center relative mb-6 w-full rounded-lg ic_wrap">
-                    <input
-                      formControlName="email"
-                      class="form-control input-field h-[52px] rounded-lg pl-4 text-left w-full font-normal"
-                      aria-describedby="emailHelp"
-                      placeholder="Введите email"
-                      id="myCheck"
-                    />
-                  </div>
-                  <p class="labels text-base font-normal">Номер телефона</p>
-                  <div class="flex flex-col items-center  relative mb-6 w-full rounded-lg ic_wrap">
-                    <input
-                      formControlName="phoneNumber"
-                      class="form-control input-field h-[52px] rounded-lg pl-4 text-left w-full font-normal"
-                      aria-describedby="emailHelp"
-                      placeholder="Введите email"
-                      id="myCheck"
-                    />
-                    @if (registerForm.get('phoneNumber')?.touched && !registerForm.get('phoneNumber')?.valid) {
-                      <div class="text-red-600 text-xs">Неправильный Номер Телефона!</div>
-                    }
-                  </div>
-                  <p class="labels text-base font-normal">Никнейм пользователя</p>
-                  <div class="flex items-center relative mb-6 w-full rounded-lg ic_wrap">
-                    <input
-                      formControlName="nickname"
-                      class="form-control input-field h-[52px] rounded-lg pl-4 text-left w-full font-normal"
-                      aria-describedby="emailHelp"
-                      placeholder="Введите никнейм"
-                    />
-                  </div>
-                  <div class="flex items-center relative mb-6 w-full rounded-lg ic_wrap">
-                    <mat-checkbox formControlName="isDriver">Я - водитель</mat-checkbox>
-                  </div>
-                  <p class="labels text-base font-normal">Пароль</p>
-                  <div class="flex items-center relative mb-6 w-full rounded-lg ic_wrap">
-                    <img class="icon absolute right-0 w-6 h-6 mr-1 cursor-pointer text-center min-w-[50px]" *ngIf="inputType == 'password'" (click)="inputType = 'text'" src="assets/images/icons/svg/eyee.svg" alt="clear" />
-                    <img class="icon absolute right-0 w-6 h-6 mr-1 cursor-pointer text-center min-w-[50px]" *ngIf="inputType == 'text'" (click)="inputType = 'password'" src="assets/images/icons/svg/eyeclosed.svg" alt="clear" />
-                    <input
-                      type="password" [type]="inputType"
-                      formControlName="password"
-                      class="form-control input-field h-[52px] rounded-lg pl-4 text-left w-full font-normal"
-                      placeholder="Введите пароль"
-                    />
-                    <p
-                      class="required_field absolute top-14 left-1 text-xs font-normal"
-                      *ngIf="
-                        registerForm.get('password')?.invalid && registerForm.get('email')?.touched
-                      "
-                    >
-                      <!-- <span *ngIf="loginForm?.get('password')?.errors['required']">
+                <p class="labels text-base font-normal">Пароль</p>
+                <div class="flex items-center relative mb-8 w-full rounded-lg ic_wrap">
+                  <img class="icon absolute right-0 w-6 h-6 mr-1 cursor-pointer text-center min-w-[50px]"
+                    *ngIf="inputType == 'password'" (click)="inputType = 'text'" src="assets/images/icons/svg/eyee.svg"
+                    alt="clear" />
+                  <img class="icon absolute right-0 w-6 h-6 mr-1 cursor-pointer text-center min-w-[50px]"
+                    *ngIf="inputType == 'text'" (click)="inputType = 'password'"
+                    src="assets/images/icons/svg/eyeclosed.svg" alt="clear" />
+                  <input type="password" [type]="inputType" formControlName="password"
+                    class="form-control input-field h-[52px] rounded-lg pl-4 text-left w-full font-normal"
+                    placeholder="password" />
+                  <p class="required_field absolute top-14 left-1 text-xs font-normal" *ngIf="
+                        loginForm.get('password')?.invalid && loginForm.get('email')?.touched
+                      ">
+                    <!-- <span *ngIf="loginForm?.get('password')?.errors['required']">
                         passwordEmpty
                       </span> -->
-                    </p>
-                  </div>
-                  <p class="labels text-base font-normal">Повторите пароль</p>
-                  <div class="flex flex-col items-center relative mb-6 w-full rounded-lg ic_wrap">
-                    <img class="icon absolute right-0 top-[14px] w-6 h-6 mr-1 cursor-pointer text-center min-w-[50px]" *ngIf="inputType == 'password'" (click)="inputType = 'text'" src="assets/images/icons/svg/eyee.svg" alt="clear" />
-                    <img class="icon absolute right-0 top-[14px] w-6 h-6 mr-1 cursor-pointer text-center min-w-[50px]" *ngIf="inputType == 'text'" (click)="inputType = 'password'" src="assets/images/icons/svg/eyeclosed.svg" alt="clear" />
-                    <input
-                      type="password" [type]="inputType"
-                      formControlName="repeatPassword"
-                      class="form-control input-field h-[52px] rounded-lg pl-4 text-left w-full font-normal"
-                      placeholder="Введите пароль"
-                    />
-                    @if (getNotSamePass()) {
-                      <div class="text-red-600 text-xs">Пароли не совпадают!</div>
-                    }
-                  </div>
-                  <button mat-raised-button class="s-button h-[52px] w-full text-base mx-auto uppercase mb-2.5 mt-4 font-semibold" [disabled]="!registerForm.valid" (click)="registerUser()">
-                    Зарегистрироваться
-                  </button>
-                </form>
+                  </p>
+                </div>
+                <button type="submit" mat-raised-button
+                  class="s-button h-[52px] w-full text-base mx-auto uppercase mb-2.5 mt-4 font-semibold">
+                  Авторизироваться
+                </button>
+              </form>
+            </div>
+            } @else {
+            <div>
+              <div class="slogan mb-4 font-semibold leading-none">Регистрация</div>
+              <div class="font-medium text-white">
+                Есть аккаунт? <span class="underline cursor-pointer" (click)="login()">авторизироваться</span>
               </div>
+              <form class="flex flex-col login_view" [formGroup]="registerForm">
+                <div class="flex flex-row justify-between gap-3 col-items-1 flex-nowrap">
+                  <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                    <p class="labels text-base font-normal">Email</p>
+                    <div class="flex items-center relative mb-6 w-full rounded-lg ic_wrap">
+                      <input formControlName="email"
+                        class="form-control input-field h-[52px] rounded-lg pl-4 text-left w-full font-normal"
+                        aria-describedby="emailHelp" placeholder="Введите email" />
+                    </div>
+                  </div>
+
+                  <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                    <p class="labels text-base font-normal">Никнейм пользователя</p>
+                    <div class="flex items-center relative mb-6 w-full rounded-lg ic_wrap">
+                      <input formControlName="nickname"
+                        class="form-control input-field h-[52px] rounded-lg pl-4 text-left w-full font-normal"
+                         placeholder="Введите никнейм" />
+                    </div>
+                  </div>
+                </div>
+                <div class="flex flex-row justify-between gap-3 col-items-1 flex-nowrap">
+                  
+                  <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                    <p class="labels text-base font-normal">Имя</p>
+                    <div class="flex flex-col items-center  relative mb-6 w-full rounded-lg ic_wrap">
+                      <input formControlName="firstName"
+                        class="form-control input-field h-[52px] rounded-lg pl-4 text-left w-full font-normal"
+                         placeholder="Введите Имя"  />
+                    </div>
+                  </div>
+
+                  <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                    <p class="labels text-base font-normal">Фамилия</p>
+                    <div class="flex flex-col items-center  relative mb-6 w-full rounded-lg ic_wrap">
+                      <input formControlName="lastName"
+                        class="form-control input-field h-[52px] rounded-lg pl-4 text-left w-full font-normal"
+                         placeholder="Введите Фамилию"  />
+                    </div>
+                  </div>
+                </div>
+                <div class="flex flex-row justify-between gap-3 col-items-1 flex-nowrap">
+                  
+                  <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                    <p class="labels text-base font-normal">Номер телефона</p>
+                    <div class="flex flex-col items-center  relative mb-6 w-full rounded-lg ic_wrap">
+                      <input formControlName="phoneNumber"
+                        class="form-control input-field h-[52px] rounded-lg pl-4 text-left w-full font-normal"
+                        placeholder="Введите номер телефона"  />
+                      @if (registerForm.get('phoneNumber')?.touched && !registerForm.get('phoneNumber')?.valid) {
+                      <div class="text-red-600 text-xs">Неправильный Номер Телефона!</div>
+                      }
+                    </div>
+                  </div>
+
+                  <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                    <p class="labels text-base font-normal">Доп. Номер телефона</p>
+                    <div class="flex flex-col items-center  relative mb-6 w-full rounded-lg ic_wrap">
+                      <input formControlName="phoneNumberSecond"
+                        class="form-control input-field h-[52px] rounded-lg pl-4 text-left w-full font-normal"
+                        placeholder="Введите номер телефона" />
+                      @if (registerForm.get('phoneNumberSecond')?.touched && !registerForm.get('phoneNumberSecond')?.valid) {
+                      <div class="text-red-600 text-xs">Неправильный Номер Телефона!</div>
+                      }
+                    </div>
+                  </div>
+                </div>
+ 
+
+
+                <div class="flex items-center relative mb-6 w-full rounded-lg ic_wrap text-white">
+                  <mat-checkbox formControlName="isDriver">Я - водитель</mat-checkbox>
+                </div>
+
+                <div class="flex flex-row justify-between gap-3 col-items-1 flex-nowrap">
+                  <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                    <p class="labels text-base font-normal">Пароль</p>
+                    <div class="flex items-center relative mb-6 w-full rounded-lg ic_wrap">
+                      <img class="icon absolute right-0 w-6 h-6 mr-1 cursor-pointer text-center min-w-[50px]"
+                        *ngIf="inputType == 'password'" (click)="inputType = 'text'" src="assets/images/icons/svg/eyee.svg"
+                        alt="clear" />
+                      <img class="icon absolute right-0 w-6 h-6 mr-1 cursor-pointer text-center min-w-[50px]"
+                        *ngIf="inputType == 'text'" (click)="inputType = 'password'"
+                        src="assets/images/icons/svg/eyeclosed.svg" alt="clear" />
+                      <input type="password" [type]="inputType" formControlName="password"
+                        class="form-control input-field h-[52px] rounded-lg pl-4 text-left w-full font-normal"
+                        placeholder="Введите пароль" />
+                      <p class="required_field absolute top-14 left-1 text-xs font-normal" *ngIf="
+                            registerForm.get('password')?.invalid && registerForm.get('email')?.touched
+                          ">
+                        <!-- <span *ngIf="loginForm?.get('password')?.errors['required']">
+                            passwordEmpty
+                          </span> -->
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                    <p class="labels text-base font-normal">Повторите пароль</p>
+                    <div class="flex flex-col items-center relative mb-6 w-full rounded-lg ic_wrap">
+                      <img class="icon absolute right-0 top-[14px] w-6 h-6 mr-1 cursor-pointer text-center min-w-[50px]"
+                        *ngIf="inputType == 'password'" (click)="inputType = 'text'" src="assets/images/icons/svg/eyee.svg"
+                        alt="clear" />
+                      <img class="icon absolute right-0 top-[14px] w-6 h-6 mr-1 cursor-pointer text-center min-w-[50px]"
+                        *ngIf="inputType == 'text'" (click)="inputType = 'password'"
+                        src="assets/images/icons/svg/eyeclosed.svg" alt="clear" />
+                      <input type="password" [type]="inputType" formControlName="repeatPassword"
+                        class="form-control input-field h-[52px] rounded-lg pl-4 text-left w-full font-normal"
+                        placeholder="Введите пароль" />
+                      @if (getNotSamePass()) {
+                      <div class="text-red-600 text-xs">Пароли не совпадают!</div>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+
+
+
+                <button mat-raised-button
+                  class="s-button h-[52px] w-full text-base mx-auto uppercase mb-2.5 mt-4 font-semibold"
+                  [disabled]="!registerForm.valid" (click)="registerUser()">
+                  Зарегистрироваться
+                </button>
+              </form>
+            </div>
             }
 
           </div>
@@ -162,4 +197,3 @@
     </div>
   </div>
 </div>
-

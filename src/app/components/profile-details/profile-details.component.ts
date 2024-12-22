@@ -6,7 +6,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { NgxUiLoaderModule, NgxUiLoaderService } from 'ngx-ui-loader';
 import { StateService } from '../../services/state.service';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, finalize, takeUntil } from 'rxjs';
 import { MatTabsModule } from '@angular/material/tabs';
 import { PostsTableComponent } from '../posts-table/posts-table.component';
 import { PostsService } from '../../services/api/posts.service';
@@ -14,6 +14,7 @@ import { PostStatusesEnum } from '../dialogs/post-dialog/post-dialog.component';
 import { MatInputModule } from '@angular/material/input';
 import {
   FormBuilder,
+  FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
@@ -21,6 +22,9 @@ import {
 } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { InputFieldComponent } from '../shared/input-field/input-field.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { UserService, updateUserDto } from '../../services/api/user.service';
+import { DialogsManagerService } from '../../services/dialogs-manager.service';
 
 @Component({
   selector: 'profile-details',
@@ -37,6 +41,7 @@ import { InputFieldComponent } from '../shared/input-field/input-field.component
     InputFieldComponent,
     FormsModule,
     ReactiveFormsModule,
+    MatTooltipModule
   ],
   templateUrl: './profile-details.component.html',
   styleUrl: './profile-details.component.scss',
@@ -47,13 +52,16 @@ export class ProfileDetailsComponent implements OnInit, OnDestroy {
   selectedMainTabIndex = 1;
   selectedTabIndex = 1;
   posts;
-  postTableLoaderId = 'post-table';
+  loaderId = 'user-details';
   form: FormGroup;
+  addressControl: FormControl;
   constructor(
     private stateService: StateService,
     private postService: PostsService,
     private ngxService: NgxUiLoaderService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private userService: UserService,
+    private dialogsManager: DialogsManagerService
   ) {
     this.form = this.fb.group({
       firstName: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(16)]],
@@ -61,10 +69,11 @@ export class ProfileDetailsComponent implements OnInit, OnDestroy {
       email: ['', [Validators.required, Validators.email]],
       id: [''],
       phoneNumber: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(16)]],
-      phoneNumberSec: [''],
+      phoneNumberSecond: [''],
       balance: [0],
       nickname: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(16)]],
     });
+    this.addressControl = this.fb.control('', [Validators.required, Validators.minLength(4), Validators.maxLength(46)]);
   }
 
   ngOnInit(): void {
@@ -111,16 +120,93 @@ export class ProfileDetailsComponent implements OnInit, OnDestroy {
   }
 
   getPosts(status: number) {
-    this.ngxService.startLoader(this.postTableLoaderId);
+    this.ngxService.startLoader(this.loaderId);
     this.postService
       .getFilteredPosts({ userId: this.currentUser?.id, status: status })
       .subscribe((res) => {
         this.posts = res;
-        this.ngxService.stopLoader(this.postTableLoaderId);
+        this.ngxService.stopLoader(this.loaderId);
       });
   }
 
   selectMainTab(index) {
     this.selectedMainTabIndex = index;
+  }
+
+  deleteAddress(i: number) {
+
+    this.dialogsManager.openInfoMessageDialog('Вы действительно хотите удалить адрес из избранного?', true).afterClosed().subscribe((confirmed: boolean) => {
+      if(!confirmed) {
+        return;
+      };
+      this.ngxService.startLoader(this.loaderId);
+
+      this.currentUser.favoriteAddresses.splice(i, 1);
+      console.log('this.currentUser.favoriteAddresses',this.currentUser.favoriteAddresses);
+      this.userService.setUserFavoriteAddress(this.currentUser?.id, this.currentUser.favoriteAddresses).pipe(finalize(() => this.ngxService.stopLoader(this.loaderId))).subscribe((res) => {
+        if(!res) {
+          return;
+        };
+        this.currentUser = res;
+        this.dialogsManager.openInfoMessageDialog("Успешно!");
+      });
+    });
+
+
+  }
+
+  addAddress() {
+    const address = this.addressControl.value;
+    if(!address) {
+      return;
+    };
+    if(this.currentUser.favoriteAddresses?.some(i => i.toLowerCase() == address.toLowerCase())) {
+      this.dialogsManager.openInfoMessageDialog("Адрес уже существует!");
+      return;
+    };
+    this.ngxService.startLoader(this.loaderId);
+
+    if(!this.currentUser.favoriteAddresses?.length) {
+      this.currentUser.favoriteAddresses = [];
+    };
+
+    this.currentUser.favoriteAddresses.push(address);
+
+    this.userService.setUserFavoriteAddress(this.currentUser?.id, this.currentUser.favoriteAddresses).pipe(finalize(() => this.ngxService.stopLoader(this.loaderId))).subscribe((res) => {
+      if(!res) {
+        return;
+      };
+      this.currentUser = res;
+      this.dialogsManager.openInfoMessageDialog("Успешно!");
+      this.addressControl.reset();
+    });
+  }
+
+  saveUserData() {
+    console.log('saveUserData',);
+    const value = this.form.value;
+    const data: updateUserDto = {
+      id: this.currentUser.id,
+      nickname: value.nickname,
+      phoneNumber: value.phoneNumber,
+      email: value.email
+    };
+    if(value?.phoneNumberSecond) {
+      data.phoneNumberSecond = value?.phoneNumberSecond;
+    };
+    if(value?.firstName) {
+      data.firstName = value?.firstName;
+    };
+    if(value?.lastName) {
+      data.lastName = value?.lastName;
+    };
+    this.ngxService.startLoader(this.loaderId);
+    this.userService.updateUser(data).pipe(finalize(() => this.ngxService.stopLoader(this.loaderId))).subscribe((res) => {
+      if(!res) {
+        return;
+      };
+
+      this.dialogsManager.openInfoMessageDialog("Ваш профиль успешно обновлен!");
+    });
   }
 }

@@ -5,7 +5,9 @@
         <div class="flex tab-group-header-item cursor-pointer p-3"
             [ngClass]="{'selected-tab': selectedMainTabIndex == 2}" (click)="selectMainTab(2)">Объявления Пользователя
         </div>
-
+        <div class="flex tab-group-header-item cursor-pointer p-3"
+            [ngClass]="{'selected-tab': selectedMainTabIndex == 3}" (click)="selectMainTab(3)">Избранные Адреса
+        </div>
     </div>
     <div class="overflow-auto">
         @switch (selectedMainTabIndex) {
@@ -24,21 +26,20 @@
                 </div>
                 <div class="flex flex-col justify-between  max-w-[50%] col-items-2">
                     <custom-input-field [label]="'Номер Телефона 2'"
-                        formControlName="phoneNumberSec"></custom-input-field>
+                        formControlName="phoneNumberSecond"></custom-input-field>
                 </div>
                 <div class="flex flex-col justify-between  max-w-[50%] col-items-2">
-                    <custom-input-field [label]="'Email'"
-                        formControlName="email"></custom-input-field>
+                    <custom-input-field [label]="'Email'" formControlName="email"></custom-input-field>
                 </div>
                 <div class="flex flex-col justify-between  max-w-[50%] col-items-2">
-                    <custom-input-field [label]="'Отображаемое имя'"
-                        formControlName="nickname"></custom-input-field>
+                    <custom-input-field [label]="'Отображаемое имя'" formControlName="nickname"></custom-input-field>
                 </div>
                 <div class="flex flex-col justify-between  max-w-[50%] col-items-2">
 
                 </div>
                 <div class="flex flex-col justify-between  max-w-[50%] col-items-2">
-                    <button [disabled]="!form?.valid" mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold">
+                    <button [disabled]="!form?.valid" mat-raised-button
+                        class="s-button h-[52px] text-base  uppercase font-semibold" (click)="saveUserData()">
                         Сохранить
                     </button>
                 </div>
@@ -113,7 +114,34 @@
             </div>
         </div>
         }
+        @case (3) {
+        <div class="flex w-full">
+            <div class="flex flex-col items-start mx-auto w-full">
+                <div class="text-4xl">Избранные Адреса</div>
+                <div class="flex mt-6">
+
+                    <custom-input-field [label]="'Адрес'" [formControl]="addressControl"></custom-input-field>
+
+                    <button [disabled]="!addressControl?.valid" mat-raised-button
+                        class="s-button h-[52px] text-base  uppercase font-semibold ml-20" (click)="addAddress()">
+                        Добавить
+                    </button>
+                </div>
+                <div class="flex flex-col">
+                    @for (item of currentUser?.favoriteAddresses; track item; let index = $index) {
+                        <div class="flex w-[400px] justify-between">
+                            <div class="p-2 text-lg">{{item}}</div>
+                            <img src="/assets/images/icons/svg/delete_.svg" alt="i" class="cursor-pointer w-6 h-6" matTooltip="Удалить Адрес" (click)="deleteAddress(index)">
+                        </div>
+
+                    }
+                </div>
+            </div>
+        </div>
         }
+        }
+
 
     </div>
 </div>
+<ngx-ui-loader [fgsColor]="'#ffffff'" [loaderId]="loaderId" [fgsType]="'three-bounce'"></ngx-ui-loader>

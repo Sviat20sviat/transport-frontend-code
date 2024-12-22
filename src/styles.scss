@@ -121,7 +121,7 @@ select {
   overflow: hidden;
   width: fit-content;
   border: 1px solid #cecece;
-  height: 48px;
+  height: 52px;
 }
 .tab-group-header-item {
   transition: .3s;
@@ -150,4 +150,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 .text-center {
   text-align: center !important;
+}
+.text-link {
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
 }

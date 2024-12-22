@@ -22,3 +22,10 @@ export class RolesService {
   //   return this.http.post(this.server.serverAddress + '/users/delete', {id: role.id});
   // }
 }
+
+export enum UserRolesEnum {
+  Admin = 1,
+  User = 2,
+  Driver = 3,
+  Operator = 4
+}

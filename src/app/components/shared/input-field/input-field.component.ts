@@ -9,7 +9,8 @@ import {FormsModule} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-import { Observable, map, startWith } from 'rxjs';
+import { BehaviorSubject, Observable, map, startWith } from 'rxjs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 @Component({
   selector: 'custom-input-field',
   standalone: true,
@@ -22,7 +23,8 @@ import { Observable, map, startWith } from 'rxjs';
     FormsModule,
     ReactiveFormsModule,
     MatAutocompleteModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatTooltipModule
   ],
   providers: [
     {
@@ -43,7 +45,10 @@ export class InputFieldComponent extends FormControlDirective implements OnInit,
   @Input() matAutoCompleteOptions = [];
   @Input() matAutoCompleteOptionKey = 'name';
   @Input() matAutoCompleteOptionValueKey = 'address';
+  @Input() isAddToFavorite: boolean = false;
+  @Output() addAddressToFavorite: EventEmitter<any> = new EventEmitter<any>();
   matAutoCompleteOptionsFiltered: any[];
+  isAlreadyUsed = false;
 
   formControl: UntypedFormControl;
   isRequired = false;
@@ -60,13 +65,7 @@ export class InputFieldComponent extends FormControlDirective implements OnInit,
   }
 
   ngOnInit(): void {
-    this.formControl?.valueChanges?.subscribe(res => {
-      console.log('valueChanges',res);
-    })
 
-    this.modelChange.subscribe(e => {
-      console.log('console',e);
-    });
 
     this.onChange()
   }
@@ -79,6 +78,25 @@ export class InputFieldComponent extends FormControlDirective implements OnInit,
       this.changeDetectorRef.detectChanges();
     };
     this.matAutoCompleteOptionsFiltered = this.matAutoCompleteOptions;
+
+    this.formControl?.valueChanges?.subscribe((value) => {
+      console.log('valueChanges',value, this.matAutoCompleteOptions);
+      if(!value) {
+        return;
+      };
+      this.isAlreadyUsed = false;
+      let exist1;
+      let exist2;
+      if(this.matAutoCompleteOptions?.length && this.matAutoCompleteOptions[0]?.items?.length) {
+        exist1 = this.matAutoCompleteOptions[0]?.items.some(i => i.name == value);
+      }
+      if(this.matAutoCompleteOptions?.length >=2 && this.matAutoCompleteOptions[1]?.items?.length) {
+        exist2 = this.matAutoCompleteOptions[1]?.items.some(i => i.address == value);
+      };
+      if(exist1 || exist2) {
+        this.isAlreadyUsed = true;
+      }
+    });
   }
 
   validate(control: UntypedFormControl) {
@@ -107,6 +125,20 @@ export class InputFieldComponent extends FormControlDirective implements OnInit,
   filter(): void {
     const filterValue = this.input?.nativeElement?.value?.toLowerCase();
     this.matAutoCompleteOptionsFiltered = this.matAutoCompleteOptions.filter(o => o.name.toLowerCase().includes(filterValue));
+  }
+
+  addAddressToFavorites() {
+    const address = this.formControl.value;
+    console.log('address',address);
+    if(!address) {
+      return;
+    };
+
+    this.addAddressToFavorite.emit(address);
+  }
+
+  usedAddress() {
+
   }
 
 }

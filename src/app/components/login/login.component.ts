@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { UserService, createUserDto } from '../../services/api/user.service';
 import { StateService } from '../../services/state.service';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import { ValidatorsService } from '../../services/validators.service';
 
 @Component({
   selector: 'login',
@@ -40,19 +41,23 @@ export class LoginComponent implements OnInit {
     private dialogsManager: DialogsManagerService,
     private router: Router,
     private userService: UserService,
-    private stateService: StateService
+    private stateService: StateService,
+    private validatorsService: ValidatorsService
   ) {
     this.loginForm = fb.group({
       email: fb.control(''),
       password: fb.control('')
     });
-    const phoneMask = RegExp('^((8|\\+7)[\- ]?)?(\\(?\d{3}\\)?[\- ]?)?[\\d\\- ]{7,10}$');
+    const phoneMask = validatorsService.phoneMask;
     this.registerForm = fb.group({
       email: fb.control('', [Validators.email, Validators.required]),
       password: fb.control('', [Validators.minLength(6), Validators.maxLength(16), Validators.required]),
       repeatPassword: fb.control('', [Validators.minLength(6), Validators.maxLength(16), Validators.required]),
       nickname: fb.control('', [Validators.required, Validators.minLength(4), Validators.maxLength(14)]),
+      firstName: ['', [Validators.required,]],
+      lastName: ['', [Validators.required,]],
       phoneNumber: fb.control('', [Validators.required, Validators.pattern(phoneMask)]),
+      phoneNumberSecond: fb.control('', [Validators.pattern(phoneMask)]),
       isDriver: fb.control(false),
     })
   }
@@ -131,7 +136,10 @@ export class LoginComponent implements OnInit {
       email: values.email,
       nickname: values.nickname,
       phoneNumber: values.phoneNumber,
-      isDriver: values.isDriver
+      isDriver: values.isDriver,
+      phoneNumberSecond: values.phoneNumberSecond,
+      firstName: values.firstName,
+      lastName: values.lastName
     };
 
     this.authService.register(dto).subscribe({

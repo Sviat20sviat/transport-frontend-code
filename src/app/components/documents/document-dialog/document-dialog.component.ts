@@ -16,6 +16,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DocumentsService } from '../../../services/api/documents.service';
 import { StateService } from '../../../services/state.service';
 import { Subject, takeUntil } from 'rxjs';
+import { DialogsManagerService } from '../../../services/dialogs-manager.service';
 @Component({
   selector: 'document-dialog',
   standalone: true,
@@ -57,9 +58,11 @@ export class DocumentDialogComponent implements OnDestroy {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: {document},
+    public dialogRef: MatDialogRef<DocumentDialogComponent>,
     private fb: FormBuilder,
     private documentsService: DocumentsService,
-    private stateService: StateService
+    private stateService: StateService,
+    private dialogsManager: DialogsManagerService
   ) {
     console.log('console',data);
     this.form = fb.group({
@@ -114,6 +117,13 @@ export class DocumentDialogComponent implements OnDestroy {
 
     this.documentsService.createDocument(req).subscribe(res => {
       console.log('console',res);
+      if(!res) {
+        this.dialogsManager.openInfoMessageDialog("Ошибка при содании документа!");
+        return;
+      };
+      this.dialogsManager.openInfoMessageDialog("Документ создан успешно!").afterClosed().subscribe(() => {
+        this.dialogRef.close(res);
+      })
     });
   }
 }

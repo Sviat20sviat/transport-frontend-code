@@ -5,6 +5,7 @@ import { PostsService } from './api/posts.service';
 import { DocumentsService } from './api/documents.service';
 import { RolesService } from './api/roles.service';
 import { AddressesService } from './api/addresses.service';
+import { AddressTypes } from '../components/address-out/address-out.component';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,9 @@ export class StateService implements OnDestroy {
   private rolesSubject = new BehaviorSubject<any[]>([]);
   private clientsSubject = new BehaviorSubject<any[]>([]);
 
+  private addressesInSubject = new BehaviorSubject<any[]>([]);
+  private addressesOutSubject = new BehaviorSubject<any[]>([]);
+
   private unsubscribeAll$ = new Subject();
 
   users$: Observable<any[]> = this.usersSubject.asObservable();
@@ -27,6 +31,9 @@ export class StateService implements OnDestroy {
   roles$: Observable<any[]> = this.rolesSubject.asObservable();
   clients$: Observable<any[]> = this.clientsSubject.asObservable();
 
+  addresesIn$: Observable<any[]> = this.addressesInSubject.asObservable();
+  addressesOut$: Observable<any[]> = this.addressesOutSubject.asObservable();
+
   currentUser$: BehaviorSubject<any> = new BehaviorSubject(null);
 
 
@@ -35,7 +42,7 @@ export class StateService implements OnDestroy {
     private postsService: PostsService,
     private documentsService: DocumentsService,
     private rolesService: RolesService,
-    private addressesService:AddressesService
+    private addressesService: AddressesService,
   ) {
     this.loadRoles();
     this.loadUsers();
@@ -43,6 +50,9 @@ export class StateService implements OnDestroy {
     this.loadDocuments();
     this.loadWarehouses();
     this.loadClients();
+
+    this.loadAddresesIn();
+    this.loadAddresesOut();
   }
   ngOnDestroy(): void {
     this.unsubscribeAll$.next(null);
@@ -70,7 +80,7 @@ export class StateService implements OnDestroy {
     
   }
 
-  private loadDocuments() {
+  loadDocuments() {
 
     this.documentsService.getAllDocuments().subscribe((res) => {
       if(!res) {
@@ -109,6 +119,20 @@ export class StateService implements OnDestroy {
       };
     })
 
+  }
+
+  private loadAddresesIn() {
+    this.addressesService.getFilteredAddress({addressType: AddressTypes.InAddress}).subscribe((res: any) => {
+      console.log('console',res);
+      this.addressesInSubject.next(res);
+    })
+  }
+
+  private loadAddresesOut() {
+    this.addressesService.getFilteredAddress({addressType: AddressTypes.OutAddress}).subscribe((res: any) => {
+      console.log('console',res);
+      this.addressesOutSubject.next(res);
+    })
   }
 
   getAllData(): Observable<{
