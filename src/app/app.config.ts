@@ -1,4 +1,4 @@
-import { ApplicationConfig, LOCALE_ID, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, LOCALE_ID, importProvidersFrom, provideZoneChangeDetection, isDevMode } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -10,6 +10,7 @@ import { CommonModule, registerLocaleData } from '@angular/common';
 import localeRu from '@angular/common/locales/ru';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { MatNativeDateModule } from '@angular/material/core';
+import { provideServiceWorker } from '@angular/service-worker';
 // import { provideYConfig, YConfig } from 'angular-yandex-maps-v3';
 
 // const config: YConfig = {
@@ -35,7 +36,10 @@ export const appConfig: ApplicationConfig = {
       provide: CommonModule,
       useClass: CommonModule
     },
-    { provide: LOCALE_ID, useValue: 'ru' }, provideAnimationsAsync(), provideAnimationsAsync(),
+    { provide: LOCALE_ID, useValue: 'ru' }, provideAnimationsAsync(), provideAnimationsAsync(), provideServiceWorker('ngsw-worker.js', {
+            enabled: !isDevMode(),
+            registrationStrategy: 'registerWhenStable:30000'
+          }),
     // provideYConfig(config)
   ]
 };
