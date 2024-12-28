@@ -43,7 +43,11 @@ export class PostsService {
     return this.http.post(this.server.serverAddress + '/posts/update', data);
   }
 
-  getFilteredPosts(filter: {userId?: number, driverId?: number,  status?: number}) {
+  getFilteredPosts(filter: {userId?: number, customerId?: number, driverId?: number,  status?: number}) {
     return this.http.post(this.server.serverAddress + '/posts/getFilteredPosts', filter);
+  }
+
+  searchPosts(searchText: string): Observable<any> {
+    return this.http.post(this.server.serverAddress + '/posts/search', {value: searchText});
   }
 }

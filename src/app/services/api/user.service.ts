@@ -23,8 +23,8 @@ export class UserService {
     return this.http.post(this.server.serverAddress + '/users/delete', {id: user.id});
   }
 
-  updateUser(user) {
-    return this.http.post(this.server.serverAddress + '/users/update', user);
+  updateUser(data: updateUserDto) {
+    return this.http.post(this.server.serverAddress + '/users/update', data);
   }
 
   createUser(createUserDto: createUserDto) {
@@ -54,6 +54,14 @@ export class UserService {
     };
     return this.getFilteredUsers();
   }
+
+  blockUser(userId: string) {
+    return this.http.post(this.server.serverAddress + '/users/ban', {userId, banReason: "BAN"});
+  }
+
+  unblockUser(userId) {
+    return this.http.post(this.server.serverAddress + '/users/unban', {userId});
+  }
 }
 
 export interface createUserDto {
@@ -65,14 +73,38 @@ export interface createUserDto {
   isDriver: boolean,
   firstName?: string,
   lastName?: string
+
+  roles?: number[];
+
+  inn?: string;
+  kpp?: string;
+  ogrn?: string;
+  ocpo?: string;
+  bic?: string;
+  bankAccount?: string;
+  userBankAccount?: string;
+  registrationAddress?: string;
+  realAddress?: string;
 }
 
 export interface updateUserDto {
-  id: string,
-  email: string,
-  nickname: string,
-  phoneNumber: string,
-  phoneNumberSecond?: string,
-  firstName?: string,
-  lastName?: string
+  id: string;
+  email: string;
+  nickname: string;
+  phoneNumber: string;
+  phoneNumberSecond?: string;
+  firstName?: string;
+  lastName?: string;
+
+  roles?: number[];
+
+  inn?: string;
+  kpp?: string;
+  ogrn?: string;
+  ocpo?: string;
+  bic?: string;
+  bankAccount?: string;
+  userBankAccount?: string;
+  registrationAddress?: string;
+  realAddress?: string;
 }

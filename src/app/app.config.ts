@@ -10,11 +10,11 @@ import { CommonModule, registerLocaleData } from '@angular/common';
 import localeRu from '@angular/common/locales/ru';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { MatNativeDateModule } from '@angular/material/core';
-import { provideYConfig, YConfig } from 'angular-yandex-maps-v3';
+// import { provideYConfig, YConfig } from 'angular-yandex-maps-v3';
 
-const config: YConfig = {
-  apikey: 'abeb35e1-d8ef-4e4d-9cdb-e89c194bf8ad',
-};
+// const config: YConfig = {
+//   apikey: 'abeb35e1-d8ef-4e4d-9cdb-e89c194bf8ad',
+// };
 
 registerLocaleData(localeRu);
 export const appConfig: ApplicationConfig = {
@@ -36,6 +36,6 @@ export const appConfig: ApplicationConfig = {
       useClass: CommonModule
     },
     { provide: LOCALE_ID, useValue: 'ru' }, provideAnimationsAsync(), provideAnimationsAsync(),
-    provideYConfig(config)
+    // provideYConfig(config)
   ]
 };
