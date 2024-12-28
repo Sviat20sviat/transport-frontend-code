@@ -83,19 +83,21 @@
         </thead>
         <tbody class="table-body">
             @for (post of posts; track post.id; let index = $index) {
-            <tr class="cursor-pointer" (click)="openPostDialog(post)">
+            <tr class="cursor-pointer" (click)="$event.stopPropagation(); openPostDialog(post)">
                 <td class="pl-2 py-3">
                     {{post?.id}}
                 </td>
-                <td class="py-3 px-1">
-                    <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold">
+                <td class="py-3 px-1 text-link" (click)="$event.stopPropagation(); openUserDialog(post?.author)" matTooltip="Показать полную информацию по пользователю">
+                    <!-- <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold">
                         Показать
-                    </button>
+                    </button> -->
+                    {{post?.author?.firstName}} {{post?.author?.lastName}} 
                 </td>
-                <td class="py-3 px-1">
-                    <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold">
+                <td class="py-3 px-1 text-link" (click)="$event.stopPropagation(); openUserDialog(post?.customer)" matTooltip="Показать полную информацию по пользователю">
+                    <!-- <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold">
                         Показать
-                    </button>
+                    </button> -->
+                    {{post?.customer?.firstName}} {{post?.customer?.lastName}} 
                 </td>
                 <td class="py-3 px-1">
                     {{post?.createdAt | date: 'medium'}}
@@ -111,10 +113,11 @@
                 <td class="py-3 px-1">
                     <div class="text-container">{{post?.warehouse || '--'}}</div>
                 </td>
-                <td class="py-3 px-1">
-                    <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold">
+                <td class="py-3 px-1 text-link" matTooltip="Показать полную информацию по пользователю" (click)="openUserDialog(post?.driver)">
+                    <!-- <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold">
                         Показать
-                    </button>
+                    </button> -->
+                    {{post?.driver?.firstName || '-'}} {{post?.driver?.lastName || '-'}}
                 </td>
 
                 <td class="py-3 px-1">
@@ -165,7 +168,7 @@
 
 
                     <img src="/assets/images/icons/svg/delete_.svg" alt="i" class="cursor-pointer w-6 h-6"
-                        (click)="deletePost(post)">
+                        (click)="$event.stopPropagation(); deletePost(post)">
                 </td>
             </tr>
             }

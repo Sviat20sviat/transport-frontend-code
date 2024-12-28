@@ -6,11 +6,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { NgxUiLoaderModule } from 'ngx-ui-loader';
+import { NgxUiLoaderModule, NgxUiLoaderService } from 'ngx-ui-loader';
 import { DialogsManagerService } from '../../services/dialogs-manager.service';
 import { DocumentsService } from '../../services/api/documents.service';
 import { StateService } from '../../services/state.service';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, finalize, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'documents',
@@ -52,7 +52,8 @@ export class DocumentsComponent implements OnDestroy {
   constructor(
     private dialogsManager: DialogsManagerService,
     private documentsService: DocumentsService,
-    private stateService: StateService
+    private stateService: StateService,
+    private ngxService: NgxUiLoaderService
   ) {
     this.getAllDocuments();
   }
@@ -71,8 +72,10 @@ export class DocumentsComponent implements OnDestroy {
   }
 
   getAllDocuments() {
-    this.stateService.documents$.pipe(takeUntil(this.unsubscribeAll$)).subscribe((data) => {
+    this.ngxService.startLoader(this.loaderId);
+    this.stateService.documents$.pipe(finalize(() => this.ngxService.stopLoader(this.loaderId)),takeUntil(this.unsubscribeAll$)).subscribe((data) => {
       console.log('documents', data);
+      this.ngxService.stopLoader(this.loaderId)
       if (data) {
         this.documents = data;
       };

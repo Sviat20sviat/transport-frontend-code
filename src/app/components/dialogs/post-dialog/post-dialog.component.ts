@@ -27,6 +27,7 @@ import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { UserService as UserApiServie } from '../../../services/api/user.service';
 import { BehaviorSubject, Subject, combineLatest, takeUntil } from 'rxjs';
+import { PhotoSelectComponent } from '../../shared/photo-select/photo-select.component';
 @Component({
   selector: 'post-dialog',
   standalone: true,
@@ -46,6 +47,7 @@ import { BehaviorSubject, Subject, combineLatest, takeUntil } from 'rxjs';
     SelectFieldComponent,
     MatCheckboxModule,
     MatExpansionModule,
+    PhotoSelectComponent,
   ],
   templateUrl: './post-dialog.component.html',
   styleUrl: './post-dialog.component.scss',
@@ -56,6 +58,7 @@ export class PostDialogComponent implements OnInit, OnDestroy {
   currentUser;
   form: FormGroup;
   userDataForm: FormGroup;
+  driverDataForm: FormGroup;
   post;
   driver;
   isEdit: boolean = false;
@@ -88,6 +91,7 @@ export class PostDialogComponent implements OnInit, OnDestroy {
   ];
   loaderId: string = 'post-dialog';
   clients;
+  users;
   price = 2000;
 
   addressesIn = [];
@@ -116,7 +120,8 @@ export class PostDialogComponent implements OnInit, OnDestroy {
       clients: this.stateService.clients$,
       currentUser: this.stateService.currentUser$,
       addresesIn: this.stateService.addresesIn$,
-      addresesOut: this.stateService.addressesOut$
+      addresesOut: this.stateService.addressesOut$,
+      users: this.stateService.users$
     })
     .pipe(takeUntil(this.unsubscribeAll$))
     .subscribe((res) => {
@@ -129,6 +134,7 @@ export class PostDialogComponent implements OnInit, OnDestroy {
       };
       this.addressesInGroup = this.setAutocompleteAddresses(this.currentUser?.favoriteAddresses, this.addressesIn);
       this.addressesOutGroup = this.setAutocompleteAddresses(this.currentUser?.favoriteAddresses, this.addressesOut);
+      this.users = res?.users;
     });
 
     // this.form = fb.group({
@@ -148,10 +154,14 @@ export class PostDialogComponent implements OnInit, OnDestroy {
     // });
 
     this.initUserFormGroup();
+    this.initDriverFormGroup();
 
     this.form.patchValue(this.post);
     if (this.post?.customer) {
       this.setUserDataFormValue(this.post?.customer);
+    };
+    if (this.post?.driver) {
+      this.setDriverDataFormValue(this.post?.driver);
     }
     if (!this.userService.isUserAdmin(this.currentUser)) {
       console.log(
@@ -191,6 +201,7 @@ export class PostDialogComponent implements OnInit, OnDestroy {
           console.log('getUserById', res);
           this.userDataForm.patchValue(res);
           this.userDataForm.disable();
+          this.driverDataForm.disable();
         });
     }
     this.userApiService.getUsers;
@@ -240,6 +251,7 @@ export class PostDialogComponent implements OnInit, OnDestroy {
       paid: [0, Validators.pattern('[0-9]*')],
       // createdAt: this.fb.control(''),
       status: this.fb.control(''),
+      imageUrl: this.fb.control(''),
     });
   }
 
@@ -294,8 +306,23 @@ export class PostDialogComponent implements OnInit, OnDestroy {
     });
   }
 
+  initDriverFormGroup() {
+    this.driverDataForm = this.fb.group({
+      firstName: [''],
+      lastName: [''],
+      id: [''],
+      status: [''],
+      phoneNumber: [''],
+      chatId: [''],
+    });
+  }
+
   setUserDataFormValue(user) {
     this.userDataForm.patchValue(user);
+  }
+
+  setDriverDataFormValue(user) {
+    this.driverDataForm.patchValue(user);
   }
 
   getPostExecutingStatus(status: string): number {
@@ -318,14 +345,20 @@ export class PostDialogComponent implements OnInit, OnDestroy {
   }
 
   save() {
+    if(!this.post?.id) {
+      return;
+    };
     this.ngxService.startLoader(this.loaderId);
     const value = this.form.value;
     const request = value;
+    request.id = this.post.id;
     this.postsService.updatePost(request).subscribe((res) => {
       this.ngxService.stopLoader(this.loaderId);
       console.log('setStatus!', res);
       if (res) {
-        this.dialogsManager.openInfoMessageDialog('Успешно!');
+        this.dialogsManager.openInfoMessageDialog('Успешно!').afterClosed().subscribe(() => {
+          this.dialogRef.close(res);
+        });
       }
     });
     this.isEdit = false;
@@ -337,6 +370,9 @@ export class PostDialogComponent implements OnInit, OnDestroy {
 
   isAdmin(): boolean {
     return this.currentUser?.roles?.some((role) => role.value == 'Admin');
+  }
+  isOperator(): boolean {
+    return this.currentUser?.roles?.some((role) => role.value == 'Operator');
   }
 
   create() {
@@ -411,6 +447,58 @@ export class PostDialogComponent implements OnInit, OnDestroy {
       groups.push(group);
     };
     return groups;
+  }
+
+  openUserDialog() {
+    console.log('this.post',this.post);
+    if(!this.post?.customer?.id) {
+      return;
+    };
+
+    const fullUser = this.users.find(user => user.id == this.post.customer.id);
+    if(fullUser) {
+      this.dialogsManager.openUserDialog(fullUser);
+    };
+
+  }
+
+  openDriverDialog() {
+    console.log('this.post',this.post);
+    if(!this.post?.driver?.id) {
+      return;
+    };
+
+    const fullUser = this.users.find(user => user.id == this.post.driver.id);
+    if(fullUser) {
+      this.dialogsManager.openUserDialog(fullUser);
+    };
+  }
+
+  getPostExecutingStatusText(status: number): string {
+    switch (status) {
+      case 0:
+        return 'Не одобрено';
+      case 1:
+        return 'Одобрено';
+      case 2:
+        return 'В работе';
+      case 3:
+        return 'Выполено';
+      case 4:
+        return 'Отменено';
+      case 5:
+        return 'ЧП';
+      default:
+        return 'Не одобрено';
+    }
+  }
+
+  onPhotoLoad(imageUrl: string) {
+    console.log('onPhotoLoad',imageUrl);
+    if(imageUrl && this.post?.imageUrl) {
+      this.post.imageUrl = imageUrl;
+    };
+    this.form.get('imageUrl').setValue(imageUrl);
   }
 }
 

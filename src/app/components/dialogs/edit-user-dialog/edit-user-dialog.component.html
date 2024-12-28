@@ -1,24 +1,31 @@
 <div class="flex flex-col">
-    <div class="flex justify-between px-6 pt-6 dialog-header">
-        <div class="text-xl flex items-center mb-3">
-            ПОЛЬЗОВАТЕЛЬ № {{user?.id}}
-        </div>
-        <div class="flex flex-col">
-            <div class="flex justify-between">
-                <div class="inline-flex font-medium justify-end mr-4">Зарегистрирован</div>
-                <div class="flex">{{user?.createdAt | date: 'medium'}}</div>
+    <div class="flex justify-between px-6 pt-6 dialog-header" [ngClass]="{'blocked' : user?.banned}">
+        @if(user?.id) {
+            <div class="text-xl flex items-center mb-3">
+                ПОЛЬЗОВАТЕЛЬ № {{user?.id}} @if(user?.banned) { <span class="text-red-600">ЗАБЛОКИРОВАН</span> }
             </div>
-            @if (user?.updateddAt && user?.updateddAt !== user?.createdAt) {
+            <div class="flex flex-col">
                 <div class="flex justify-between">
-                    <div class="inline-flex font-medium justify-end mr-4">Обновлен</div>
-                    <div class="flex">{{user?.updateddAt | date: 'medium'}}</div>
+                    <div class="inline-flex font-medium justify-end mr-4">Зарегистрирован</div>
+                    <div class="flex">{{user?.createdAt | date: 'medium'}}</div>
                 </div>
-            }
-        </div>
+                @if (user?.updatedAt && user?.updatedAt !== user?.createdAt) {
+                    <div class="flex justify-between">
+                        <div class="inline-flex font-medium justify-end mr-4">Обновлен</div>
+                        <div class="flex">{{user?.updatedAt | date: 'medium'}}</div>
+                    </div>
+                }
+            </div>
+        } @else {
+            <div class="text-xl flex items-center mb-3">
+                СОЗДАНИЕ НОВОГО ПОЛЬЗОВАТЕЛЯ
+            </div>
+        }
+
     </div>
     <div class="flex flex-col m-3">
-        <div class="flex flex-col max-h-[82vh] overflow-auto p-3" [formGroup]="form">
-            <div class="flex flex-row justify-between gap-3 flex-wrap">
+        <div class="flex flex-col max-h-[82vh] overflow-auto p-3">
+            <div class="flex flex-row justify-between gap-3 flex-wrap" [formGroup]="form">
                 <div class="flex flex-col justify-center mb-3 max-w-full w-full col-items-1">
                     <div class="text-lg flex items-center justify-center mb-3">
                         Данные Пользователя
@@ -30,11 +37,11 @@
                 <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
                     <custom-input-field [label]="'Фамилия'" formControlName="lastName"></custom-input-field>
                 </div>
-                <!-- <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                    <custom-input-field [label]="'Отчество'" formControlName="surName"></custom-input-field>
-                </div> -->
                 <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                    Роль
+                    <custom-input-field [label]="'Отображаемое Имя'" formControlName="nickname"></custom-input-field>
+                </div>
+                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                    <select-field [nameKey]="'value'" [options]="roles" formControlName="roles" [isMultiple]="true" [label]="'Роли'"></select-field>
                 </div>
                 <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
                     <custom-input-field [label]="'Телефон'" formControlName="phoneNumber"></custom-input-field>
@@ -46,43 +53,100 @@
                     <custom-input-field [label]="'Email'" formControlName="email"></custom-input-field>
                 </div>
                 <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                    <custom-input-field [label]="'ИНН'" formControlName="email"></custom-input-field>
+                    <custom-input-field [label]="'ИНН'" formControlName="inn"></custom-input-field>
                 </div>
                 <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                    <custom-input-field [label]="'КПП'" formControlName="email"></custom-input-field>
+                    <custom-input-field [label]="'КПП'" formControlName="kpp"></custom-input-field>
                 </div>
                 <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                    <custom-input-field [label]="'ОГРН'" formControlName="email"></custom-input-field>
+                    <custom-input-field [label]="'ОГРН'" formControlName="ogrn"></custom-input-field>
                 </div>
                 <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                    <custom-input-field [label]="'ОКПО'" formControlName="email"></custom-input-field>
+                    <custom-input-field [label]="'ОКПО'" formControlName="ocpo"></custom-input-field>
                 </div>
                 <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                    <custom-input-field [label]="'К/С Банка'" formControlName="email"></custom-input-field>
+                    <custom-input-field [label]="'К/С Банка'" formControlName="bankAccount"></custom-input-field>
                 </div>
                 <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                    <custom-input-field [label]="'P/С Клиента'" formControlName="email"></custom-input-field>
+                    <custom-input-field [label]="'P/С Клиента'" formControlName="userBankAccount"></custom-input-field>
                 </div>
                 <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                    <custom-input-field [label]="'БИК'" formControlName="email"></custom-input-field>
+                    <custom-input-field [label]="'БИК'" formControlName="bic"></custom-input-field>
                 </div>
                 <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                    <custom-input-field [label]="'Прописка'" formControlName="email"></custom-input-field>
+                    <custom-input-field [label]="'Прописка'" formControlName="registrationAddress"></custom-input-field>
                 </div>
                 <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                    <custom-input-field [label]="'Факт. Адрес'" formControlName="email"></custom-input-field>
+                    <custom-input-field [label]="'Факт. Адрес'" formControlName="realAddress"></custom-input-field>
                 </div>
-                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                    <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold">
-                        Заблокировать
-                    </button>
-                </div>
+                @if(user?.id) {
+                    <div class="flex flex-col justify-center mb-3 max-w-[100%] col-items-1 items-center">
+                        <mat-accordion class="example-headers-align w-full" multi>
+                            <mat-expansion-panel>
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title> Объявления пользователя - {{user?.posts?.length}} </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                <div class="flex flex-col">
+                                    @for (post of user?.posts; track $index) {
+                                        <div class="flex p-4 cursor-pointer on-hover justify-between" (click)="openPostDialog(post)">
+                                            <div class="mr-4">№ {{post.id}}</div>
+                                            <div class="mr-4"> {{post.title}}</div>
+                                            <div class="mr-4">Создано {{post.createdAt | date : 'medium'}}</div>
+                                            <div class="executing-status-badge" [ngClass]="'status-' +(post?.status)">
+                                                {{getPostExecutingStatus((post?.status))}}
+                                            </div>
+                                        </div>
+                                    } @empty {
+                                        <div class="flex p-4 text-center">
+                                            Нет ни одного объявления
+                                        </div>
+                                    }
+
+
+                                </div>
+
+                            </mat-expansion-panel>
+                        </mat-accordion>
+                    </div>
+                    <div class="flex flex-col justify-center mb-3 max-w-[100%] col-items-1 items-center">
+                        @if(user?.banned) {
+                            <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold" (click)="unblockUser()">
+                                Разблокировать
+                            </button>
+                        } @else {
+                            <button mat-raised-button class="d-button h-[52px] w-[200px] text-base  uppercase font-semibold" (click)="blockUser()">
+                                Заблокировать
+                            </button>
+                        }
+
+                    </div>
+                }
             </div>
+            @if(!user?.id) {
+                <div class="flex flex-row justify-between gap-3 flex-wrap" [formGroup]="passwordForm">
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Пароль'" formControlName="password"></custom-input-field>
+                    </div>
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Повторите Пароль'" formControlName="repeatPassword"></custom-input-field>
+                        @if (getNotSamePass()) {
+                            <div class="text-red-600 text-xs">Пароли не совпадают!</div>
+                            }
+                    </div>
+                </div>
+            }
         </div>
         <div class="flex justify-center">
-            <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold">
-                Редактировать
-            </button>
+            @if(user?.id) {
+                <button (click)="update()" mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold" [disabled]="!form?.valid">
+                    Редактировать
+                </button>
+            } @else {
+                <button (click)="create()" mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold" [disabled]="!form?.valid || !passwordForm?.valid">
+                    СОЗДАТЬ
+                </button>
+            }
+
         </div>
     </div>
 </div>

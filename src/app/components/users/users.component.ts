@@ -114,8 +114,21 @@ export class UsersComponent implements OnInit, OnDestroy {
   }
 
   editUser(user) {
-    const dialog = this.dialogsManager.openEditUserDialog(user);
-    dialog.afterClosed().subscribe((res) => {});
+    const dialog = this.dialogsManager.openUserDialog(user);
+    dialog.afterClosed().subscribe((res) => {
+      if(res) {
+        this.getUsersByType();
+      }
+    });
+  }
+
+  addUser() {
+    const dialog = this.dialogsManager.openUserDialog();
+    dialog.afterClosed().subscribe((res) => {
+      if(res) {
+        this.getUsersByType();
+      };
+    });
   }
 
   selectUserTypeTab(index: number) {

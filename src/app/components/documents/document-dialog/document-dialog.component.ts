@@ -126,4 +126,21 @@ export class DocumentDialogComponent implements OnDestroy {
       })
     });
   }
+
+  deleteDocument() {
+    if(!this.document?.id) {
+      return;
+    };
+    this.dialogsManager.openInfoMessageDialog('ВЫ ДЕЙСТВИТЕЛЬНО ХОТИТЕ УДАЛИТЬ ДОКУМЕНТ?', true).afterClosed().subscribe((confirm) => {
+      if(confirm) {
+        this.documentsService.deleteDocument(this.document.id).subscribe(res => {
+          console.log('console',res);
+          this.dialogsManager.openInfoMessageDialog("Документ удален успешно!").afterClosed().subscribe(() => {
+            this.dialogRef.close(true);
+          })
+        });
+      };
+    });
+
+  }
 }

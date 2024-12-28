@@ -1,18 +1,20 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule, JsonPipe } from '@angular/common';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { NgxUiLoaderModule } from 'ngx-ui-loader';
+import { NgxUiLoaderModule, NgxUiLoaderService } from 'ngx-ui-loader';
 import { DialogsManagerService } from '../../services/dialogs-manager.service';
 import { AddressesService } from '../../services/api/addresses.service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { StateService } from '../../services/state.service';
-import { Subject, combineLatest, forkJoin, takeUntil } from 'rxjs';
+import { Subject, combineLatest, finalize, forkJoin, takeUntil } from 'rxjs';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import moment from 'moment';
+import { DocumentsService } from '../../services/api/documents.service';
 @Component({
   selector: 'mutual-settlements',
   standalone: true,
@@ -42,11 +44,13 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
   documents = [];
   constructor(
     private fb: FormBuilder,
-    private stateService: StateService
+    private stateService: StateService,
+    private documentsService: DocumentsService,
+    private ngxService: NgxUiLoaderService,
   ) {
     this.range = fb.group({
-      start: '',
-      end: ''
+      fromTime: ['', [Validators.required]],
+      toTime: ['', [Validators.required]],
     });
     combineLatest({
       clients: this.stateService.clients$,
@@ -72,8 +76,26 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
   }
 
   createSettlement() {
-
-
+    const values = this.range.value;
+    console.log('values',values);
+    if(!values.fromTime ||!values.toTime) {
+      return;
+    };
+    this.ngxService.startLoader(this.loaderId);
+    const fromTime = moment(values.fromTime).startOf('day').unix();
+    const toTime = moment(values.toTime).endOf('day').unix();
+    console.log('fromTime',fromTime);
+    console.log('toTime',toTime);
+  
+    const createdAt ={fromTime: fromTime, toTime: toTime};
+    this.documentsService.getAllDocuments(createdAt).pipe(takeUntil(this.unsubscribeAll$), finalize(()=> this.ngxService.stopLoader(this.loaderId))).subscribe((res) => {
+      if(!res) {
+        return;
+      };
+      this.mutualSettlements = [];
+      this.documents = res;
+      this.setData();
+    });
   }
 
   openSettlementDialog(settlement) {

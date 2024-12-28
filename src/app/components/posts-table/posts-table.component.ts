@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { DialogsManagerService } from '../../services/dialogs-manager.service';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
@@ -10,8 +10,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { NgxUiLoaderModule } from 'ngx-ui-loader';
 import { MatInputModule } from '@angular/material/input';
-import { FormsModule } from '@angular/forms';
+import { Form, FormBuilder, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import { InputFieldComponent } from '../shared/input-field/input-field.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'posts-table',
@@ -23,9 +26,12 @@ import { MatIconModule } from '@angular/material/icon';
     MatButtonModule,
     NgxUiLoaderModule,
     MatInputModule, 
-    FormsModule, 
+    FormsModule,
+    ReactiveFormsModule,
     MatButtonModule, 
-    MatIconModule
+    MatIconModule,
+    InputFieldComponent,
+    MatTooltipModule
   ],
   templateUrl: './posts-table.component.html',
   styleUrl: './posts-table.component.scss'
@@ -35,14 +41,22 @@ export class PostsTableComponent implements OnInit, OnDestroy {
   @Input() currentUser;
   @Input() isShowTitle: boolean = true;
   @Input() title: string = 'Объявления пользователей';
+  @Output() postsUpdated$ = new EventEmitter<any>();
   unsubscribeAll$: Subject<any> = new Subject();
   loaderId = 'post-table';
+  searchControl: FormControl;
+  users = [];
 
   constructor(
     private dialogsManager: DialogsManagerService,
-    private postsService: PostsService
+    private postsService: PostsService,
+    private fb: FormBuilder,
+    private stateService: StateService
   ) {
-
+    this.searchControl = this.fb.control('');
+    this.stateService.users$.pipe(takeUntil(this.unsubscribeAll$)).subscribe((users) => {
+      this.users = users;
+    });
   }
 
 
@@ -67,7 +81,9 @@ export class PostsTableComponent implements OnInit, OnDestroy {
     console.log('CONSOLE!', post);
     const dialog = this.dialogsManager.openPostDialog(post);
     dialog.afterClosed().subscribe((res) => {
-      console.log('afterClosed!',res);
+      if(res) {
+        this.postsUpdated$.next(res);
+      }
     })
   }
 
@@ -114,4 +130,22 @@ export class PostsTableComponent implements OnInit, OnDestroy {
     return this.dialogsManager.openInfoMessageDialog(message, true);
   }
 
+  searchPosts() {
+    // this.ngxSe
+  }
+
+  openUserDialog(user) {
+    console.log('openUserDialog!', user);
+    if(!user?.id) {
+      return;
+    };
+    let showedUser = this.users.find(u => u.id === user.id);
+    if(showedUser) {
+      const dialog = this.dialogsManager.openUserDialog(showedUser);
+      dialog.afterClosed().subscribe((res) => {
+        console.log('afterClosed!', res);
+      });
+    };
+
+  }
 }

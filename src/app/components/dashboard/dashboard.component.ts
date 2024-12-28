@@ -1,4 +1,11 @@
-import { AfterViewInit, Component, ElementRef, Inject, OnDestroy, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Inject,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { DialogsManagerService } from '../../services/dialogs-manager.service';
 import { StateService } from '../../services/state.service';
 import { CommonModule, DOCUMENT } from '@angular/common';
@@ -13,22 +20,32 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { InfoMessageComponent } from '../shared/info-message/info-message.component';
 import { Subject, finalize, forkJoin, takeUntil } from 'rxjs';
 import { NgxUiLoaderModule, NgxUiLoaderService } from 'ngx-ui-loader';
-import { EventNameEnum, WebSocketService } from '../../services/api/socket/web-socket.service';
+import {
+  EventNameEnum,
+  WebSocketService,
+} from '../../services/api/socket/web-socket.service';
 import { ProfileDetailsComponent } from '../profile-details/profile-details.component';
-import {MatTabsModule} from '@angular/material/tabs';
+import { MatTabsModule } from '@angular/material/tabs';
 import { PostsTableComponent } from '../posts-table/posts-table.component';
 import { PostStatusesEnum } from '../dialogs/post-dialog/post-dialog.component';
 import { DriverInfoComponent } from '../driver-info/driver-info.component';
 import { MatInputModule } from '@angular/material/input';
-import { FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { DocumentsComponent } from '../documents/documents.component';
-import { YMapComponent, YMapDefaultSchemeLayerDirective } from 'angular-yandex-maps-v3';
-import {MatTooltipModule} from '@angular/material/tooltip';
-import { AddressInComponent } from "../address-in/address-in.component";
-import { AddressOutComponent } from "../address-out/address-out.component";
-import { MutualSettlementsComponent } from "../mutual-settlements/mutual-settlements.component";
-declare var ymaps:any;
+// import { YMapComponent, YMapDefaultSchemeLayerDirective } from 'angular-yandex-maps-v3';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { AddressInComponent } from '../address-in/address-in.component';
+import { AddressOutComponent } from '../address-out/address-out.component';
+import { MutualSettlementsComponent } from '../mutual-settlements/mutual-settlements.component';
+import { InputFieldComponent } from '../shared/input-field/input-field.component';
+import { ContactsComponent } from '../contacts/contacts.component';
+// declare var ymaps:any;
 
 @Component({
   selector: 'dashboard',
@@ -46,16 +63,19 @@ declare var ymaps:any;
     DriverInfoComponent,
     MatInputModule,
     FormsModule,
+    ReactiveFormsModule,
     MatIconModule,
     DocumentsComponent,
-    YMapComponent, YMapDefaultSchemeLayerDirective,
+    // YMapComponent, YMapDefaultSchemeLayerDirective,
     MatTooltipModule,
     AddressInComponent,
     AddressOutComponent,
-    MutualSettlementsComponent
-],
+    MutualSettlementsComponent,
+    InputFieldComponent,
+    ContactsComponent,
+  ],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.scss'
+  styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   currentUser: any;
@@ -63,10 +83,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedTab: string = TabsEnum.Dashboard;
   allPosts = [];
   checkedPosts = [];
+  userPosts = [];
   serverAddress: string;
   unsubscribeAll$: Subject<any> = new Subject();
   loaderId: string = 'dashboard';
   selectedPostTypeTabIndex: number = 6;
+  searchControl: FormControl;
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -77,43 +99,52 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private _serverApi: ServerService,
     private ngxService: NgxUiLoaderService,
     private websocketService: WebSocketService,
-    private el: ElementRef
+    private el: ElementRef,
+    private fb: FormBuilder
   ) {
     this.serverAddress = this._serverApi.serverAddress;
+    this.searchControl = fb.control('');
   }
-  
+
   ngOnInit(): void {
-    this.stateService.currentUser$.pipe(takeUntil(this.unsubscribeAll$)).subscribe((user) => {
-      this.currentUser = user;
-      const localStorage = this.document.defaultView?.localStorage;
-      let selectedTab = localStorage.getItem('selectedTab');
-      if (selectedTab) {
-        this.selectedTab = JSON.parse(selectedTab);
-      };
-  
-      this.websocketService.on(EventNameEnum.OnPostCreate).subscribe((data) => {
-        console.log('OnPostCreate!', data);
-        this.getPost(data.id)
-      })
-      this.websocketService.on(EventNameEnum.OnPostUpdate).subscribe((data) => {
-        console.log('OnPostUpdate!', data);
-        if(!this.isAdmin()) {
-          if(this.checkedPosts.some(p => p.id == data.id)) {
-            this.getAll();
-          } else {
-            this.getPost(data.id)
-          }
-        } else {
-          let existPostIndex = this.allPosts.findIndex(p => p.id == data.id);
-          if(existPostIndex > -1) {
-            this.allPosts[existPostIndex] = data;
-          }
+    this.stateService.currentUser$
+      .pipe(takeUntil(this.unsubscribeAll$))
+      .subscribe((user) => {
+        this.currentUser = user;
+        const localStorage = this.document.defaultView?.localStorage;
+        let selectedTab = localStorage.getItem('selectedTab');
+        if (selectedTab) {
+          this.selectedTab = JSON.parse(selectedTab);
         }
+        this.getAll();
+
+        this.websocketService
+          .on(EventNameEnum.OnPostCreate)
+          .subscribe((data) => {
+            console.log('OnPostCreate!', data);
+            this.getPost(data.id);
+          });
+        this.websocketService
+          .on(EventNameEnum.OnPostUpdate)
+          .subscribe((data) => {
+            console.log('OnPostUpdate!', data);
+            if (!this.isAdmin()) {
+              if (this.checkedPosts.some((p) => p.id == data.id)) {
+                this.getAll();
+              } else {
+                this.getPost(data.id);
+              }
+            } else {
+              let existPostIndex = this.allPosts.findIndex(
+                (p) => p.id == data.id
+              );
+              if (existPostIndex > -1) {
+                this.allPosts[existPostIndex] = data;
+              }
+            }
+          });
+        this.getFilteredPosts();
       });
-      this.getFilteredPosts();
-    });
-
-
   }
 
   async ngAfterViewInit(): Promise<void> {
@@ -129,15 +160,25 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   //  }
 
   isAdmin(): boolean {
-    return this.currentUser?.roles?.some(role => role.value == "Admin");
+    return this.currentUser?.roles?.some((role) => role.value == 'Admin');
   }
 
   isDriver(): boolean {
-    return this.currentUser?.roles?.some(role => role.value == "Driver");
+    return this.currentUser?.roles?.some((role) => role.value == 'Driver');
+  }
+
+  isOperator(): boolean {
+    return this.currentUser?.roles?.some((role) => role.value == 'Operator');
+  }
+
+  isUser(): boolean {
+    return this.currentUser?.roles?.some((role) => role.value == 'User');
   }
 
   openInfo() {
-    return this.dialogsManager.openInfoMessageDialog("Успешно открытие ДАШБОРДА!")
+    return this.dialogsManager.openInfoMessageDialog(
+      'Успешно открытие ДАШБОРДА!'
+    );
   }
 
   openConfirmDialog(message): MatDialogRef<InfoMessageComponent> {
@@ -145,20 +186,26 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   showUsers() {
-    console.log('showUsers!',);
+    console.log('showUsers!');
     this.selectedTab = TabsEnum.Users;
     localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
   }
 
   showDashboard() {
-    console.log('showDashboard!',);
+    console.log('showDashboard!');
     this.selectedTab = TabsEnum.Dashboard;
     localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
   }
 
   showUserDashboard() {
-    console.log('showUserDashboard!',);
+    console.log('showUserDashboard!');
     this.selectedTab = TabsEnum.UserDashboard;
+    localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
+  }
+
+  showDriverDashboard() {
+    console.log('showDriverDashboard!');
+    this.selectedTab = TabsEnum.DriverDashboard;
     localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
   }
 
@@ -167,65 +214,84 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getAll() {
+    console.log('getAll', this.isAdmin());
     this.ngxService.startLoader(this.loaderId);
-    if (!this.isAdmin()) { 
-      this.postsService.getAllCheckedPosts().subscribe((posts) => {
+    if (this.isAdmin() || this.isOperator()) {
+      this.postsService.getPosts().subscribe((posts) => {
         console.log('CONSOLE!', posts);
-        this.checkedPosts = posts;
+        this.allPosts = posts;
         this.ngxService.stopLoader(this.loaderId);
-      })
+      });
       return;
     }
-
-    this.postsService.getPosts().subscribe((posts) => {
-      console.log('CONSOLE!', posts);
-      this.allPosts = posts;
-      this.ngxService.stopLoader(this.loaderId);
-    })
+    if (this.isDriver()) {
+      this.postsService.getAllCheckedPosts().subscribe((posts) => {
+        console.log('getAllCheckedPosts!', posts);
+        this.checkedPosts = posts;
+        this.ngxService.stopLoader(this.loaderId);
+      });
+      return;
+    }
+    if (this.isUser()) {
+      this.postsService
+        .getFilteredPosts({ customerId: this.currentUser?.id })
+        .pipe(finalize(() => this.ngxService.stopLoader(this.loaderId)))
+        .subscribe((posts: any) => {
+          this.userPosts = posts;
+        });
+      return;
+    }
   }
 
   deletePost(post: any) {
-    const dialog = this.openConfirmDialog("Вы действительно хотите удалить объявление?");
+    const dialog = this.openConfirmDialog(
+      'Вы действительно хотите удалить объявление?'
+    );
     console.log('post!', post);
-    dialog.afterClosed().pipe(takeUntil(this.unsubscribeAll$)).subscribe((confirmed: boolean) => {
-      if (confirmed && post?.id) {
-        console.log('confirmed!',);
-        this.postsService.deletePost(post.id).subscribe((res) => {
-          console.log('CONSOLE!', res);
-          if (res?.deleted) {
-            const index = this.allPosts.findIndex(p => p.id === post.id);
-            this.allPosts.splice(index, 1);
-          }
-        });
-        return;
-      }
-      console.log('not Cconfirmed',);
-    })
+    dialog
+      .afterClosed()
+      .pipe(takeUntil(this.unsubscribeAll$))
+      .subscribe((confirmed: boolean) => {
+        if (confirmed && post?.id) {
+          console.log('confirmed!');
+          this.postsService.deletePost(post.id).subscribe((res) => {
+            console.log('CONSOLE!', res);
+            if (res?.deleted) {
+              const index = this.allPosts.findIndex((p) => p.id === post.id);
+              this.allPosts.splice(index, 1);
+            }
+          });
+          return;
+        }
+        console.log('not Cconfirmed');
+      });
   }
 
   createPost() {
-    console.log('createPost!',);
+    console.log('createPost!');
     const dialog = this.dialogsManager.openCreatePostDialog();
     dialog.afterClosed().subscribe((res) => {
       if (res?.id) {
         // this.getAll();
-      };
-    })
+      }
+    });
   }
 
   getPost(id) {
     this.ngxService.startLoader(this.loaderId);
-    this.postsService.getPost(id).pipe(finalize(() => this.ngxService.stopLoader(this.loaderId))).subscribe(post => {
-      if (!this.isAdmin()) {
-        if ((post as any).status !== 1) {
+    this.postsService
+      .getPost(id)
+      .pipe(finalize(() => this.ngxService.stopLoader(this.loaderId)))
+      .subscribe((post) => {
+        if (!this.isAdmin()) {
+          if ((post as any).status !== 1) {
+            return;
+          }
+          this.checkedPosts.push(post);
           return;
         }
-        this.checkedPosts.push(post);
-        return;
-      }
-      this.allPosts.push(post);
-
-    })
+        this.allPosts.push(post);
+      });
   }
 
   getPostExecutingStatus(status: number): string {
@@ -247,27 +313,50 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  openPostDialog(post) {
+  openPostDialog(post?) {
     console.log('CONSOLE!', post);
     const dialog = this.dialogsManager.openPostDialog(post);
     dialog.afterClosed().subscribe(() => {
-      console.log('afterClosed!',);
+      console.log('afterClosed!');
       // this.getAll();
-    })
+    });
   }
 
   setInProgressByDriver(post) {
-    if(!post) {
-      this.dialogsManager.openInfoMessageDialog("ОШИБКА! ОБЪЯВЛЕНИЕ НЕ НАЙДЕНО.")
+    if (!post) {
+      this.dialogsManager.openInfoMessageDialog(
+        'ОШИБКА! ОБЪЯВЛЕНИЕ НЕ НАЙДЕНО.'
+      );
       return;
     }
-    console.log('currentUser!',this.currentUser);
-    this.ngxService.startLoader(this.loaderId);
-    this.postsService.updatePost({driverId: this.currentUser.id, status: PostStatusesEnum.InProgress, id: post.id}).subscribe((res) => {
-      console.log('res',res);
-      this.ngxService.stopLoader(this.loaderId);
-      this.dialogsManager.openInfoMessageDialog("Вы успешно взяли объявление! Пожалуйста, ознакомтесь детальнее с объявлением в списке Ваших Объявлений");
-    })
+    console.log('currentUser!', this.currentUser);
+    this.dialogsManager
+      .openInfoMessageDialog(
+        'Вы действительно хотите взять на выполение это объявление?',
+        true
+      )
+      .afterClosed()
+      .subscribe((confirm) => {
+        if (!confirm) {
+          return;
+        }
+
+        this.ngxService.startLoader(this.loaderId);
+        this.postsService
+          .updatePost({
+            driverId: this.currentUser.id,
+            status: PostStatusesEnum.InProgress,
+            id: post.id,
+          })
+          .pipe(finalize(() => this.ngxService.stopLoader(this.loaderId)))
+          .subscribe((res) => {
+            console.log('res', res);
+            this.dialogsManager.openInfoMessageDialog(
+              'Вы успешно взяли объявление! Пожалуйста, ознакомтесь детальнее с объявлением в списке Ваших Объявлений'
+            );
+            this.getAll();
+          });
+      });
   }
 
   showSettings() {
@@ -276,7 +365,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   showDriverPosts() {
-    console.log('showDriverPosts',);
+    console.log('showDriverPosts');
     this.selectedTab = 'DriverDeliveries';
     localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
   }
@@ -316,7 +405,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   getFilteredPosts(status?: number) {
     this.ngxService.startLoader(this.loaderId);
     this.postsService
-      .getFilteredPosts({ userId: this.currentUser?.id, status: status >= 0 ? status : null })
+      .getFilteredPosts({
+        userId: this.currentUser?.id,
+        status: status >= 0 ? status : null,
+      })
       .subscribe((res: any) => {
         this.allPosts = res;
         this.ngxService.stopLoader(this.loaderId);
@@ -348,14 +440,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
   }
 
-
   private async loadMap(): Promise<void> {
     // const ymaps = (window as any).ymaps;
-
     // await ymaps3.ready;
-
     // const {YMap, YMapDefaultSchemeLayer} = ymaps3;
-
     // const map = new ymaps.Map(
     //     document.getElementById('map'),
     //     {
@@ -365,8 +453,35 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     //         }
     //     }
     // );
-
     // map.addChild(new YMapDefaultSchemeLayer());
+  }
+  searchPosts() {
+    const value = this.searchControl.value;
+    if (!value) {
+      this.selectPostTypeTab(this.selectedPostTypeTabIndex);
+      return;
+    }
+    this.ngxService.startLoader(this.loaderId);
+    this.postsService
+      .searchPosts(value)
+      .pipe(finalize(() => this.ngxService.stopLoader(this.loaderId)))
+      .subscribe((posts) => {
+        if (posts) {
+          this.allPosts = posts;
+          this.selectedPostTypeTabIndex = 6;
+        }
+      });
+  }
+
+  onPostUpdate(event) {
+    if (event) {
+      this.selectPostTypeTab(this.selectedPostTypeTabIndex);
+    }
+  }
+
+  showContacts() {
+    this.selectedTab = TabsEnum.Contacts;
+    localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
   }
 }
 
@@ -374,12 +489,14 @@ export enum TabsEnum {
   Dashboard = 'Dashboard',
   Users = 'Users',
   UserDashboard = 'UserDashboard',
+  DriverDashboard = 'DriverDashboard',
   Settings = 'Settings',
   ProfileDetails = 'ProfileDetails',
   DriverDeliveries = 'DriverDeliveries',
   Documents = 'Documents',
-  Map = "Map",
-  InAddresses = "InAddresses",
-  OutAddresses = "OutAddresses",
-  MutualSettlements = 'MutualSettlements'
+  Map = 'Map',
+  InAddresses = 'InAddresses',
+  OutAddresses = 'OutAddresses',
+  MutualSettlements = 'MutualSettlements',
+  Contacts = 'Contacts',
 }

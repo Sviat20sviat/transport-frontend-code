@@ -1,14 +1,19 @@
 <div class="flex flex-col w-full tab-group">
+    @if(!isDriver()) {
     <div class="tab-group-header flex mb-4">
         <div class="flex tab-group-header-item cursor-pointer p-3"
             [ngClass]="{'selected-tab': selectedMainTabIndex == 1}" (click)="selectMainTab(1)">Данные Пользователя</div>
+
         <div class="flex tab-group-header-item cursor-pointer p-3"
             [ngClass]="{'selected-tab': selectedMainTabIndex == 2}" (click)="selectMainTab(2)">Объявления Пользователя
         </div>
+
         <div class="flex tab-group-header-item cursor-pointer p-3"
             [ngClass]="{'selected-tab': selectedMainTabIndex == 3}" (click)="selectMainTab(3)">Избранные Адреса
         </div>
     </div>
+    }
+
     <div class="overflow-auto">
         @switch (selectedMainTabIndex) {
         @case (1) {
@@ -65,6 +70,7 @@
 
         </div>
         }
+
         @case (2) {
         <div class="flex w-full">
             <div class="flex flex-col items-start mx-auto w-full">
@@ -81,25 +87,83 @@
                     </div>
                 </div>
                 <div class="flex flex-col w-full mt-8 tab-group">
-                    <div class="tab-group-header flex">
+                    <div class="tab-group-header flex mb-3">
                         <div class="flex tab-group-header-item cursor-pointer p-3"
-                            [ngClass]="{'selected-tab': selectedTabIndex == 1}" (click)="selectTab(1)">Ожидают водителя
+                            [ngClass]="{'selected-tab': selectedTabIndex == 1}" (click)="selectTab(1)">Ож. в.
                         </div>
                         <div class="flex tab-group-header-item cursor-pointer p-3"
                             [ngClass]="{'selected-tab': selectedTabIndex == 0}" (click)="selectTab(0)">В работе</div>
                         <div class="flex tab-group-header-item cursor-pointer p-3"
-                            [ngClass]="{'selected-tab': selectedTabIndex == 2}" (click)="selectTab(2)">Неодобренные
+                            [ngClass]="{'selected-tab': selectedTabIndex == 2}" (click)="selectTab(2)">Неод
                         </div>
                         <div class="flex tab-group-header-item cursor-pointer p-3"
-                            [ngClass]="{'selected-tab': selectedTabIndex == 3}" (click)="selectTab(3)">Завершенные</div>
+                            [ngClass]="{'selected-tab': selectedTabIndex == 3}" (click)="selectTab(3)">Зав</div>
                         <div class="flex tab-group-header-item cursor-pointer p-3"
-                            [ngClass]="{'selected-tab': selectedTabIndex == 4}" (click)="selectTab(4)">Отмененные</div>
+                            [ngClass]="{'selected-tab': selectedTabIndex == 4}" (click)="selectTab(4)">Отм</div>
                         <div class="flex tab-group-header-item cursor-pointer p-3"
                             [ngClass]="{'selected-tab': selectedTabIndex == 5}" (click)="selectTab(5)">ЧП</div>
 
                     </div>
                     <div class="flex overflow-auto max-h-[800px]">
-                        <posts-table [currentUser]="currentUser" [posts]="posts" [isShowTitle]="false"></posts-table>
+                        <div class="post-card-container driver-post-card-container">
+                            @for (post of posts; track $index) {
+                            <div class="post-card-item cursor-pointer" (click)="openPostDialog(post)">
+                                <div class="flex justify-between mb-2">
+                                    <span class="post-card-title">Номер:</span>
+                                    <span>{{post?.id}}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="post-card-title">Автор:</span>
+                                    <span>{{post?.customer?.firstName + ' ' + post?.customer?.lastName}} </span>
+                                </div>
+                                @if(post?.customer?.id !== post?.author?.id) {
+                                <div class="flex justify-between">
+                                    <span class="post-card-title">Заказчик:</span>
+                                    <span>{{post?.author?.firstName + ' ' + post?.author?.lastName}} </span>
+                                </div>
+                                }
+                        
+                                <div class="flex justify-between">
+                                    <span class="post-card-title">Создано:</span>
+                                    <span>{{post?.createdAt | date: 'medium'}}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="post-card-title">Откуда, адрес:</span>
+                                    <span>{{post?.addressFrom}}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="post-card-title">Куда, адрес:</span>
+                                    <span>{{post?.addressTo}}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="post-card-title">Описание:</span>
+                                    <span>{{post?.content}}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="post-card-title">Статус:</span>
+                                    <div class="executing-status-badge" [ngClass]="'status-' +(post?.status)">
+                                        {{getPostExecutingStatus((post?.status))}}</div>
+                                </div>
+                                <!-- <div class="flex items-center mt-auto">
+                                    @if(post?.status > 0 && post?.status < 3) { <button mat-raised-button
+                                        class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
+                                        (click)="$event.stopPropagation(); setDoneByDriver(post)">
+                                        Выполнено
+                                        </button>
+                                        <button mat-raised-button class="d-button h-[52px] w-[200px] text-base  uppercase font-semibold mt-3"
+                                            (click)="$event.stopPropagation(); setCancelByDriver(post)">
+                                            Отменить
+                                        </button>
+                                        <button mat-raised-button class="d-button h-[52px] w-[200px] text-base  uppercase font-semibold mt-3"
+                                            (click)="$event.stopPropagation(); setSosDriver(post)">
+                                            ЧП
+                                        </button>
+                                        }
+                        
+                                </div> -->
+                            </div>
+                            }
+                        </div>
                     </div>
                 </div>
 
@@ -118,21 +182,23 @@
         <div class="flex w-full">
             <div class="flex flex-col items-start mx-auto w-full">
                 <div class="text-4xl">Избранные Адреса</div>
-                <div class="flex mt-6">
+                <div class="flex mt-6 selected-adrs-container">
 
                     <custom-input-field [label]="'Адрес'" [formControl]="addressControl"></custom-input-field>
 
                     <button [disabled]="!addressControl?.valid" mat-raised-button
-                        class="s-button h-[52px] text-base  uppercase font-semibold ml-20" (click)="addAddress()">
+                        class="s-button h-[52px] text-base  uppercase font-semibold ml-20 selected-adrs-btn"
+                        (click)="addAddress()">
                         Добавить
                     </button>
                 </div>
                 <div class="flex flex-col">
                     @for (item of currentUser?.favoriteAddresses; track item; let index = $index) {
-                        <div class="flex w-[400px] justify-between">
-                            <div class="p-2 text-lg">{{item}}</div>
-                            <img src="/assets/images/icons/svg/delete_.svg" alt="i" class="cursor-pointer w-6 h-6" matTooltip="Удалить Адрес" (click)="deleteAddress(index)">
-                        </div>
+                    <div class="flex w-[400px] justify-between favorites-container">
+                        <div class="p-2 text-lg">{{item}}</div>
+                        <img src="/assets/images/icons/svg/delete_.svg" alt="i" class="cursor-pointer w-6 h-6"
+                            matTooltip="Удалить Адрес" (click)="deleteAddress(index)">
+                    </div>
 
                     }
                 </div>

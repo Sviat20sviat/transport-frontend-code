@@ -1,5 +1,79 @@
-<!-- <div class="text-xl flex items-center">
-    
-</div> -->
-<posts-table [currentUser]="currentUser" [posts]="posts" [title]="'Ваши выбранные объявления'"></posts-table>
+<div class="text-xl flex items-center">
+    Ваши заказы
+</div>
+<div class="tab-group-header flex mb-3">
+    <div class="flex tab-group-header-item cursor-pointer p-3"
+        [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 2}" (click)="selectPostTypeTab(0)">В работе
+    </div>
+    <div class="flex tab-group-header-item cursor-pointer p-3"
+        [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 3}" (click)="selectPostTypeTab(3)">
+        Зав
+    </div>
+    <div class="flex tab-group-header-item cursor-pointer p-3"
+        [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 4}" (click)="selectPostTypeTab(4)">
+        Отм
+    </div>
+    <div class="flex tab-group-header-item cursor-pointer p-3"
+        [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 5}" (click)="selectPostTypeTab(5)">ЧП</div>
+</div>
+
+<div class="post-card-container driver-post-card-container">
+    @for (post of posts; track $index) {
+    <div class="post-card-item cursor-pointer" (click)="openPostDialog(post)">
+        <div class="flex justify-between mb-2">
+            <span class="post-card-title">Номер:</span>
+            <span>{{post?.id}}</span>
+        </div>
+        <div class="flex justify-between">
+            <span class="post-card-title">Автор:</span>
+            <span>{{post?.customer?.firstName + ' ' + post?.customer?.lastName}} </span>
+        </div>
+        @if(post?.customer?.id !== post?.author?.id) {
+        <div class="flex justify-between">
+            <span class="post-card-title">Заказчик:</span>
+            <span>{{post?.author?.firstName + ' ' + post?.author?.lastName}} </span>
+        </div>
+        }
+
+        <div class="flex justify-between">
+            <span class="post-card-title">Создано:</span>
+            <span>{{post?.createdAt | date: 'medium'}}</span>
+        </div>
+        <div class="flex justify-between">
+            <span class="post-card-title">Откуда, адрес:</span>
+            <span>{{post?.addressFrom}}</span>
+        </div>
+        <div class="flex justify-between">
+            <span class="post-card-title">Куда, адрес:</span>
+            <span>{{post?.addressTo}}</span>
+        </div>
+        <div class="flex justify-between">
+            <span class="post-card-title">Описание:</span>
+            <span>{{post?.content}}</span>
+        </div>
+        <div class="flex justify-between">
+            <span class="post-card-title">Статус:</span>
+            <div class="executing-status-badge" [ngClass]="'status-' +(post?.status)">
+                {{getPostExecutingStatus((post?.status))}}</div>
+        </div>
+        <div class="flex items-center mt-auto">
+            @if(post?.status > 0 && post?.status < 3) { <button mat-raised-button
+                class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
+                (click)="$event.stopPropagation(); setDoneByDriver(post)">
+                Выполнено
+                </button>
+                <button mat-raised-button class="d-button h-[52px] w-[200px] text-base  uppercase font-semibold mt-3"
+                    (click)="$event.stopPropagation(); setCancelByDriver(post)">
+                    Отменить
+                </button>
+                <button mat-raised-button class="d-button h-[52px] w-[200px] text-base  uppercase font-semibold mt-3"
+                    (click)="$event.stopPropagation(); setSosDriver(post)">
+                    ЧП
+                </button>
+                }
+
+        </div>
+    </div>
+    }
+</div>
 <ngx-ui-loader [fgsColor]="'#ffffff'" [loaderId]="loaderId" [fgsType]="'three-bounce'"></ngx-ui-loader>

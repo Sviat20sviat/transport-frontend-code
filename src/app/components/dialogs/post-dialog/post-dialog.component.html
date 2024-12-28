@@ -3,6 +3,9 @@
         <div class="text-xl flex items-center mb-3">
             @if(post?.id) {
             ЗАЯВКА № {{post?.id}}
+            <div class="executing-status-badge ml-2" [ngClass]="'status-' +(post?.status)">
+                {{getPostExecutingStatusText((post?.status))}}
+            </div>
             } @else {
             НОВАЯ ЗАЯВКА
             }
@@ -14,11 +17,12 @@
             <div class="flex">{{post?.createdAt | date: 'medium'}}</div>
         </div>
         }
+        <div class="flex close-dialog-button" (click)="dialogRef.close()">X</div>
 
     </div>
 
-    <div class="flex flex-col m-3">
-        <div class="flex flex-col max-h-[80vh] overflow-auto p-3">
+    <div class="flex flex-col m-3 post-dialog-container">
+        <div class="flex flex-col max-h-[79vh] overflow-auto p-3 post-wrap-item">
             <div class="flex flex-row justify-between gap-3 flex-wrap">
                 @if(post?.id) {
                 <div class="flex flex-col justify-center mb-3 max-w-full w-full col-items-1">
@@ -47,7 +51,42 @@
                         <custom-input-field [label]="'Telegram Id'" formControlName="chatId"></custom-input-field>
                     </div>
                     <div class="col-items-1 flex justify-center">
-                        <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold">
+                        <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold"
+                            (click)="openUserDialog()">
+                            Открыть полную Информацию по клиенту
+                        </button>
+                    </div>
+                </div>
+                }
+                @if(post?.driver?.id) {
+                <div class="flex flex-col justify-center mb-3 max-w-full w-full col-items-1">
+                    <div class="text-lg flex items-center justify-center mb-3">
+                        Данные по Водителю
+                    </div>
+                </div>
+                <div class="flex flex-row justify-between gap-3 flex-wrap col-items-1" [formGroup]="driverDataForm">
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Имя'" formControlName="firstName"></custom-input-field>
+                    </div>
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Фамилия'" formControlName="lastName"></custom-input-field>
+                    </div>
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Уникальный Номер'" formControlName="id"></custom-input-field>
+                    </div>
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Статус клиента'" formControlName="status"></custom-input-field>
+                    </div>
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Номер Телефона'"
+                            formControlName="phoneNumber"></custom-input-field>
+                    </div>
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <custom-input-field [label]="'Telegram Id'" formControlName="chatId"></custom-input-field>
+                    </div>
+                    <div class="col-items-1 flex justify-center">
+                        <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold"
+                            (click)="openDriverDialog()">
                             Открыть полную Информацию по клиенту
                         </button>
                     </div>
@@ -69,11 +108,13 @@
                     </div>
                     <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
                         <custom-input-field [label]="'Адрес, откуда'" formControlName="addressFrom"
-                            [matAutoCompleteOptions]="addressesOutGroup"  [isAddToFavorite]="true" (addAddressToFavorite)="addAddressToFavorite($event)"></custom-input-field>
+                            [matAutoCompleteOptions]="addressesOutGroup" [isAddToFavorite]="true"
+                            (addAddressToFavorite)="addAddressToFavorite($event)"></custom-input-field>
                     </div>
                     <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
                         <custom-input-field [label]="'Адрес, куда'" formControlName="addressTo"
-                            [matAutoCompleteOptions]="addressesInGroup" [isAddToFavorite]="true" (addAddressToFavorite)="addAddressToFavorite($event)"></custom-input-field>
+                            [matAutoCompleteOptions]="addressesInGroup" [isAddToFavorite]="true"
+                            (addAddressToFavorite)="addAddressToFavorite($event)"></custom-input-field>
                     </div>
                     @if(userService.isUserAdmin(this.currentUser) || userService.isUserOperator(this.currentUser)) {
                     <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
@@ -107,7 +148,18 @@
                         <select-field [label]="'Заказчик'" [options]="clients" [nameKey]="'email'"
                             formControlName="customerId"></select-field>
                     </div>
+                    @if (post?.id) {
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <select-field [label]="'Статус Заказа'" [options]="statuses" [nameKey]="'value'"
+                            formControlName="status"></select-field>
+                    </div>
                     }
+
+                    }
+                    <div class="flex flex-col justify-between mb-3 max-w-[100%] col-items-1">
+                        <photo-select (selectedFileChange)="onPhotoLoad($event)"
+                            [inputImageUrl]="post?.imageUrl"></photo-select>
+                    </div>
 
                     <div class="flex flex-col justify-center mb-3 max-w-full w-full col-items-1">
                         <div class="text-lg flex items-center justify-center mb-3">
@@ -247,10 +299,13 @@
 
             <div class="flex flex-row justify-center">
                 @if(post?.id) {
+                @if(isAdmin() || isOperator()) {
                 <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
-                    (click)="edit()" [disabled]="!form?.valid">
+                    (click)="save()" [disabled]="!form?.valid">
                     Редактировать
                 </button>
+                }
+
                 } @else {
                 <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
                     (click)="create()" [disabled]="!form?.valid">

@@ -1,52 +1,70 @@
 <div class="left-menu flex flex-col justify-between z-10" [ngClass]="{ 'left-opened' : leftOpened}">
-    <div class="flex flex-col justify-end items-start mr-6">
-        <div class="flex w-full justify-end">
+    <div class="flex flex-col justify-end items-start mr-6 left-menu-container">
+        <div class="flex w-full justify-end menu-icon-container">
             <img (click)="leftOpened = !leftOpened" class="mt-6 cursor-pointer"
                 src="/assets/images/icons/svg/burger_menu.svg" alt="i">
         </div>
 
-        <div class="flex flex-col mt-10">
+        <div class="flex flex-col mt-10 left-menu-icons-container">
             @if (isAdmin()) {
-            <div class="flex mt-6 cursor-pointer" (click)="showUsers()" matTooltip="Пользователи">
+            <div class="flex mt-6 cursor-pointer icon-container" (click)="showUsers()" matTooltip="Пользователи">
                 <img class=" ml-4 cursor-pointer w-6 h-6" src="/assets/images/icons/svg/user.svg" alt="i">
                 <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Пользователи</span>
             </div>
             }
 
 
-            @if (isAdmin()) {
-            <div class="flex mt-6 cursor-pointer" (click)="showDashboard()" matTooltip="Объявления">
+            @if (isAdmin() || isOperator()) {
+            <div class="flex mt-6 cursor-pointer icon-container" (click)="showDashboard()" matTooltip="Объявления">
+                <img class="ml-3 cursor-pointer w-8 h-8" src="/assets/images/icons/svg/EventsView.svg" alt="i">
+                <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Объявления</span>
+            </div>
+            } @else if (isDriver()) {
+            <div class="flex mt-6 cursor-pointer icon-container" (click)="showDriverDashboard()"
+                matTooltip="Объявления">
                 <img class="ml-3 cursor-pointer w-8 h-8" src="/assets/images/icons/svg/EventsView.svg" alt="i">
                 <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Объявления</span>
             </div>
             } @else {
-            <div class="flex mt-6 cursor-pointer" (click)="showUserDashboard()" matTooltip="Объявления">
+            <div class="flex mt-6 cursor-pointer icon-container" (click)="showUserDashboard()" matTooltip="Объявления">
                 <img class="ml-3 cursor-pointer w-8 h-8" src="/assets/images/icons/svg/EventsView.svg" alt="i">
                 <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Объявления</span>
             </div>
             }
 
             @if (isDriver()) {
-            <div class="flex mt-6 cursor-pointer" (click)="showDriverPosts()">
-                <img src="assets/images/icons/delivery.png" alt="del" class="w-[30px] h-[30px] ml-4" matTooltip="Ваши Заказы">
+            <div class="flex mt-6 cursor-pointer icon-container" (click)="showDriverPosts()">
+                <img src="assets/images/icons/delivery.png" alt="del" class="w-[30px] h-[30px] ml-4"
+                    matTooltip="Ваши Заказы">
                 <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Ваши Заказы</span>
             </div>
             }
-            <div class="flex mt-6 cursor-pointer" (click)="showDocuments()">
-                <img src="assets/images/icons/svg/file.svg" alt="del" class="w-[30px] h-[30px] ml-4" matTooltip="Документы">
+            @if (isAdmin()) {
+            <div class="flex mt-6 cursor-pointer icon-container" (click)="showDocuments()">
+                <img src="assets/images/icons/svg/file.svg" alt="del" class="w-[30px] h-[30px] ml-4"
+                    matTooltip="Документы">
                 <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Документы</span>
             </div>
-            <div class="flex mt-6 cursor-pointer" (click)="showOutAddresses()">
-                <img src="assets/images/icons/svg/map_pin.svg" alt="del" class="w-[30px] h-[30px] ml-4" matTooltip="Адреса внешние">
+            <div class="flex mt-6 cursor-pointer icon-container" (click)="showOutAddresses()">
+                <img src="assets/images/icons/svg/map_pin.svg" alt="del" class="w-[30px] h-[30px] ml-4"
+                    matTooltip="Адреса внешние">
                 <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Адреса внешние</span>
             </div>
-            <div class="flex mt-6 cursor-pointer" (click)="showInAddresses()">
-                <img src="assets/images/icons/svg/map_pin.svg" alt="del" class="w-[30px] h-[30px] ml-4" matTooltip="Адреса внутренние">
+            <div class="flex mt-6 cursor-pointer icon-container" (click)="showInAddresses()">
+                <img src="assets/images/icons/svg/map_pin.svg" alt="del" class="w-[30px] h-[30px] ml-4"
+                    matTooltip="Адреса внутренние">
                 <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Адреса внутренние</span>
             </div>
-            <div class="flex mt-6 cursor-pointer" (click)="showMutualSettlements()">
-                <img class="ml-3 cursor-pointer w-8 h-8" src="/assets/images/icons/svg/EventsView.svg" alt="i" matTooltip="Взаиморасчеты">
+            <div class="flex mt-6 cursor-pointer icon-container" (click)="showMutualSettlements()">
+                <img class="ml-3 cursor-pointer w-8 h-8" src="/assets/images/icons/svg/EventsView.svg" alt="i"
+                    matTooltip="Взаиморасчеты">
                 <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Взаиморасчеты</span>
+            </div>
+            }
+            <div class="flex mt-6 cursor-pointer icon-container" (click)="showContacts()">
+                <img class="ml-3 cursor-pointer w-8 h-8" src="/assets/images/icons/svg/start_call.svg" alt="i"
+                    matTooltip="Контакты для связи">
+                <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Контакты для связи</span>
             </div>
             <!-- <div class="flex mt-6 cursor-pointer" (click)="showMap()">
                 <img src="assets/images/icons/svg/map.svg" alt="del" class="w-[30px] h-[30px] ml-4">
@@ -54,8 +72,9 @@
             </div> -->
 
 
-            <div class="flex mt-6 cursor-pointer" (click)="showSettings()">
-                <img class="ml-4 cursor-pointer w-6 h-6" src="/assets/images/icons/svg/cog-settings.svg" alt="i" matTooltip="Настройки пользователя">
+            <div class="flex mt-6 cursor-pointer icon-container" (click)="showSettings()">
+                <img class="ml-4 cursor-pointer w-6 h-6" src="/assets/images/icons/svg/cog-settings.svg" alt="i"
+                    matTooltip="Настройки пользователя">
                 <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Настройки пользователя</span>
             </div>
 
@@ -71,19 +90,22 @@
 
 </div>
 <div class="main-container flex flex-col ml-[60px] max-h-[100vh]">
-    <div class="main-header sticky flex w-full h-[60px]">
+    <!-- <div class="main-header sticky flex w-full h-[60px]">
         <div class="search-container ml-10 mt-3">
             <input class="main-input input-field h-[40px] rounded-lg pl-4 text-left w-full font-normal"
                 placeholder="Введите для поиска.." />
         </div>
-    </div>
-    <div class="p-6 h-full overflow-auto">
+    </div> -->
+    <div class="p-6 h-full overflow-auto dashboard-content-container">
         @switch (selectedTab) {
         @case('Dashboard') {
         <ng-container *ngTemplateOutlet="dashboard"></ng-container>
         }
         @case('UserDashboard') {
         <ng-container *ngTemplateOutlet="usersDashboard"></ng-container>
+        }
+        @case('DriverDashboard') {
+        <ng-container *ngTemplateOutlet="driverDashboard"></ng-container>
         }
         @case('Users') {
         <users></users>
@@ -98,149 +120,206 @@
         <documents></documents>
         }
         @case('Map') {
-            <ng-container *ngTemplateOutlet="map"></ng-container>
+        <ng-container *ngTemplateOutlet="map"></ng-container>
         }
         @case('InAddresses') {
-            <address-in></address-in>
+        <address-in></address-in>
         }
         @case('OutAddresses') {
-            <address-out></address-out>
+        <address-out></address-out>
         }
         @case('MutualSettlements') {
-            <mutual-settlements></mutual-settlements>
+        <mutual-settlements></mutual-settlements>
         }
+        @case('Contacts') {
+            <contacts></contacts>
+            }
         @default {
-        <ng-container *ngTemplateOutlet="dashboard"></ng-container>
+        <ng-container *ngTemplateOutlet="usersDashboard"></ng-container>
         }
         }
     </div>
 
     <ng-template #dashboard>
-        <div class="tab-group-header flex">
-            <div class="flex tab-group-header-item cursor-pointer p-3"
-                [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 1}" (click)="selectPostTypeTab(1)">Ожидают
-                водителя</div>
-            <div class="flex tab-group-header-item cursor-pointer p-3"
-                [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 0}" (click)="selectPostTypeTab(0)">В работе
-            </div>
-            <div class="flex tab-group-header-item cursor-pointer p-3"
-                [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 2}" (click)="selectPostTypeTab(2)">Неодобренные
-            </div>
-            <div class="flex tab-group-header-item cursor-pointer p-3"
-                [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 3}" (click)="selectPostTypeTab(3)">Завершенные
-            </div>
-            <div class="flex tab-group-header-item cursor-pointer p-3"
-                [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 4}" (click)="selectPostTypeTab(4)">Отмененные
-            </div>
-            <div class="flex tab-group-header-item cursor-pointer p-3"
-                [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 5}" (click)="selectPostTypeTab(5)">ЧП</div>
-            <div class="flex tab-group-header-item cursor-pointer p-3"
-                [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 6}" (click)="selectPostTypeTab(6)">Все</div>
+        <div class="text-xl flex items-center mb-4">
+            Объявления пользователей
         </div>
-        <posts-table [currentUser]="currentUser" [posts]="allPosts"></posts-table>
-    </ng-template>
-    <ng-template #usersDashboard>
-        <div class="flex flex-row justify-between mb-2">
-            <div class="text-xl flex items-center">
-                Объявления пользователей
+        <div class="flex mb-[-60px]">
+            <div class="tab-group-header flex ">
+                <div class="flex tab-group-header-item cursor-pointer p-3"
+                    [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 1}" (click)="selectPostTypeTab(1)">Ожидают
+                    водителя</div>
+                <div class="flex tab-group-header-item cursor-pointer p-3"
+                    [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 0}" (click)="selectPostTypeTab(0)">В работе
+                </div>
+                <div class="flex tab-group-header-item cursor-pointer p-3"
+                    [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 2}" (click)="selectPostTypeTab(2)">
+                    Неодобренные
+                </div>
+                <div class="flex tab-group-header-item cursor-pointer p-3"
+                    [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 3}" (click)="selectPostTypeTab(3)">
+                    Завершенные
+                </div>
+                <div class="flex tab-group-header-item cursor-pointer p-3"
+                    [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 4}" (click)="selectPostTypeTab(4)">
+                    Отмененные
+                </div>
+                <div class="flex tab-group-header-item cursor-pointer p-3"
+                    [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 5}" (click)="selectPostTypeTab(5)">ЧП</div>
+                <div class="flex tab-group-header-item cursor-pointer p-3"
+                    [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 6}" (click)="selectPostTypeTab(6)">Все</div>
             </div>
-            <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
-                (click)="createPost()">
-                Создать объявление
+            <custom-input-field [label]="'Введите для поиска...'" [formControl]="searchControl"
+                class="ml-4"></custom-input-field>
+            <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold ml-4"
+                (click)="searchPosts()">
+                Поиск
             </button>
         </div>
 
-        <div class="content overflow-auto w-full">
-            <!-- @for (post of allPosts; track post.id) {
-                <div class="flex flex-row justify-between rounded-lg post-item cursor-pointer w-full p-2 mb-2">
-                    <div class="flex">
-                        <img [src]="serverAddress+ '/' + post.image" alt="i" class="w-10 h-10 mr-2">
-                        <div class="flex items-center mr-2">{{post?.title}}</div>
-                        <div class="flex items-center mr-2"> <span class="font-medium">Aвтор:</span> {{post?.author?.email}}</div>
-                        <div class="flex items-center mr-2"><span class="font-medium">Создано:</span>{{post?.createdAt | date: 'shortDate'}}</div>
-                        <div class="flex items-center mr-2"><span class="font-medium">Описание:</span>{{post?.content}}</div>
-                    </div>
-                    <div class="flex items-center">
-                        <img src="/assets/images/icons/svg/delete_.svg" alt="i"class="cursor-pointer w-6 h-6" (click)="deletePost(post)">
-                    </div>
-                </div>
-            } -->
-            <table class="w-full">
-                <thead class="table-header">
-                    <tr class="sam_row px-2">
-                        <th class="py-3">
-                            <span class="font-medium text-white pl-2">Номер</span>
-                        </th>
-                        <th class="py-3">
-                            <span class="font-medium text-white">Aвтор</span>
-                        </th>
-                        <th class="py-3">
-                            <span class="font-medium text-white">Создано</span>
-                        </th>
-                        <th class="py-3">
-                            <span class="font-medium text-white">Откуда, адрес</span>
-                        </th>
-                        <th class="py-3">
-                            <span class="font-medium text-white">Куда, адрес</span>
-                        </th>
-                        <th class="py-3">
-                            <span class="font-medium text-white">Описание</span>
-                        </th>
-                        <th class="py-3">
-                            <span class="font-medium text-white">Статус</span>
-                        </th>
-                        <th class="py-3">
-                            <span class="font-medium text-white">Действия</span>
-                        </th>
+        <posts-table [currentUser]="currentUser" [posts]="allPosts" [title]="''"
+            (postsUpdated$)="onPostUpdate($event)"></posts-table>
+    </ng-template>
+    <ng-template #usersDashboard>
+        <div class="flex flex-row justify-between mb-2 user flex-wrap">
+            <div class="text-xl flex items-center">
+                Ваши Объявления
+            </div>
+            <div class="flex">
 
-                    </tr>
-                </thead>
-                <tbody class="table-body">
-                    @for (post of checkedPosts; track post.id; let index = $index) {
-                    <tr class="cursor-pointer" (click)="openPostDialog(post)">
-                        <td class="pl-2 py-3">
-                            {{post?.id}}
-                        </td>
-                        <td class="py-3">
-                            <!-- {{post?.author?.email}} -->
-                            <button mat-raised-button
-                                class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold">
-                                Открыть
-                            </button>
-                        </td>
-                        <td class="py-3">
-                            {{post?.createdAt | date: 'short'}}
-                        </td>
-                        <td class="py-3">
-                            {{post?.addressFrom}}
-                        </td>
-                        <td class="py-3">
-                            {{post?.addressTo}}
-                        </td>
-                        <td class="py-3">
-                            <div class="text-container">{{post?.content}}</div>
-
-                        </td>
-                        <td class="py-3">
-                            <div class="executing-status-badge" [ngClass]="'status-' +(post?.status)">
-                                {{getPostExecutingStatus((post?.status))}}</div>
-
-                        </td>
-                        <td class="pr-2 py-3">
-                            @if(isDriver()) {
-                            <button mat-raised-button [disabled]="post?.status > 1"
-                                class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
-                                (click)="$event.stopPropagation(); setInProgressByDriver(post)">
-                                Взять объявление
-                            </button>
-                            }
-                        </td>
-                    </tr>
-                    }
-                </tbody>
-            </table>
+                <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
+                    (click)="openPostDialog()">
+                    Создать объявление
+                </button>
+            </div>
 
         </div>
+
+        <div class="content overflow-auto w-full">
+            <!-- <div class="flex flex-row justify-between mb-2">
+                <div class="text-xl flex items-center">
+                    Заказы пользователей
+                </div>
+                <button mat-raised-button
+                    class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
+                    (click)="$event.stopPropagation(); openPostDialog()">
+                    Создать Заказ
+                </button>
+            </div> -->
+            <div class="post-card-container">
+                @for (post of userPosts; track $index) {
+                <div class="post-card-item cursor-pointer" (click)="openPostDialog(post)">
+                    
+                    <div class="flex justify-between mb-2">
+                        <span class="post-card-title">Номер:</span>
+                        <span>{{post?.id}}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="post-card-title">Автор:</span>
+                        <span>{{post?.customer?.firstName + ' ' + post?.customer?.lastName}} </span>
+                    </div>
+                    @if(post?.customer?.id !== post?.author?.id) {
+                    <div class="flex justify-between">
+                        <span class="post-card-title">Заказчик:</span>
+                        <span>{{post?.author?.firstName + ' ' + post?.author?.lastName}} </span>
+                    </div>
+                    }
+    
+                    <div class="flex justify-between">
+                        <span class="post-card-title">Создано:</span>
+                        <span>{{post?.createdAt | date: 'medium'}}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="post-card-title">Откуда, адрес:</span>
+                        <span>{{post?.addressFrom}}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="post-card-title">Куда, адрес:</span>
+                        <span>{{post?.addressTo}}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="post-card-title">Описание:</span>
+                        <span>{{post?.content}}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="post-card-title">Статус:</span>
+                        <div class="executing-status-badge" [ngClass]="'status-' +(post?.status)">
+                            {{getPostExecutingStatus((post?.status))}}</div>
+                    </div>
+                    <div class="flex items-center mt-auto">
+                        @if(true) {
+                        <button mat-raised-button [disabled]="true"
+                            class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
+                            (click)="$event.stopPropagation();">
+                            Отменить Заказ
+                        </button>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </ng-template>
+    <ng-template #driverDashboard>
+        <div class="flex flex-row justify-between mb-2">
+            <div class="text-xl flex items-center">
+                Заказы пользователей
+            </div>
+
+        </div>
+        <div class="post-card-container">
+            @for (post of checkedPosts; track $index) {
+            <div class="post-card-item cursor-pointer" (click)="openPostDialog(post)">
+                
+                <div class="flex justify-between mb-2">
+                    <span class="post-card-title">Номер:</span>
+                    <span>{{post?.id}}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="post-card-title">Автор:</span>
+                    <span>{{post?.customer?.firstName + ' ' + post?.customer?.lastName}} </span>
+                </div>
+                @if(post?.customer?.id !== post?.author?.id) {
+                <div class="flex justify-between">
+                    <span class="post-card-title">Заказчик:</span>
+                    <span>{{post?.author?.firstName + ' ' + post?.author?.lastName}} </span>
+                </div>
+                }
+
+                <div class="flex justify-between">
+                    <span class="post-card-title">Создано:</span>
+                    <span>{{post?.createdAt | date: 'medium'}}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="post-card-title">Откуда, адрес:</span>
+                    <span>{{post?.addressFrom}}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="post-card-title">Куда, адрес:</span>
+                    <span>{{post?.addressTo}}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="post-card-title">Описание:</span>
+                    <span>{{post?.content}}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="post-card-title">Статус:</span>
+                    <div class="executing-status-badge" [ngClass]="'status-' +(post?.status)">
+                        {{getPostExecutingStatus((post?.status))}}</div>
+                </div>
+                <div class="flex items-center mt-auto">
+                    @if(true) {
+                    <button mat-raised-button [disabled]="post?.status > 1"
+                        class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
+                        (click)="$event.stopPropagation(); setInProgressByDriver(post)">
+                        Взять Заказ
+                    </button>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+
     </ng-template>
 
     <ng-template #map>

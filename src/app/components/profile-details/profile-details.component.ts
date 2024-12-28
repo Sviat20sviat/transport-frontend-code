@@ -122,10 +122,10 @@ export class ProfileDetailsComponent implements OnInit, OnDestroy {
   getPosts(status: number) {
     this.ngxService.startLoader(this.loaderId);
     this.postService
-      .getFilteredPosts({ userId: this.currentUser?.id, status: status })
+      .getFilteredPosts({ customerId: this.currentUser?.id, status: status })
+      .pipe(finalize(() => this.ngxService.stopLoader(this.loaderId)))
       .subscribe((res) => {
         this.posts = res;
-        this.ngxService.stopLoader(this.loaderId);
       });
   }
 
@@ -208,5 +208,30 @@ export class ProfileDetailsComponent implements OnInit, OnDestroy {
 
       this.dialogsManager.openInfoMessageDialog("Ваш профиль успешно обновлен!");
     });
+  }
+  isDriver() {
+    return this.currentUser?.roles?.some((role) => role.value == 'Driver');
+  }
+
+  getPostExecutingStatus(status: number): string {
+    switch (status) {
+      case 0:
+        return 'Не одобрено';
+      case 1:
+        return 'Одобрено';
+      case 2:
+        return 'В работе';
+      case 3:
+        return 'Выполено';
+      case 4:
+        return 'Отменено';
+      case 5:
+        return 'ЧП';
+      default:
+        return 'Не одобрено';
+    }
+  }
+  openPostDialog(post: any) {
+    this.dialogsManager.openPostDialog(post);
   }
 }
