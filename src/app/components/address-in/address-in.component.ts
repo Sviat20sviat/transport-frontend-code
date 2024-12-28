@@ -12,18 +12,17 @@ import { AddressTypes } from '../address-out/address-out.component';
 import { AddressesService } from '../../services/api/addresses.service';
 
 @Component({
-  selector: 'address-in',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatButtonModule,
-    NgxUiLoaderModule,
-    MatInputModule, FormsModule, MatButtonModule, MatIconModule
-  ],
-  templateUrl: './address-in.component.html',
-  styleUrl: './address-in.component.scss'
+    selector: 'address-in',
+    imports: [
+        CommonModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatButtonModule,
+        NgxUiLoaderModule,
+        MatInputModule, FormsModule, MatButtonModule, MatIconModule
+    ],
+    templateUrl: './address-in.component.html',
+    styleUrl: './address-in.component.scss'
 })
 export class AddressInComponent {
 

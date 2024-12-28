@@ -16,20 +16,19 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import moment from 'moment';
 import { DocumentsService } from '../../services/api/documents.service';
 @Component({
-  selector: 'mutual-settlements',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatButtonModule,
-    NgxUiLoaderModule,
-    MatInputModule, FormsModule, MatButtonModule, MatIconModule,
-    MatDatepickerModule, FormsModule, ReactiveFormsModule, JsonPipe,
-    MatTooltipModule
-  ],
-  templateUrl: './mutual-settlements.component.html',
-  styleUrl: './mutual-settlements.component.scss'
+    selector: 'mutual-settlements',
+    imports: [
+        CommonModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatButtonModule,
+        NgxUiLoaderModule,
+        MatInputModule, FormsModule, MatButtonModule, MatIconModule,
+        MatDatepickerModule, FormsModule, ReactiveFormsModule, JsonPipe,
+        MatTooltipModule
+    ],
+    templateUrl: './mutual-settlements.component.html',
+    styleUrl: './mutual-settlements.component.scss'
 })
 export class MutualSettlementsComponent implements OnInit, OnDestroy {
 

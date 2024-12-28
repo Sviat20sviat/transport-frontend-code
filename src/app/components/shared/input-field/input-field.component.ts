@@ -12,30 +12,29 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { BehaviorSubject, Observable, map, startWith } from 'rxjs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 @Component({
-  selector: 'custom-input-field',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatButtonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatAutocompleteModule,
-    MatSlideToggleModule,
-    MatTooltipModule
-  ],
-  providers: [
-    {
-      provide: NG_VALIDATORS,
-      useExisting: InputFieldComponent,
-      multi: true
-    },
-    getValueAccessor(InputFieldComponent)
-  ],
-  templateUrl: './input-field.component.html',
-  styleUrl: './input-field.component.scss'
+    selector: 'custom-input-field',
+    imports: [
+        CommonModule,
+        MatInputModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatButtonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatAutocompleteModule,
+        MatSlideToggleModule,
+        MatTooltipModule
+    ],
+    providers: [
+        {
+            provide: NG_VALIDATORS,
+            useExisting: InputFieldComponent,
+            multi: true
+        },
+        getValueAccessor(InputFieldComponent)
+    ],
+    templateUrl: './input-field.component.html',
+    styleUrl: './input-field.component.scss'
 })
 export class InputFieldComponent extends FormControlDirective implements OnInit, AfterViewInit {
   @ViewChild('input') input: ElementRef<HTMLInputElement>;

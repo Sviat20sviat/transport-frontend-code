@@ -11,18 +11,17 @@ import { DialogsManagerService } from '../../services/dialogs-manager.service';
 import { AddressesService } from '../../services/api/addresses.service';
 
 @Component({
-  selector: 'address-out',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatButtonModule,
-    NgxUiLoaderModule,
-    MatInputModule, FormsModule, MatButtonModule, MatIconModule
-  ],
-  templateUrl: './address-out.component.html',
-  styleUrl: './address-out.component.scss'
+    selector: 'address-out',
+    imports: [
+        CommonModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatButtonModule,
+        NgxUiLoaderModule,
+        MatInputModule, FormsModule, MatButtonModule, MatIconModule
+    ],
+    templateUrl: './address-out.component.html',
+    styleUrl: './address-out.component.scss'
 })
 export class AddressOutComponent {
   

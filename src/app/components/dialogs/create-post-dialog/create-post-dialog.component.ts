@@ -12,20 +12,18 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 @Component({
-  selector: 'create-post-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
-    UsersComponent,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatButtonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    
-  ],
-  templateUrl: './create-post-dialog.component.html',
-  styleUrl: './create-post-dialog.component.scss'
+    selector: 'create-post-dialog',
+    imports: [
+        CommonModule,
+        UsersComponent,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatButtonModule,
+        FormsModule,
+        ReactiveFormsModule,
+    ],
+    templateUrl: './create-post-dialog.component.html',
+    styleUrl: './create-post-dialog.component.scss'
 })
 export class CreatePostDialogComponent {
   form: FormGroup;

@@ -10,29 +10,27 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
-  selector: 'select-field',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-
-    MatFormFieldModule,
-    MatSelectModule,
-    MatButtonModule,
-    InputFieldComponent,
-    MatInputModule, MatIconModule,
-  ],
-  templateUrl: './select-field.component.html',
-  styleUrl: './select-field.component.scss',
-  providers: [
-    {
-      provide: NG_VALIDATORS,
-      useExisting: SelectFieldComponent,
-      multi: true
-    },
-    getValueAccessor(SelectFieldComponent)
-  ],
+    selector: 'select-field',
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatButtonModule,
+        InputFieldComponent,
+        MatInputModule, MatIconModule,
+    ],
+    templateUrl: './select-field.component.html',
+    styleUrl: './select-field.component.scss',
+    providers: [
+        {
+            provide: NG_VALIDATORS,
+            useExisting: SelectFieldComponent,
+            multi: true
+        },
+        getValueAccessor(SelectFieldComponent)
+    ]
 })
 export class SelectFieldComponent extends FormControlDirective implements OnInit, AfterViewInit {
   @Input() label;

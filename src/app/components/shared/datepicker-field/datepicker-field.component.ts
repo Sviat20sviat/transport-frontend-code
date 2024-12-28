@@ -9,27 +9,26 @@ import { MatButtonModule } from '@angular/material/button';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 
 @Component({
-  selector: 'datepicker-field',
-  standalone: true,
-  imports: [
-    MatInputModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatButtonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatDatepickerModule
-  ],
-  templateUrl: './datepicker-field.component.html',
-  styleUrl: './datepicker-field.component.scss',
-  providers: [
-    {
-      provide: NG_VALIDATORS,
-      useExisting: DatepickerFieldComponent,
-      multi: true
-    },
-    getValueAccessor(DatepickerFieldComponent)
-  ],
+    selector: 'datepicker-field',
+    imports: [
+        MatInputModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatButtonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatDatepickerModule
+    ],
+    templateUrl: './datepicker-field.component.html',
+    styleUrl: './datepicker-field.component.scss',
+    providers: [
+        {
+            provide: NG_VALIDATORS,
+            useExisting: DatepickerFieldComponent,
+            multi: true
+        },
+        getValueAccessor(DatepickerFieldComponent)
+    ]
 })
 export class DatepickerFieldComponent extends FormControlDirective implements OnInit, AfterViewInit {
   @Input() label = '';

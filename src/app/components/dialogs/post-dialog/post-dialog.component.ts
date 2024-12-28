@@ -29,29 +29,28 @@ import { UserService as UserApiServie } from '../../../services/api/user.service
 import { BehaviorSubject, Subject, combineLatest, takeUntil } from 'rxjs';
 import { PhotoSelectComponent } from '../../shared/photo-select/photo-select.component';
 @Component({
-  selector: 'post-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    UsersComponent,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatButtonModule,
-    NgxUiLoaderModule,
-    InputFieldComponent,
-    MatInputModule,
-    MatIconModule,
-    DatepickerFieldComponent,
-    SelectFieldComponent,
-    MatCheckboxModule,
-    MatExpansionModule,
-    PhotoSelectComponent,
-  ],
-  templateUrl: './post-dialog.component.html',
-  styleUrl: './post-dialog.component.scss',
-  providers: [provideNativeDateAdapter()],
+    selector: 'post-dialog',
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        UsersComponent,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatButtonModule,
+        NgxUiLoaderModule,
+        InputFieldComponent,
+        MatInputModule,
+        MatIconModule,
+        DatepickerFieldComponent,
+        SelectFieldComponent,
+        MatCheckboxModule,
+        MatExpansionModule,
+        PhotoSelectComponent,
+    ],
+    templateUrl: './post-dialog.component.html',
+    styleUrl: './post-dialog.component.scss',
+    providers: [provideNativeDateAdapter()]
 })
 export class PostDialogComponent implements OnInit, OnDestroy {
   unsubscribeAll$: Subject<any> = new Subject();

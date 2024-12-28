@@ -26,24 +26,23 @@ import { finalize } from 'rxjs';
 import { AuthService } from '../../../services/api/auth.service';
 import { MatExpansionModule } from '@angular/material/expansion';
 @Component({
-  selector: 'app-edit-user-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatSelectModule,
-    MatFormFieldModule,
-    FormsModule,
-    ReactiveFormsModule,
-    NgxUiLoaderModule,
-    DatepickerFieldComponent,
-    SelectFieldComponent,
-    MatCheckboxModule,
-    InputFieldComponent,
-    MatButtonModule,
-    MatExpansionModule,
-  ],
-  templateUrl: './edit-user-dialog.component.html',
-  styleUrl: './edit-user-dialog.component.scss',
+    selector: 'app-edit-user-dialog',
+    imports: [
+        CommonModule,
+        MatSelectModule,
+        MatFormFieldModule,
+        FormsModule,
+        ReactiveFormsModule,
+        NgxUiLoaderModule,
+        DatepickerFieldComponent,
+        SelectFieldComponent,
+        MatCheckboxModule,
+        InputFieldComponent,
+        MatButtonModule,
+        MatExpansionModule,
+    ],
+    templateUrl: './edit-user-dialog.component.html',
+    styleUrl: './edit-user-dialog.component.scss'
 })
 export class EditUserDialogComponent implements OnInit {
   toppings = new FormControl('', [Validators.required]);

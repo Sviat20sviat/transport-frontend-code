@@ -14,18 +14,17 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import { ValidatorsService } from '../../services/validators.service';
 
 @Component({
-  selector: 'login',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatCheckboxModule
-  ],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+    selector: 'login',
+    imports: [
+        CommonModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatCheckboxModule
+    ],
+    templateUrl: './login.component.html',
+    styleUrl: './login.component.scss'
 })
 export class LoginComponent implements OnInit {
   loginPageImage: any;

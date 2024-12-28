@@ -27,24 +27,23 @@ import { UserService, updateUserDto } from '../../services/api/user.service';
 import { DialogsManagerService } from '../../services/dialogs-manager.service';
 
 @Component({
-  selector: 'profile-details',
-  standalone: true,
-  imports: [
-    CommonModule,
-    // UsersComponent,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatButtonModule,
-    NgxUiLoaderModule,
-    MatTabsModule,
-    PostsTableComponent,
-    InputFieldComponent,
-    FormsModule,
-    ReactiveFormsModule,
-    MatTooltipModule
-  ],
-  templateUrl: './profile-details.component.html',
-  styleUrl: './profile-details.component.scss',
+    selector: 'profile-details',
+    imports: [
+        CommonModule,
+        // UsersComponent,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatButtonModule,
+        NgxUiLoaderModule,
+        MatTabsModule,
+        PostsTableComponent,
+        InputFieldComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        MatTooltipModule
+    ],
+    templateUrl: './profile-details.component.html',
+    styleUrl: './profile-details.component.scss'
 })
 export class ProfileDetailsComponent implements OnInit, OnDestroy {
   unsubscribeAll$: Subject<any> = new Subject();

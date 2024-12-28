@@ -17,24 +17,23 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { StateService } from '../../services/state.service';
 
 @Component({
-  selector: 'posts-table',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatButtonModule,
-    NgxUiLoaderModule,
-    MatInputModule, 
-    FormsModule,
-    ReactiveFormsModule,
-    MatButtonModule, 
-    MatIconModule,
-    InputFieldComponent,
-    MatTooltipModule
-  ],
-  templateUrl: './posts-table.component.html',
-  styleUrl: './posts-table.component.scss'
+    selector: 'posts-table',
+    imports: [
+        CommonModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatButtonModule,
+        NgxUiLoaderModule,
+        MatInputModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatButtonModule,
+        MatIconModule,
+        InputFieldComponent,
+        MatTooltipModule
+    ],
+    templateUrl: './posts-table.component.html',
+    styleUrl: './posts-table.component.scss'
 })
 export class PostsTableComponent implements OnInit, OnDestroy {
   @Input() posts: Array<any>;

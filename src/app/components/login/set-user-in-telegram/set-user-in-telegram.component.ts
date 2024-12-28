@@ -7,17 +7,16 @@ import { StateService } from '../../../services/state.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
-  selector: 'set-user-in-telegram',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    FormsModule,
-    ReactiveFormsModule
-  ],
-  templateUrl: './set-user-in-telegram.component.html',
-  styleUrl: './set-user-in-telegram.component.scss'
+    selector: 'set-user-in-telegram',
+    imports: [
+        CommonModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        FormsModule,
+        ReactiveFormsModule
+    ],
+    templateUrl: './set-user-in-telegram.component.html',
+    styleUrl: './set-user-in-telegram.component.scss'
 })
 export class SetUserInTelegramComponent {
   currentUser;

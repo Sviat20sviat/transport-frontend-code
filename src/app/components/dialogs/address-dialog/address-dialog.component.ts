@@ -18,27 +18,26 @@ import { AddressesService } from '../../../services/api/addresses.service';
 import { DialogsManagerService } from '../../../services/dialogs-manager.service';
 
 @Component({
-  selector: 'address-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    UsersComponent,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatButtonModule,
-    NgxUiLoaderModule,
-    InputFieldComponent,
-    MatInputModule,
-    MatIconModule,
-    DatepickerFieldComponent,
-    SelectFieldComponent,
-    MatCheckboxModule,
-    MatExpansionModule,
-  ],
-  templateUrl: './address-dialog.component.html',
-  styleUrl: './address-dialog.component.scss'
+    selector: 'address-dialog',
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        UsersComponent,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatButtonModule,
+        NgxUiLoaderModule,
+        InputFieldComponent,
+        MatInputModule,
+        MatIconModule,
+        DatepickerFieldComponent,
+        SelectFieldComponent,
+        MatCheckboxModule,
+        MatExpansionModule,
+    ],
+    templateUrl: './address-dialog.component.html',
+    styleUrl: './address-dialog.component.scss'
 })
 export class AddressDialogComponent {
 

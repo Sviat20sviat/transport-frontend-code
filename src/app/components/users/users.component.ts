@@ -18,18 +18,17 @@ import { StateService } from '../../services/state.service';
 import { UserRolesEnum } from '../../services/api/roles.service';
 
 @Component({
-  selector: 'users',
-  standalone: true,
-  imports: [
-    CommonModule,
-    NgxUiLoaderModule,
-    InputFieldComponent,
-    FormsModule,
-    ReactiveFormsModule,
-    MatButtonModule,
-  ],
-  templateUrl: './users.component.html',
-  styleUrl: './users.component.scss',
+    selector: 'users',
+    imports: [
+        CommonModule,
+        NgxUiLoaderModule,
+        InputFieldComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        MatButtonModule,
+    ],
+    templateUrl: './users.component.html',
+    styleUrl: './users.component.scss'
 })
 export class UsersComponent implements OnInit, OnDestroy {
   users = [];

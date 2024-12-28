@@ -12,18 +12,17 @@ import { DialogsManagerService } from '../../services/dialogs-manager.service';
 import { PostStatusesEnum } from '../dialogs/post-dialog/post-dialog.component';
 
 @Component({
-  selector: 'driver-info',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatButtonModule,
-    NgxUiLoaderModule,
-    PostsTableComponent,
-  ],
-  templateUrl: './driver-info.component.html',
-  styleUrl: './driver-info.component.scss',
+    selector: 'driver-info',
+    imports: [
+        CommonModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatButtonModule,
+        NgxUiLoaderModule,
+        PostsTableComponent,
+    ],
+    templateUrl: './driver-info.component.html',
+    styleUrl: './driver-info.component.scss'
 })
 export class DriverInfoComponent implements OnInit, OnDestroy {
   posts = [];

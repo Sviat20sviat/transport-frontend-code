@@ -18,25 +18,24 @@ import { StateService } from '../../../services/state.service';
 import { Subject, takeUntil } from 'rxjs';
 import { DialogsManagerService } from '../../../services/dialogs-manager.service';
 @Component({
-  selector: 'document-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    UsersComponent,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatButtonModule,
-    NgxUiLoaderModule,
-    InputFieldComponent,
-    MatInputModule, MatIconModule,
-    DatepickerFieldComponent,
-    SelectFieldComponent,
-    MatCheckboxModule
-  ],
-  templateUrl: './document-dialog.component.html',
-  styleUrl: './document-dialog.component.scss'
+    selector: 'document-dialog',
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        UsersComponent,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatButtonModule,
+        NgxUiLoaderModule,
+        InputFieldComponent,
+        MatInputModule, MatIconModule,
+        DatepickerFieldComponent,
+        SelectFieldComponent,
+        MatCheckboxModule
+    ],
+    templateUrl: './document-dialog.component.html',
+    styleUrl: './document-dialog.component.scss'
 })
 export class DocumentDialogComponent implements OnDestroy {
 

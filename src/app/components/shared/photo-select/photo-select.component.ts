@@ -6,11 +6,10 @@ import { FilesService } from '../../../services/api/files.service';
 import { finalize } from 'rxjs';
 
 @Component({
-  selector: 'photo-select',
-  standalone: true,
-  imports: [CommonModule, NgxUiLoaderModule],
-  templateUrl: './photo-select.component.html',
-  styleUrl: './photo-select.component.scss',
+    selector: 'photo-select',
+    imports: [CommonModule, NgxUiLoaderModule],
+    templateUrl: './photo-select.component.html',
+    styleUrl: './photo-select.component.scss'
 })
 export class PhotoSelectComponent implements OnInit {
   @Output() selectedFileChange = new EventEmitter<any>();

@@ -13,21 +13,20 @@ import { StateService } from '../../services/state.service';
 import { Subject, finalize, takeUntil } from 'rxjs';
 
 @Component({
-  selector: 'documents',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatButtonModule,
-    NgxUiLoaderModule,
-    MatInputModule,
-    FormsModule,
-    MatButtonModule,
-    MatIconModule,
-  ],
-  templateUrl: './documents.component.html',
-  styleUrl: './documents.component.scss',
+    selector: 'documents',
+    imports: [
+        CommonModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatButtonModule,
+        NgxUiLoaderModule,
+        MatInputModule,
+        FormsModule,
+        MatButtonModule,
+        MatIconModule,
+    ],
+    templateUrl: './documents.component.html',
+    styleUrl: './documents.component.scss'
 })
 export class DocumentsComponent implements OnDestroy {
   documents = [
