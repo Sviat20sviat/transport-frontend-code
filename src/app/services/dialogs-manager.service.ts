@@ -8,6 +8,7 @@ import { SetUserInTelegramComponent } from '../components/login/set-user-in-tele
 import { DocumentDialogComponent } from '../components/documents/document-dialog/document-dialog.component';
 import { AddressDialogComponent } from '../components/dialogs/address-dialog/address-dialog.component';
 import { AddressTypes } from '../components/address-out/address-out.component';
+import { PhotoDialogComponent } from '../components/dialogs/photo-dialog/photo-dialog.component';
 
 @Injectable({
   providedIn: 'root'
@@ -74,6 +75,16 @@ export class DialogsManagerService {
   openAddressDialog(address?, addressType?: AddressTypes): MatDialogRef<AddressDialogComponent> {
     return this.dialogRef.open(AddressDialogComponent, {
       data: {address: address || null, addressType},
+      maxHeight: "98vh",
+      width:  "100%",
+      maxWidth: "800px",
+      height:  "100%"
+    });
+  }
+
+  openPhotoDialog(imageUrl): MatDialogRef<PhotoDialogComponent> {
+    return this.dialogRef.open(PhotoDialogComponent, {
+      data: {imageUrl: imageUrl},
       maxHeight: "98vh",
       width:  "100%",
       maxWidth: "800px",

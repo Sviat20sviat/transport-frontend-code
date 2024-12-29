@@ -96,7 +96,6 @@ export class LoginComponent implements OnInit {
 
     this.authService.login(values.email, values.password)?.subscribe({
       next(res) {
-        console.log('response!', res);
         if (res?.token?.token) {
           self.dialogsManager.openInfoMessageDialog("Успешно!")
           self.authService.accessToken = res.token.token;
@@ -105,15 +104,9 @@ export class LoginComponent implements OnInit {
         }
       },
       error(err) {
-        if(err.error.message == "UNCORRECT CREDENTIALS") {
-          self.dialogsManager.openInfoMessageDialog('Email или пароль неверные!')
-        };
+        self.dialogsManager.openInfoMessageDialog('Email или пароль неверные!')
       }
     });
-
-    // this.server.getUsers().subscribe(data => {
-    //   console.log('CONSOLE!',data);
-    // })
   }
 
   register() {

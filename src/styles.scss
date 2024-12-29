@@ -226,6 +226,7 @@ body {
 
 .close-dialog-button {
   font-size: 22px;
+  cursor: pointer;
 }
 
 @media (max-width: 736px) {
@@ -309,5 +310,8 @@ body {
   .favorites-container {
     width: fit-content;
     align-items: center;
+  }
+  .flex-nowrap {
+    flex-wrap: wrap;
   }
 }

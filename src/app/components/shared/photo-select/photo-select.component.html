@@ -1,7 +1,7 @@
 <div class="photo-select-comp-wrap relative">
     <div class="photo-select-comp">
         @if(imageUrl) {
-        <img [src]="imageUrl" alt="" width="200" />
+        <img [src]="imageUrl" alt="" width="200" class="cursor-pointer" (click)="openPhotoDialog()"/>
         }
         <input class="mt-4" type="file" (change)="onFileSelected($event)" accept="image/*" required />
 

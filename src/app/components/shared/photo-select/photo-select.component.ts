@@ -4,6 +4,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NgxUiLoaderModule, NgxUiLoaderService } from 'ngx-ui-loader';
 import { FilesService } from '../../../services/api/files.service';
 import { finalize } from 'rxjs';
+import { DialogsManagerService } from '../../../services/dialogs-manager.service';
 
 @Component({
     selector: 'photo-select',
@@ -21,7 +22,8 @@ export class PhotoSelectComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private ngxService: NgxUiLoaderService,
-    private filesService: FilesService
+    private filesService: FilesService,
+    private dialogsManager: DialogsManagerService,
   ) {
     console.log('this.inputImageUrl',this.inputImageUrl);
     if (this.inputImageUrl) {
@@ -98,5 +100,9 @@ export class PhotoSelectComponent implements OnInit {
         alert('Ошибка при загрузке файла.');
       },
     });
+  }
+
+  openPhotoDialog() {
+    this.dialogsManager.openPhotoDialog(this.imageUrl);
   }
 }
