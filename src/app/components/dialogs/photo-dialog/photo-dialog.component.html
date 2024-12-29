@@ -1,0 +1,12 @@
+<div class="flex flex-col">
+    <div class="flex justify-between px-6 pt-6 dialog-header">
+        <div class="text-xl flex items-center mb-3">
+            Изображение
+        </div>
+
+        <div class="flex close-dialog-button" (click)="dialogRef.close()">X</div>
+    </div>
+    <div class="flex p-3">
+        <img [src]="data?.imageUrl" alt="image" class="w-full">
+    </div>
+</div>

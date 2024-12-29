@@ -389,8 +389,16 @@ export class PostDialogComponent implements OnInit, OnDestroy {
       if (!res) {
         this.dialogsManager.openInfoMessageDialog('ОШИБКА СОДАНИЯ');
         return;
-      }
-      this.dialogsManager.openInfoMessageDialog('Объявление успешно создано');
+      };
+      if (
+        !this.userService.isUserAdmin(this.currentUser) &&
+        !this.userService.isUserOperator(this.currentUser)
+      ) {
+        this.dialogsManager.openInfoMessageDialog('Объявление успешно создано. Вы увидите стоимость услуги и Водитель сможет приступить к заказу после его подтверждения Оператором.');
+      } else {
+        this.dialogsManager.openInfoMessageDialog('Объявление успешно создано');
+      };
+
       this.dialogRef.close(res);
     });
   }
