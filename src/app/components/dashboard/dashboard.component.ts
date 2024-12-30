@@ -48,33 +48,33 @@ import { ContactsComponent } from '../contacts/contacts.component';
 // declare var ymaps:any;
 
 @Component({
-    selector: 'dashboard',
-    imports: [
-        CommonModule,
-        UsersComponent,
-        MatFormFieldModule,
-        MatSelectModule,
-        MatButtonModule,
-        NgxUiLoaderModule,
-        ProfileDetailsComponent,
-        MatTabsModule,
-        PostsTableComponent,
-        DriverInfoComponent,
-        MatInputModule,
-        FormsModule,
-        ReactiveFormsModule,
-        MatIconModule,
-        DocumentsComponent,
-        // YMapComponent, YMapDefaultSchemeLayerDirective,
-        MatTooltipModule,
-        AddressInComponent,
-        AddressOutComponent,
-        MutualSettlementsComponent,
-        InputFieldComponent,
-        ContactsComponent,
-    ],
-    templateUrl: './dashboard.component.html',
-    styleUrl: './dashboard.component.scss'
+  selector: 'dashboard',
+  imports: [
+    CommonModule,
+    UsersComponent,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatButtonModule,
+    NgxUiLoaderModule,
+    ProfileDetailsComponent,
+    MatTabsModule,
+    PostsTableComponent,
+    DriverInfoComponent,
+    MatInputModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatIconModule,
+    DocumentsComponent,
+    // YMapComponent, YMapDefaultSchemeLayerDirective,
+    MatTooltipModule,
+    AddressInComponent,
+    AddressOutComponent,
+    MutualSettlementsComponent,
+    InputFieldComponent,
+    ContactsComponent,
+  ],
+  templateUrl: './dashboard.component.html',
+  styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   currentUser: any;
@@ -110,53 +110,69 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntil(this.unsubscribeAll$))
       .subscribe((user) => {
         this.currentUser = user;
+        console.log('currentUser',user);
         const localStorage = this.document.defaultView?.localStorage;
         let selectedTab = localStorage.getItem('selectedTab');
         if (selectedTab) {
           this.selectedTab = JSON.parse(selectedTab);
         }
         this.getAll();
-
-        this.websocketService
-          .on(EventNameEnum.OnPostCreate)
-          .subscribe((data) => {
-            console.log('OnPostCreate!', data);
-            this.getPost(data.id);
-          });
-        this.websocketService
-          .on(EventNameEnum.OnPostUpdate)
-          .subscribe((data) => {
-            console.log('OnPostUpdate!', data);
-            if (!this.isAdmin()) {
-              if (this.checkedPosts.some((p) => p.id == data.id)) {
-                this.getAll();
-              } else {
-                this.getPost(data.id);
-              }
-            } else {
-              let existPostIndex = this.allPosts.findIndex(
-                (p) => p.id == data.id
-              );
-              if (existPostIndex > -1) {
-                this.allPosts[existPostIndex] = data;
-              }
-            }
-          });
-        this.getFilteredPosts();
+        if (this.isDriver()) {
+          this.selectedTab = TabsEnum.DriverDashboard;
+        }
+        if (!this.isAdmin() && !this.isOperator() && !this.isDriver()) {
+          this.selectedTab = TabsEnum.UserDashboard;
+        }
+        if (this.isAdmin() || this.isOperator()) {
+          this.setAdminListeners();
+        }
+        if (this.isDriver()) {
+          this.setDriverListeners();
+        }
+        if (!this.isAdmin() && !this.isOperator() && !this.isDriver()) {
+          console.log('isAdminisDriver',);
+          this.setUserListeners();
+        }
       });
   }
 
   async ngAfterViewInit(): Promise<void> {
     await this.loadMap();
   }
+
   ngOnDestroy(): void {
     this.unsubscribeAll$.next(null);
     this.unsubscribeAll$.complete();
   }
 
-  // receiveSocketResponse() {
-  //   this.websocketService.on();
-  //  }
+  setAdminListeners() {
+    this.stateService.postsUpdatesSignal
+      .pipe(takeUntil(this.unsubscribeAll$))
+      .subscribe((data) => {
+        console.log('data', data);
+        this.getAll();
+      });
+  }
+
+  setUserListeners() {
+    this.stateService.postsUpdatesSignal
+      .pipe(takeUntil(this.unsubscribeAll$))
+      .subscribe((data) => {
+        if ((data?.customer?.id === this.currentUser?.id) || data?.clientId == this.currentUser?.id) {
+          this.getAll();
+        }
+      });
+  }
+
+  setDriverListeners() {
+    this.stateService.postsUpdatesSignal
+      .pipe(takeUntil(this.unsubscribeAll$))
+      .subscribe((data) => {
+        if (data?.driver?.id == this.currentUser?.id || (data?.driver?.id == null && data.status == 1)) {
+          this.getAll();
+        }
+      });
+  }
 
   isAdmin(): boolean {
     return this.currentUser?.roles?.some((role) => role.value == 'Admin');
@@ -215,14 +231,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   getAll() {
     console.log('getAll', this.isAdmin());
     this.ngxService.startLoader(this.loaderId);
-    if (this.isAdmin() || this.isOperator()) {
-      this.postsService.getPosts().subscribe((posts) => {
-        console.log('CONSOLE!', posts);
-        this.allPosts = posts;
-        this.ngxService.stopLoader(this.loaderId);
-      });
-      return;
-    }
     if (this.isDriver()) {
       this.postsService.getAllCheckedPosts().subscribe((posts) => {
         console.log('getAllCheckedPosts!', posts);
@@ -231,14 +239,22 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       });
       return;
     }
-    if (this.isUser()) {
+    if (this.isAdmin() || this.isOperator()) {
+      this.postsService.getPosts().subscribe((posts) => {
+        console.log('CONSOLE!', posts);
+        this.allPosts = posts;
+        this.ngxService.stopLoader(this.loaderId);
+      });
+      return;
+    }
+
+    if (!this.isAdmin() && !this.isOperator() && !this.isDriver()) {
       this.postsService
         .getFilteredPosts({ customerId: this.currentUser?.id })
         .pipe(finalize(() => this.ngxService.stopLoader(this.loaderId)))
         .subscribe((posts: any) => {
           this.userPosts = posts;
         });
-      return;
     }
   }
 
@@ -403,14 +419,16 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   getFilteredPosts(status?: number) {
     this.ngxService.startLoader(this.loaderId);
+    const data = {};
+    data['status'] = status;
+    if (!this.isAdmin() && !this.isOperator()) {
+      data['userId'] = this.currentUser?.id;
+    }
     this.postsService
-      .getFilteredPosts({
-        userId: this.currentUser?.id,
-        status: status >= 0 ? status : null,
-      })
+      .getFilteredPosts(data)
+      .pipe(finalize(() => this.ngxService.stopLoader(this.loaderId)))
       .subscribe((res: any) => {
         this.allPosts = res;
-        this.ngxService.stopLoader(this.loaderId);
       });
   }
 
@@ -455,6 +473,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     // map.addChild(new YMapDefaultSchemeLayer());
   }
   searchPosts() {
+    console.log('searchPosts');
     const value = this.searchControl.value;
     if (!value) {
       this.selectPostTypeTab(this.selectedPostTypeTabIndex);

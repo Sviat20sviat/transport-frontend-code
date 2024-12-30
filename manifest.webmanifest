@@ -1,0 +1,31 @@
+{
+  "name": "GreatGepard Delivery",
+  "short_name": "GreatGepard",
+  "theme_color": "#1976d2",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "assets/images/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/images/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+        "src": "assets/images/icon-128x128.png",
+        "sizes": "128x128",
+        "type": "image/png"
+      },
+      {
+        "src": "assets/images/icon-144x144.png",
+        "sizes": "144x144",
+        "type": "image/png"
+      }
+  ]
+}

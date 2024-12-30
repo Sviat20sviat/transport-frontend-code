@@ -2,7 +2,6 @@ import { ApplicationConfig, LOCALE_ID, importProvidersFrom, provideZoneChangeDet
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
-import { provideClientHydration } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { JwtInterceptor } from './interceptors/http.interceptor';
@@ -22,7 +21,6 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }), 
     provideRouter(routes), 
-    provideClientHydration(), 
     provideAnimationsAsync(),
     provideAnimations(),
     importProvidersFrom(MatNativeDateModule),
@@ -37,8 +35,7 @@ export const appConfig: ApplicationConfig = {
       useClass: CommonModule
     },
     { provide: LOCALE_ID, useValue: 'ru' }, provideAnimationsAsync(), provideAnimationsAsync(), provideServiceWorker('ngsw-worker.js', {
-            enabled: !isDevMode(),
-            registrationStrategy: 'registerWhenStable:30000'
+            enabled: !isDevMode()
           }),
     // provideYConfig(config)
   ]
