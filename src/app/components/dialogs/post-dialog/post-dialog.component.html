@@ -21,10 +21,10 @@
 
     </div>
 
-    <div class="flex flex-col m-3 post-dialog-container">
-        <div class="flex flex-col max-h-[79vh] overflow-auto p-3 post-wrap-item">
+    <div class="flex flex-col m-3 post-dialog-container h-[90vh] justify-between">
+        <div class="flex flex-col h-full overflow-auto p-3 post-wrap-item">
             <div class="flex flex-row justify-between gap-3 flex-wrap">
-                @if(post?.id) {
+                @if(post?.id && (userService.isUserAdmin(this.currentUser) || userService.isUserOperator(this.currentUser))) {
                 <div class="flex flex-col justify-center mb-3 max-w-full w-full col-items-1">
                     <div class="text-lg flex items-center justify-center mb-3">
                         Данные по Заказчику
@@ -58,7 +58,7 @@
                     </div>
                 </div>
                 }
-                @if(post?.driver?.id) {
+                @if(post?.driver?.id && (userService.isUserAdmin(this.currentUser) || userService.isUserOperator(this.currentUser))) {
                 <div class="flex flex-col justify-center mb-3 max-w-full w-full col-items-1">
                     <div class="text-lg flex items-center justify-center mb-3">
                         Данные по Водителю
@@ -157,8 +157,12 @@
 
                     }
                     <div class="flex flex-col justify-between mb-3 max-w-[100%] col-items-1">
-                        <photo-select (selectedFileChange)="onPhotoLoad($event)"
-                            [inputImageUrl]="post?.imageUrl"></photo-select>
+                        @if(!post?.imageUrl) {
+                            <div class="text-center">Загрузите изображение (штрих-код заказа, номер заказа на сайте или фото груза)</div>
+                        } @else {
+                            <div class="text-center">Изображение - уточнение по заказу</div> 
+                        }
+                        <photo-select (selectedFileChange)="onPhotoLoad($event)" [inputImageUrl]="post?.imageUrl"></photo-select>
                     </div>
 
                     <div class="flex flex-col justify-center mb-3 max-w-full w-full col-items-1">
@@ -196,12 +200,11 @@
                             formControlName="cargoCharacterComment"></custom-input-field>
                     </div>
                     <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                        <custom-input-field [label]="'Размер, В*Ш*Г'"
+                        <custom-input-field [label]="'Размер, В*Ш*Г, см'"
                             formControlName="cargoCharacterSize"></custom-input-field>
                     </div>
                     <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                        <custom-input-field [label]="'Совокупный Размер, В*Ш*Г'"
-                            formControlName="cargoCharacterSizeAll"></custom-input-field>
+                        <div class="flex w-full h-full items-center">Совокупный размер: {{form.get('cargoCharacterSizeAll').value}} см3</div>
                     </div>
                     <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
                         <mat-checkbox formControlName="isFragile"
@@ -290,6 +293,9 @@
             </div>
         </div>
         <div class="flex justify-center flex-col">
+            @if(!form?.valid) {
+                <div class="text-red-600 my-2 text-center">*Внимание! Не все обязательные поля заполенены!*</div>
+            }
             @if(userService.isUserUser(this.currentUser)) {
             <div class="flex flex-row text-xl font-bold text-green-700 justify-center">
                 К ОПЛАТЕ <span class="text-red-700 mx-4">{{form?.get('summ')?.value || "--"}} </span>РУБ

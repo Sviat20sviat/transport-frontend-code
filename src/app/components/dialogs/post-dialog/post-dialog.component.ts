@@ -109,51 +109,14 @@ export class PostDialogComponent implements OnInit, OnDestroy {
     public userService: UserService,
     private userApiService: UserApiServie
   ) {
+
+  }
+
+  ngOnInit(): void {
+    this.post = this.data?.post;
     this.initForm();
-    this.post = data?.post;
-    console.log('this.post', this.post);
 
-    console.log('this.currentUser!', this.currentUser);
 
-    combineLatest({ 
-      clients: this.stateService.clients$,
-      currentUser: this.stateService.currentUser$,
-      addresesIn: this.stateService.addresesIn$,
-      addresesOut: this.stateService.addressesOut$,
-      users: this.stateService.users$
-    })
-    .pipe(takeUntil(this.unsubscribeAll$))
-    .subscribe((res) => {
-      this.clients = res.clients;
-      this.currentUser = res.currentUser;
-      this.addressesIn = res.addresesIn;
-      this.addressesOut = res.addresesOut
-      if (this.currentUser?.id) {
-        this.setValidator();
-      };
-      this.addressesInGroup = this.setAutocompleteAddresses(this.currentUser?.favoriteAddresses, this.addressesIn);
-      this.addressesOutGroup = this.setAutocompleteAddresses(this.currentUser?.favoriteAddresses, this.addressesOut);
-      this.users = res?.users;
-    });
-
-    // this.form = fb.group({
-    //   id: fb.control(''),
-    //   status: fb.control(''),
-    //   title: fb.control(''),
-    //   content: fb.control(''),
-    //   addressFrom: fb.control(''),
-    //   addressTo: fb.control(''),
-    //   warehouse: fb.control(''),
-    //   price: fb.control(''),
-    //   commission: fb.control(''),
-    //   summ: fb.control(''),
-    //   paid: fb.control(''),
-    //   driverId: fb.control(''),
-    //   createdAt: fb.control(''),
-    // });
-
-    this.initUserFormGroup();
-    this.initDriverFormGroup();
 
     this.form.patchValue(this.post);
     if (this.post?.customer) {
@@ -161,14 +124,7 @@ export class PostDialogComponent implements OnInit, OnDestroy {
     };
     if (this.post?.driver) {
       this.setDriverDataFormValue(this.post?.driver);
-    }
-    if (!this.userService.isUserAdmin(this.currentUser)) {
-      console.log(
-        'this.userService.isUserAdmin(this.currentUser)!',
-        this.userService.isUserAdmin(this.currentUser)
-      );
-      // this.form.get('status').disable();
-    }
+    };
     this.form.get('status').valueChanges.subscribe((value) => {
       console.log('value!', value);
     });
@@ -186,13 +142,28 @@ export class PostDialogComponent implements OnInit, OnDestroy {
           this.form.get('cargoCharacterSizeAll').setValue(all);
         }
       });
-  }
-  ngOnDestroy(): void {
-    this.unsubscribeAll$.next(null);
-    this.unsubscribeAll$.complete();
-  }
-
-  ngOnInit(): void {
+      combineLatest({ 
+        clients: this.stateService.clients$,
+        currentUser: this.stateService.currentUser$,
+        addresesIn: this.stateService.addresesIn$,
+        addresesOut: this.stateService.addressesOut$,
+        users: this.stateService.users$
+      })
+      .pipe(takeUntil(this.unsubscribeAll$))
+      .subscribe((res) => {
+        this.clients = res.clients;
+        this.currentUser = res.currentUser;
+        this.addressesIn = res.addresesIn;
+        this.addressesOut = res.addresesOut
+        if (this.currentUser?.id) {
+          this.setValidator();
+        };
+        this.addressesInGroup = this.setAutocompleteAddresses(this.currentUser?.favoriteAddresses, this.addressesIn);
+        this.addressesOutGroup = this.setAutocompleteAddresses(this.currentUser?.favoriteAddresses, this.addressesOut);
+        this.users = res?.users;
+      });
+      this.initUserFormGroup();
+      this.initDriverFormGroup();
     if (this.post?.author?.id) {
       this.userApiService
         .getUserById(this.post?.author?.id)
@@ -204,6 +175,11 @@ export class PostDialogComponent implements OnInit, OnDestroy {
         });
     }
     this.userApiService.getUsers;
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribeAll$.next(null);
+    this.unsubscribeAll$.complete();
   }
 
   initForm() {
@@ -229,7 +205,7 @@ export class PostDialogComponent implements OnInit, OnDestroy {
           Validators.pattern(/^\d{1,3}\*\d{1,3}\*\d{1,3}$/),
         ],
       ],
-      cargoCharacterSizeAll: [0],
+      cargoCharacterSizeAll: this.fb.control(0),
       cargoCharacterWeight: [''],
       isFragile: [false],
       additionalContactFullName: [''],
@@ -273,7 +249,8 @@ export class PostDialogComponent implements OnInit, OnDestroy {
       this.setPriceCalc();
     } else {
       this.validateFormForUser();
-    }
+      this.form.disable();
+    };
   }
 
   setPriceCalc() {

@@ -27,7 +27,7 @@
 }
 
 .mdc-text-field--filled.mdc-text-field--disabled {
-  background-color: rgb(105 105 105 / 86%) !important;
+  background-color: rgb(155 155 155 / 51%) !important
 }
 
 .mat-mdc-raised-button[disabled],
@@ -96,4 +96,8 @@
 
 button.d-button.mat-mdc-raised-button {
   background-color: red !important;
+}
+.mdc-floating-label--required:not(.mdc-floating-label--hide-required-marker)::after {
+  color: red;
+  font-size: 24px;
 }
