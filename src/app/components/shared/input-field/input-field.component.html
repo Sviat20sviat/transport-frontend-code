@@ -2,7 +2,7 @@
   <mat-label>{{label}}</mat-label>
 
   @if(!isTextarea) {
-    <input #input matInput [placeholder]="placeholder" [formControl]="formControl" [matAutocomplete]="auto" [(ngModel)]="model" (input)="filter()">
+    <input #input matInput [placeholder]="placeholder" [formControl]="formControl" [matAutocomplete]="auto" [(ngModel)]="model" (input)="filter()" [maxlength]="maxLength">
   } @else {
     <textarea matInput [placeholder]="placeholder" [formControl]="formControl"></textarea>
   }

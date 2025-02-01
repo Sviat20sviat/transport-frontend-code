@@ -12,7 +12,7 @@
     </button>
 </div>
 
-<div class="content overflow-auto w-full">
+<div class="content overflow-auto w-full" [ngClass]="{'dash-table': isDashboard}">
     <table class="w-full">
         <thead class="table-header">
             <tr class="sam_row px-2">
@@ -103,15 +103,15 @@
                     {{post?.createdAt | date: 'medium'}}
                 </td>
                 <td class="py-3 px-1">
-                    {{post?.addressFrom}}
+                    {{getAddressFrom(post?.addressFromId)}}
                 </td>
                 <td class="py-3 px-1">
-                    {{post?.addressTo}}
+                    {{getAddressTo(post?.addressToId)}}
                 </td>
 
 
                 <td class="py-3 px-1">
-                    <div class="text-container">{{post?.warehouse || '--'}}</div>
+                    <div class="text-container">{{post?.addressTo ? "Нет": "Да"}}</div>
                 </td>
                 <td class="py-3 px-1 text-link" matTooltip="Показать полную информацию по пользователю" (click)="openUserDialog(post?.driver)">
                     <!-- <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold">
@@ -150,13 +150,13 @@
 
                 </td>
                 <td class="py-3 px-1">
-                    <div class="text-container">{{post?.cargoStatus || 0}}</div>
+                    <div class="text-container">{{getCargoStatus(post?.cargoStatus)}}</div>
                 </td>
                 <td class="py-3 px-1">
                     <div class="text-container">{{post?.deliveryDate}}</div>
                 </td>
                 <td class="py-3 px-1">
-                    <div class="text-container">Вид 1</div>
+                    <div class="text-container">{{getDeliveryType(post?.deliveryType)}}</div>
                 </td>
                 <td class="py-3 px-1">
                     <div class="text-container">{{post?.content}}</div>
@@ -165,8 +165,6 @@
                     {{post?.updatedAt | date: 'medium'}}
                 </td>
                 <td class="pr-2 py-3">
-
-
                     <img src="/assets/images/icons/svg/delete_.svg" alt="i" class="cursor-pointer w-6 h-6"
                         (click)="$event.stopPropagation(); deletePost(post)">
                 </td>

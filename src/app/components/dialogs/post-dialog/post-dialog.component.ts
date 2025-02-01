@@ -7,7 +7,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { NgxUiLoaderModule, NgxUiLoaderService } from 'ngx-ui-loader';
 import { DialogsManagerService } from '../../../services/dialogs-manager.service';
 import { StateService } from '../../../services/state.service';
-import { PostsService } from '../../../services/api/posts.service';
+import {
+  CreatePostData,
+  PostsService,
+} from '../../../services/api/posts.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
   FormBuilder,
@@ -29,28 +32,28 @@ import { UserService as UserApiServie } from '../../../services/api/user.service
 import { BehaviorSubject, Subject, combineLatest, takeUntil } from 'rxjs';
 import { PhotoSelectComponent } from '../../shared/photo-select/photo-select.component';
 @Component({
-    selector: 'post-dialog',
-    imports: [
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        UsersComponent,
-        MatFormFieldModule,
-        MatSelectModule,
-        MatButtonModule,
-        NgxUiLoaderModule,
-        InputFieldComponent,
-        MatInputModule,
-        MatIconModule,
-        DatepickerFieldComponent,
-        SelectFieldComponent,
-        MatCheckboxModule,
-        MatExpansionModule,
-        PhotoSelectComponent,
-    ],
-    templateUrl: './post-dialog.component.html',
-    styleUrl: './post-dialog.component.scss',
-    providers: [provideNativeDateAdapter()]
+  selector: 'post-dialog',
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    UsersComponent,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatButtonModule,
+    NgxUiLoaderModule,
+    InputFieldComponent,
+    MatInputModule,
+    MatIconModule,
+    DatepickerFieldComponent,
+    SelectFieldComponent,
+    MatCheckboxModule,
+    MatExpansionModule,
+    PhotoSelectComponent,
+  ],
+  templateUrl: './post-dialog.component.html',
+  styleUrl: './post-dialog.component.scss',
+  providers: [provideNativeDateAdapter()],
 })
 export class PostDialogComponent implements OnInit, OnDestroy {
   unsubscribeAll$: Subject<any> = new Subject();
@@ -88,6 +91,8 @@ export class PostDialogComponent implements OnInit, OnDestroy {
       value: 'ЧП',
     },
   ];
+  deliveryTypes = [];
+  cargoStatuses = [];
   loaderId: string = 'post-dialog';
   clients;
   users;
@@ -97,7 +102,7 @@ export class PostDialogComponent implements OnInit, OnDestroy {
   addressesOut = [];
   addressesInGroup = [];
   addressesOutGroup = [];
-  addAddressToFavorite$: BehaviorSubject<any>
+  addAddressToFavorite$: BehaviorSubject<any>;
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { post },
     public dialogRef: MatDialogRef<PostDialogComponent>,
@@ -109,7 +114,8 @@ export class PostDialogComponent implements OnInit, OnDestroy {
     public userService: UserService,
     private userApiService: UserApiServie
   ) {
-
+    this.deliveryTypes = this.stateService.deliveryTypes;
+    this.cargoStatuses = this.stateService.cargoStatuses;
   }
 
   ngOnInit(): void {
@@ -117,64 +123,79 @@ export class PostDialogComponent implements OnInit, OnDestroy {
     this.initForm();
 
 
-
     this.form.patchValue(this.post);
-    if (this.post?.customer) {
-      this.setUserDataFormValue(this.post?.customer);
-    };
-    if (this.post?.driver) {
-      this.setDriverDataFormValue(this.post?.driver);
-    };
+
     this.form.get('status').valueChanges.subscribe((value) => {
       console.log('value!', value);
     });
-    this.form
-      .get('cargoCharacterSize')
-      .valueChanges.subscribe((value: string) => {
-        if (this.form.get('cargoCharacterSize')?.valid) {
-          console.log('cargoCharacterSize', value);
-          let fd = value.split('*')[0];
-          let sd = value.split('*')[1];
-          let td = value.split('*')[2];
-          console.log('console', fd, sd, td);
-          let all = +fd * +sd * +td;
-          console.log('console', all);
-          this.form.get('cargoCharacterSizeAll').setValue(all);
-        }
-      });
-      combineLatest({ 
-        clients: this.stateService.clients$,
-        currentUser: this.stateService.currentUser$,
-        addresesIn: this.stateService.addresesIn$,
-        addresesOut: this.stateService.addressesOut$,
-        users: this.stateService.users$
-      })
+
+    this.form.get('height').valueChanges.subscribe((value: number) => {
+      this.form.get('cargoCharacterSizeAll').setValue(this.cargoCharacterSizeAllCalc(value, this.form.get('width').value, this.form.get('depth').value));
+    });
+    this.form.get('width').valueChanges.subscribe((value: number) => {
+      this.form.get('cargoCharacterSizeAll').setValue(this.cargoCharacterSizeAllCalc(this.form.get('height').value, value, this.form.get('depth').value));
+    });
+    this.form.get('depth').valueChanges.subscribe((value: number) => {
+      this.form.get('cargoCharacterSizeAll').setValue(this.cargoCharacterSizeAllCalc(this.form.get('height').value, this.form.get('width').value, value));
+    });
+    this.form.get('addressTo').valueChanges.subscribe((value: string) => {
+      if(value?.length) {
+        this.form.get('deliveryType').setValue(DeliveryTypesEnum.CourierDelivery);
+      };
+    });
+    this.form.get('addressFrom').valueChanges.subscribe((value: string) => {
+      if(value?.length) {
+        this.form.get('deliveryType').setValue(DeliveryTypesEnum.CourierDelivery);
+      };
+    });
+    combineLatest({
+      clients: this.stateService.clients$,
+      currentUser: this.stateService.currentUser$,
+      addresesIn: this.stateService.addresesIn$,
+      addresesOut: this.stateService.addressesOut$,
+      users: this.stateService.users$,
+    })
       .pipe(takeUntil(this.unsubscribeAll$))
       .subscribe((res) => {
         this.clients = res.clients;
         this.currentUser = res.currentUser;
+        console.log('this.currentUser',this.currentUser);
         this.addressesIn = res.addresesIn;
-        this.addressesOut = res.addresesOut
+        this.addressesOut = res.addresesOut;
+ 
+        this.addressesInGroup = this.setAutocompleteAddresses(
+          this.currentUser?.favoriteAddresses,
+          this.addressesIn
+        );
+        this.addressesOutGroup = this.setAutocompleteAddresses(
+          this.currentUser?.favoriteAddresses,
+          this.addressesOut
+        );
+        this.users = res?.users;
+
+        if(this.isAdmin() || this.isOperator()) {
+          this.initUserFormGroup();
+          this.initDriverFormGroup();
+          if (this.post?.customer) {
+            this.setUserDataFormValue(this.post?.customer);
+          };
+          if (this.post?.driver) {
+            this.setDriverDataFormValue(this.post?.driver);
+          };
+        };
         if (this.currentUser?.id) {
           this.setValidator();
         };
-        this.addressesInGroup = this.setAutocompleteAddresses(this.currentUser?.favoriteAddresses, this.addressesIn);
-        this.addressesOutGroup = this.setAutocompleteAddresses(this.currentUser?.favoriteAddresses, this.addressesOut);
-        this.users = res?.users;
       });
-      this.initUserFormGroup();
-      this.initDriverFormGroup();
-    if (this.post?.author?.id) {
+    if (this.post?.author?.id && (this.isAdmin() || this.isOperator())) {
       this.userApiService
         .getUserById(this.post?.author?.id)
         .subscribe((res) => {
-          console.log('getUserById', res);
           this.userDataForm.patchValue(res);
           this.userDataForm.disable();
           this.driverDataForm.disable();
         });
     }
-    this.userApiService.getUsers;
   }
 
   ngOnDestroy(): void {
@@ -186,25 +207,24 @@ export class PostDialogComponent implements OnInit, OnDestroy {
     this.form = this.fb.group({
       title: ['', Validators.required],
       content: ['', Validators.required],
-      addressFrom: ['', Validators.required],
-      addressTo: ['', Validators.required],
+
+      addressFrom: [''],
+      addressTo: ['',],
+
+      addressFromId: ['', Validators.required],
+      addressToId: ['', Validators.required],
+
       postNaming: [''],
-      warehouse: ['', Validators.required],
-      cargoStatus: [0, Validators.required],
+      warehouse: [''],
+      cargoStatus: [1],
       deliveryDate: [null],
-      deliveryType: ['', Validators.required],
+      deliveryType: [null, Validators.required],
       trackCode: ['', Validators.required],
-      orderNumber: ['', Validators.required],
+      orderNumber: [''],
       cargoPickupComment: [''],
       cargoCharacter: [''],
       cargoCharacterComment: [''],
-      cargoCharacterSize: [
-        '',
-        [
-          Validators.required,
-          Validators.pattern(/^\d{1,3}\*\d{1,3}\*\d{1,3}$/),
-        ],
-      ],
+      cargoCharacterSize: [''],
       cargoCharacterSizeAll: this.fb.control(0),
       cargoCharacterWeight: [''],
       isFragile: [false],
@@ -217,23 +237,47 @@ export class PostDialogComponent implements OnInit, OnDestroy {
       additionalRecipientComment: [''],
       additionalFloor: [''],
       additionalFriagle: [false],
-      userId: [null], //заказчик
-      customerId: [null, Validators.required], //фактический создатель
+      userId: [null],
+      customerId: [null, Validators.required],
 
       price: [0, Validators.pattern('[0-9]*')],
       commission: [0, Validators.pattern('[0-9]*')],
       summ: [0, Validators.pattern('[0-9]*')],
       paid: [0, Validators.pattern('[0-9]*')],
-      // createdAt: this.fb.control(''),
       status: this.fb.control(''),
       imageUrl: this.fb.control(''),
+
+      height: [
+        null,
+        [
+          Validators.required,
+          Validators.pattern('[0-9]*'),
+          Validators.maxLength(3),
+        ],
+      ],
+      width: [
+        null,
+        [
+          Validators.required,
+          Validators.pattern('[0-9]*'),
+          Validators.maxLength(3),
+        ],
+      ],
+      depth: [
+        null,
+        [
+          Validators.required,
+          Validators.pattern('[0-9]*'),
+          Validators.maxLength(3),
+        ],
+      ],
     });
   }
 
   setValidator() {
     if (
-      this.userService.isUserAdmin(this.currentUser) ||
-      this.userService.isUserOperator(this.currentUser)
+      this.isAdmin() ||
+      this.isOperator()
     ) {
       this.form.get('customerId')?.setValidators(Validators.required);
       this.form
@@ -249,8 +293,10 @@ export class PostDialogComponent implements OnInit, OnDestroy {
       this.setPriceCalc();
     } else {
       this.validateFormForUser();
-      this.form.disable();
-    };
+      setTimeout(() => {
+        this.form.disable();
+      }, 0);
+    }
   }
 
   setPriceCalc() {
@@ -321,9 +367,9 @@ export class PostDialogComponent implements OnInit, OnDestroy {
   }
 
   save() {
-    if(!this.post?.id) {
+    if (!this.post?.id) {
       return;
-    };
+    }
     this.ngxService.startLoader(this.loaderId);
     const value = this.form.value;
     const request = value;
@@ -332,9 +378,12 @@ export class PostDialogComponent implements OnInit, OnDestroy {
       this.ngxService.stopLoader(this.loaderId);
       console.log('setStatus!', res);
       if (res) {
-        this.dialogsManager.openInfoMessageDialog('Успешно!').afterClosed().subscribe(() => {
-          this.dialogRef.close(res);
-        });
+        this.dialogsManager
+          .openInfoMessageDialog('Успешно!')
+          .afterClosed()
+          .subscribe(() => {
+            this.dialogRef.close(res);
+          });
       }
     });
     this.isEdit = false;
@@ -353,6 +402,54 @@ export class PostDialogComponent implements OnInit, OnDestroy {
 
   create() {
     const values = this.form?.value;
+    const createPostData: CreatePostData = {
+      title: values.title,
+      content: values.content,
+
+      addressFrom: values.addressFrom,
+      addressTo: values.addressTo,
+
+      addressFromId: values?.addressFromId,
+      addressToId: values?.addressToId,
+
+      postNaming: values.postNaming,
+      warehouse: values?.warehouse,
+      cargoStatus: values.cargoStatus,
+      deliveryDate: values.deliveryDate,
+      deliveryType: values.deliveryType,
+      trackCode: values.trackCode,
+      orderNumber: values.orderNumber,
+      cargoPickupComment: values.cargoPickupComment,
+      cargoCharacter: values.cargoCharacter,
+      cargoCharacterComment: values.cargoCharacterComment,
+      cargoCharacterSize: values.cargoCharacterSize,
+      cargoCharacterSizeAll: values.cargoCharacterSizeAll || 0,
+      cargoCharacterWeight: values.cargoCharacterWeight,
+      isFragile: values.isFragile || false,
+      additionalContactFullName: values.additionalContactFullName,
+      additionalContactPhone: values.additionalContactPhone,
+      additionalContactPhoneSec: values.additionalContactPhoneSec,
+      additionalComment: values.additionalComment,
+      additionalRecipientFullName: values.additionalRecipientFullName,
+      additionalRecipientPhone: values.additionalRecipientPhone,
+      additionalRecipientComment: values.additionalRecipientComment,
+      additionalFloor: values.additionalFloor,
+      additionalFriagle: values.additionalFriagle || false,
+      userId: values.userId || null,
+      customerId: values.customerId,
+      price: values.price || 0,
+      commission: values.commission || 0,
+      summ: values.summ || 0,
+      paid: values.paid || 0,
+      status: values.status,
+      imageUrl: values.imageUrl,
+
+      height: values.height || 0,
+      width: values.width || 0,
+      depth: values.depth || 0,
+    };
+
+    console.log(createPostData);
     console.log('values', values);
     if (
       !this.userService.isUserAdmin(this.currentUser) &&
@@ -361,23 +458,29 @@ export class PostDialogComponent implements OnInit, OnDestroy {
       values.customerId = this.currentUser.id;
     }
 
-    this.postsService.createPost(values, this.currentUser).subscribe((res) => {
-      console.log('createPost', res);
-      if (!res) {
-        this.dialogsManager.openInfoMessageDialog('ОШИБКА СОДАНИЯ');
-        return;
-      };
-      if (
-        !this.userService.isUserAdmin(this.currentUser) &&
-        !this.userService.isUserOperator(this.currentUser)
-      ) {
-        this.dialogsManager.openInfoMessageDialog('Объявление успешно создано. Вы увидите стоимость услуги и Водитель сможет приступить к заказу после его подтверждения Оператором.');
-      } else {
-        this.dialogsManager.openInfoMessageDialog('Объявление успешно создано');
-      };
+    this.postsService
+      .createPost(createPostData, this.currentUser)
+      .subscribe((res) => {
+        console.log('createPost', res);
+        if (!res) {
+          this.dialogsManager.openInfoMessageDialog('ОШИБКА СОЗДАНИЯ');
+          return;
+        }
+        if (
+          !this.userService.isUserAdmin(this.currentUser) &&
+          !this.userService.isUserOperator(this.currentUser)
+        ) {
+          this.dialogsManager.openInfoMessageDialog(
+            'Объявление успешно создано. Вы увидите стоимость услуги и Водитель сможет приступить к заказу после его подтверждения Оператором.'
+          );
+        } else {
+          this.dialogsManager.openInfoMessageDialog(
+            'Объявление успешно создано'
+          );
+        }
 
-      this.dialogRef.close(res);
-    });
+        this.dialogRef.close(res);
+      });
   }
 
   validateFormForUser() {
@@ -389,73 +492,87 @@ export class PostDialogComponent implements OnInit, OnDestroy {
   }
 
   addAddressToFavorite(address) {
-    console.log('event addAddressToFavorite',event);
-    if(!this.currentUser?.id) {
+    console.log('event addAddressToFavorite', event);
+    if (!this.currentUser?.id) {
       return;
-    };
+    }
     let addresses = [];
-    if(this.currentUser?.favoriteAddresses?.length) {
-      addresses = [...this.currentUser?.favoriteAddresses]
-    };
+    if (this.currentUser?.favoriteAddresses?.length) {
+      addresses = [...this.currentUser?.favoriteAddresses];
+    }
     addresses = [...addresses, address];
-    this.userApiService.setUserFavoriteAddress(this.currentUser?.id, addresses).subscribe(res => {
-      console.log('setUserFavoriteAddress',res);
-      if(!res) {
-        this.dialogsManager.openInfoMessageDialog('Ошибка добавления адреса в избранное');
-        return;
-      };
-      this.currentUser = res;
-      this.dialogsManager.openInfoMessageDialog('Адрес добавлен успешно!');
-      this.addressesInGroup = this.setAutocompleteAddresses(this.currentUser?.favoriteAddresses, this.addressesIn);
-      this.addressesOutGroup = this.setAutocompleteAddresses(this.currentUser?.favoriteAddresses, this.addressesOut);
-    })
+    this.userApiService
+      .setUserFavoriteAddress(this.currentUser?.id, addresses)
+      .subscribe((res) => {
+        console.log('setUserFavoriteAddress', res);
+        if (!res) {
+          this.dialogsManager.openInfoMessageDialog(
+            'Ошибка добавления адреса в избранное'
+          );
+          return;
+        }
+        this.currentUser = res;
+        this.dialogsManager.openInfoMessageDialog('Адрес добавлен успешно!');
+        this.addressesInGroup = this.setAutocompleteAddresses(
+          this.currentUser?.favoriteAddresses,
+          this.addressesIn
+        );
+        this.addressesOutGroup = this.setAutocompleteAddresses(
+          this.currentUser?.favoriteAddresses,
+          this.addressesOut
+        );
+      });
   }
 
-  setAutocompleteAddresses(userFavorites: string[] | null, addresses: string[] | null): any[] {
+  setAutocompleteAddresses(
+    userFavorites: string[] | null,
+    addresses: string[] | null
+  ): any[] {
     const groups = [];
 
-    if(userFavorites?.length) {
+    if (userFavorites?.length) {
       const group = {
         name: 'Избранные Адреса',
-        items: userFavorites.map(item => {
-          return {name: item}
-        })
+        items: userFavorites.map((item) => {
+          return { name: item };
+        }),
       };
       groups.push(group);
-    };
-    if(addresses?.length) {
+    }
+    if (addresses?.length) {
       const group = {
         name: 'Возможные Адреса',
-        items: addresses
+        items: addresses,
       };
       groups.push(group);
-    };
+    }
     return groups;
   }
 
   openUserDialog() {
-    console.log('this.post',this.post);
-    if(!this.post?.customer?.id) {
+    console.log('this.post', this.post);
+    if (!this.post?.customer?.id) {
       return;
-    };
+    }
 
-    const fullUser = this.users.find(user => user.id == this.post.customer.id);
-    if(fullUser) {
+    const fullUser = this.users.find(
+      (user) => user.id == this.post.customer.id
+    );
+    if (fullUser) {
       this.dialogsManager.openUserDialog(fullUser);
-    };
-
+    }
   }
 
   openDriverDialog() {
-    console.log('this.post',this.post);
-    if(!this.post?.driver?.id) {
+    console.log('this.post', this.post);
+    if (!this.post?.driver?.id) {
       return;
-    };
+    }
 
-    const fullUser = this.users.find(user => user.id == this.post.driver.id);
-    if(fullUser) {
+    const fullUser = this.users.find((user) => user.id == this.post.driver.id);
+    if (fullUser) {
       this.dialogsManager.openUserDialog(fullUser);
-    };
+    }
   }
 
   getPostExecutingStatusText(status: number): string {
@@ -478,11 +595,24 @@ export class PostDialogComponent implements OnInit, OnDestroy {
   }
 
   onPhotoLoad(imageUrl: string) {
-    console.log('onPhotoLoad',imageUrl);
-    if(imageUrl && this.post?.imageUrl) {
+    console.log('onPhotoLoad', imageUrl);
+    if (imageUrl && this.post?.imageUrl) {
       this.post.imageUrl = imageUrl;
-    };
+    }
     this.form.get('imageUrl').setValue(imageUrl);
+  }
+
+  cargoCharacterSizeAllCalc(height: number, width: number, depth: number): number {
+    const dimensions = [Number(height), Number(width), Number(depth)];
+    const validNumbers = dimensions.filter(value => typeof value === 'number' && !isNaN(value) && value > 0);
+
+    if (validNumbers.length === 0) {
+      return 0;
+    } else if (validNumbers.length === 1) {
+      return validNumbers[0];
+    } else {
+      return validNumbers.reduce((acc, current) => acc * current, 1);
+    };
   }
 }
 
@@ -493,4 +623,19 @@ export enum PostStatusesEnum {
   Done = 3,
   Rejected = 4,
   SOS = 5,
+}
+
+export enum DeliveryTypesEnum {
+  CourierDelivery = 1,
+  Pickup = 2,
+}
+
+export enum CargoStatusesEnum {
+  WaitCargo = 1,
+  OnTheWayOnOurDelivery = 2,
+  WaitInWarehouse = 3,
+  // WaitInOurWarehouse = 4,
+  ReadyForPickup = 5,
+  Issued = 6,
+  Cancelled = 7,
 }

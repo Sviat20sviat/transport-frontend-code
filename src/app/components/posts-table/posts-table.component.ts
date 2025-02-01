@@ -15,6 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { InputFieldComponent } from '../shared/input-field/input-field.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { StateService } from '../../services/state.service';
+import { CargoStatusesEnum } from '../dialogs/post-dialog/post-dialog.component';
 
 @Component({
     selector: 'posts-table',
@@ -40,11 +41,15 @@ export class PostsTableComponent implements OnInit, OnDestroy {
   @Input() currentUser;
   @Input() isShowTitle: boolean = true;
   @Input() title: string = 'Объявления пользователей';
+  @Input() isDashboard: boolean = false;
   @Output() postsUpdated$ = new EventEmitter<any>();
   unsubscribeAll$: Subject<any> = new Subject();
   loaderId = 'post-table';
   searchControl: FormControl;
   users = [];
+  deliveryTypes = [];
+  addressesTo = [];
+  addressesFrom = [];
 
   constructor(
     private dialogsManager: DialogsManagerService,
@@ -56,11 +61,17 @@ export class PostsTableComponent implements OnInit, OnDestroy {
     this.stateService.users$.pipe(takeUntil(this.unsubscribeAll$)).subscribe((users) => {
       this.users = users;
     });
+    this.deliveryTypes = this.stateService.deliveryTypes;
   }
 
 
   ngOnInit(): void {
-
+    this.stateService.addresesIn$.subscribe((addresses) => {
+      this.addressesTo = addresses;
+    });
+    this.stateService.addressesOut$.subscribe((addresses) => {
+      this.addressesFrom = addresses;
+    });
   }
 
   ngOnDestroy(): void {
@@ -146,5 +157,45 @@ export class PostsTableComponent implements OnInit, OnDestroy {
       });
     };
 
+  }
+
+  
+  getCargoStatus(status: number) {
+    switch (status) {
+      case CargoStatusesEnum.WaitCargo:
+        return 'В Ожидании забора груза';
+        case CargoStatusesEnum.OnTheWayOnOurDelivery:
+        return 'В пути';
+        case CargoStatusesEnum.WaitInWarehouse:
+        return 'Ожидает на Складе';
+        case CargoStatusesEnum.ReadyForPickup:
+        return 'Готово к выдаче';
+        case CargoStatusesEnum.Issued:
+        return 'Выдано';
+        case CargoStatusesEnum.Cancelled:
+        return 'Отменено';
+      default:
+        return 'В пути';
+    }
+  }
+
+  getDeliveryType(id: number) {
+    return this.deliveryTypes.find(dt => dt.id === id)?.name;
+  }
+
+  getAddressTo(id): string {
+    const address = this.addressesTo.find(a => a.id === id);
+    if(address) {
+      return `${address?.name} ${address.address}`;
+    };
+    return '--';
+  }
+
+  getAddressFrom(id): string {
+    const address = this.addressesFrom.find(a => a.id === id);
+    if(address) {
+      return `${address?.name} ${address.address}`;
+    };
+    return '--';
   }
 }

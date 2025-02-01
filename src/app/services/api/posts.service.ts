@@ -25,7 +25,7 @@ export class PostsService {
     return this.http.post(this.server.serverAddress + '/posts/delete', {id: postId});
   }
 
-  createPost(data: any, user) {
+  createPost(data: CreatePostData, user) {
     console.log('createPost!',data,user);
     data.userId = user?.id;
     return this.http.post(this.server.serverAddress + '/posts', data);
@@ -50,4 +50,50 @@ export class PostsService {
   searchPosts(searchText: string): Observable<any> {
     return this.http.post(this.server.serverAddress + '/posts/search', {value: searchText});
   }
+}
+export interface CreatePostData {
+  title: string;
+  content: string;
+
+  addressFrom: string;
+  addressTo: string;
+
+  addressToId: number;
+  addressFromId: number;
+
+  postNaming: string;
+  warehouse: string;
+  cargoStatus: number;
+  deliveryDate: Date | null;
+  deliveryType: string;
+  trackCode: string;
+  orderNumber: string;
+  cargoPickupComment: string;
+  cargoCharacter: string;
+  cargoCharacterComment: string;
+  cargoCharacterSize: string;
+  cargoCharacterSizeAll: number;
+  cargoCharacterWeight: string;
+  isFragile: boolean;
+  additionalContactFullName: string;
+  additionalContactPhone: string;
+  additionalContactPhoneSec: string;
+  additionalComment: string;
+  additionalRecipientFullName: string;
+  additionalRecipientPhone: string;
+  additionalRecipientComment: string;
+  additionalFloor: string;
+  additionalFriagle: boolean;
+  userId: number | null;
+  customerId: number;
+  price: number;
+  commission: number;
+  summ: number;
+  paid: number;
+  status: string;
+  imageUrl: string;
+
+  height: number;
+  width: number;
+  depth: number;
 }

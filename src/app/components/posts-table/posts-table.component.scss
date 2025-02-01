@@ -1,0 +1,10 @@
+:host::ng-deep {
+  .dash-table {
+    max-height: calc(100vh - 152px);
+    th {
+      position: sticky !important;
+      top: 0 !important;
+      background-color: #00774f !important;
+    }
+  }
+}

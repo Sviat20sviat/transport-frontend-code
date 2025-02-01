@@ -176,9 +176,9 @@
                 Поиск
             </button>
         </div>
-
-        <posts-table [currentUser]="currentUser" [posts]="allPosts" [title]="''"
-            (postsUpdated$)="onPostUpdate($event)"></posts-table>
+        <div class="flex">
+            <posts-table [currentUser]="currentUser" [posts]="allPosts" [title]="''" (postsUpdated$)="onPostUpdate($event)" [isDashboard]="true"></posts-table>
+        </div>
     </ng-template>
     <ng-template #usersDashboard>
         <div class="flex flex-row justify-between mb-2 user flex-wrap">
@@ -209,21 +209,25 @@
             <div class="post-card-container">
                 @for (post of userPosts; track $index) {
                 <div class="post-card-item cursor-pointer" (click)="openPostDialog(post)">
-                    
+                    <div class="flex justify-between mb-2">
+                        <span class="post-card-title">Наименование:</span>
+                        <span>{{post?.title}}</span>
+                    </div>
                     <div class="flex justify-between mb-2">
                         <span class="post-card-title">Номер:</span>
                         <span>{{post?.id}}</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="post-card-title">Автор:</span>
+                        <span class="post-card-title">Заказчик:</span>
                         <span>{{post?.customer?.firstName + ' ' + post?.customer?.lastName}} </span>
                     </div>
-                    @if(post?.customer?.id !== post?.author?.id) {
+                    
                     <div class="flex justify-between">
-                        <span class="post-card-title">Заказчик:</span>
-                        <span>{{post?.author?.firstName + ' ' + post?.author?.lastName}} </span>
+                        <span class="post-card-title">Автор:</span>
+                        <span>
+                            {{post?.author?.firstName + ' ' + post?.author?.lastName}} 
+                        </span>
                     </div>
-                    }
     
                     <div class="flex justify-between">
                         <span class="post-card-title">Создано:</span>
@@ -239,7 +243,7 @@
                     </div>
                     <div class="flex justify-between">
                         <span class="post-card-title">Описание:</span>
-                        <span>{{post?.content}}</span>
+                        <span class="single-line-text">{{post?.content}}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="post-card-title">Статус:</span>
@@ -300,7 +304,7 @@
                 </div>
                 <div class="flex justify-between">
                     <span class="post-card-title">Описание:</span>
-                    <span>{{post?.content}}</span>
+                    <span class="single-line-text">{{post?.content}}</span>
                 </div>
                 <div class="flex justify-between">
                     <span class="post-card-title">Статус:</span>

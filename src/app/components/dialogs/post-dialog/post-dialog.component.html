@@ -11,20 +11,23 @@
             }
 
         </div>
-        @if(post?.id) {
         <div class="flex">
-            <div class="inline-flex font-medium justify-end mr-4">Создано</div>
-            <div class="flex">{{post?.createdAt | date: 'medium'}}</div>
+            @if(post?.id) {
+            <div class="flex">
+                <div class="inline-flex font-medium justify-end mr-4">Создано</div>
+                <div class="flex">{{post?.createdAt | date: 'medium'}}</div>
+            </div>
+            }
+            <div class="flex close-dialog-button" (click)="dialogRef.close()">X</div>
         </div>
-        }
-        <div class="flex close-dialog-button" (click)="dialogRef.close()">X</div>
+
 
     </div>
 
-    <div class="flex flex-col m-3 post-dialog-container h-[90vh] justify-between">
+    <div class="flex flex-col p-3 post-dialog-container h-[90vh] justify-between">
         <div class="flex flex-col h-full overflow-auto p-3 post-wrap-item">
             <div class="flex flex-row justify-between gap-3 flex-wrap">
-                @if(post?.id && (userService.isUserAdmin(this.currentUser) || userService.isUserOperator(this.currentUser))) {
+                @if(post?.id && (isAdmin() || isOperator())) {
                 <div class="flex flex-col justify-center mb-3 max-w-full w-full col-items-1">
                     <div class="text-lg flex items-center justify-center mb-3">
                         Данные по Заказчику
@@ -53,12 +56,12 @@
                     <div class="col-items-1 flex justify-center">
                         <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold"
                             (click)="openUserDialog()">
-                            Открыть полную Информацию по клиенту
+                            Открыть полную Информацию по Заказчику
                         </button>
                     </div>
                 </div>
                 }
-                @if(post?.driver?.id && (userService.isUserAdmin(this.currentUser) || userService.isUserOperator(this.currentUser))) {
+                @if(post?.driver?.id && (isAdmin() || isOperator())) {
                 <div class="flex flex-col justify-center mb-3 max-w-full w-full col-items-1">
                     <div class="text-lg flex items-center justify-center mb-3">
                         Данные по Водителю
@@ -87,7 +90,7 @@
                     <div class="col-items-1 flex justify-center">
                         <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold"
                             (click)="openDriverDialog()">
-                            Открыть полную Информацию по клиенту
+                            Открыть полную Информацию по Водителю
                         </button>
                     </div>
                 </div>
@@ -104,17 +107,25 @@
                         <custom-input-field [label]="'Наименование'" formControlName="title"></custom-input-field>
                     </div>
                     <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                        <custom-input-field [label]="'Описание'" formControlName="content"></custom-input-field>
+                        <custom-input-field [label]="'Описание товара'" formControlName="content"></custom-input-field>
                     </div>
                     <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                        <custom-input-field [label]="'Адрес, откуда'" formControlName="addressFrom"
+
+                        <select-field [label]="'Адрес, откуда'" [options]="addressesOut"
+                            formControlName="addressFromId"></select-field>
+
+                        <!-- <custom-input-field [label]="'Адрес, откуда'" formControlName="addressFrom"
                             [matAutoCompleteOptions]="addressesOutGroup" [isAddToFavorite]="true"
-                            (addAddressToFavorite)="addAddressToFavorite($event)"></custom-input-field>
+                            (addAddressToFavorite)="addAddressToFavorite($event)"></custom-input-field> -->
                     </div>
                     <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                        <custom-input-field [label]="'Адрес, куда'" formControlName="addressTo"
+                        <select-field [label]="'Адрес, куда'" [options]="addressesIn"
+                            formControlName="addressToId"></select-field>
+
+                        <!-- <custom-input-field [label]="'Адрес, куда'" formControlName="addressTo"
                             [matAutoCompleteOptions]="addressesInGroup" [isAddToFavorite]="true"
-                            (addAddressToFavorite)="addAddressToFavorite($event)"></custom-input-field>
+                            (addAddressToFavorite)="addAddressToFavorite($event)">
+                        </custom-input-field> -->
                     </div>
                     @if(userService.isUserAdmin(this.currentUser) || userService.isUserOperator(this.currentUser)) {
                     <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
@@ -135,13 +146,15 @@
                         <datepicker-field formControlName="createdAt" [label]="'Дата создания'"></datepicker-field>
                     </div> -->
 
-                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                    <!-- <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
                         <custom-input-field [label]="'На Склад (если на склад)'"
                             formControlName="warehouse"></custom-input-field>
-                    </div>
+                    </div> -->
                     <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                        <custom-input-field [label]="'Вид доставки'"
-                            formControlName="deliveryType"></custom-input-field>
+                        <!-- <custom-input-field [label]="'Вид доставки'"
+                            formControlName="deliveryType"></custom-input-field> -->
+                        <select-field [label]="'Вид доставки'" [options]="deliveryTypes"
+                            formControlName="deliveryType"></select-field>
                     </div>
                     @if (userService.isUserAdmin(this.currentUser)) {
                     <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
@@ -153,66 +166,83 @@
                         <select-field [label]="'Статус Заказа'" [options]="statuses" [nameKey]="'value'"
                             formControlName="status"></select-field>
                     </div>
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <select-field [label]="'Статус Груза'" [options]="cargoStatuses"
+                            formControlName="cargoStatus"></select-field>
+                    </div>
                     }
 
                     }
-                    <div class="flex flex-col justify-between mb-3 max-w-[100%] col-items-1">
-                        @if(!post?.imageUrl) {
-                            <div class="text-center">Загрузите изображение (штрих-код заказа, номер заказа на сайте или фото груза)</div>
-                        } @else {
-                            <div class="text-center">Изображение - уточнение по заказу</div> 
-                        }
-                        <photo-select (selectedFileChange)="onPhotoLoad($event)" [inputImageUrl]="post?.imageUrl"></photo-select>
-                    </div>
 
                     <div class="flex flex-col justify-center mb-3 max-w-full w-full col-items-1">
                         <div class="text-lg flex items-center justify-center mb-3">
                             Данные по забору груза
                         </div>
                     </div>
-                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                        <custom-input-field [label]="'Трек-номер, штрихкод, номер посылки'" [isTextarea]="true"
-                            formControlName="trackCode"></custom-input-field>
+                    <div class="flex flex-col justify-between mb-3 max-w-[100%] col-items-1">
+                        <custom-input-field [label]="'Трек-номер, штрихкод, номер посылки, номер заказа'"
+                            [isTextarea]="true" formControlName="trackCode"></custom-input-field>
                     </div>
-                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                    <div class="flex flex-col justify-between mb-3 max-w-[100%] col-items-1">
+                        @if(!post?.imageUrl) {
+                        <div class="text-center">Загрузите изображение (штрих-код заказа, номер заказа на сайте или фото
+                            груза)</div>
+                        } @else {
+                        <div class="text-center">Изображение - уточнение по заказу</div>
+                        }
+                        <photo-select (selectedFileChange)="onPhotoLoad($event)"
+                            [inputImageUrl]="post?.imageUrl"></photo-select>
+                    </div>
+                    <!-- <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
                         <custom-input-field [label]="'Номер заказа'" [isTextarea]="true"
                             formControlName="orderNumber"></custom-input-field>
-                    </div>
-                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                        <custom-input-field [label]="'Комментарий'" [isTextarea]="true"
+                    </div> -->
+                    <div class="flex flex-col justify-between mb-3 max-w-[100%] col-items-1">
+                        <custom-input-field [label]="'Комментарий К Заказу'" [isTextarea]="true"
                             formControlName="cargoPickupComment"></custom-input-field>
                     </div>
-                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                        <datepicker-field formControlName="deliveryDate"
-                            [label]="'Дата Планирумой Доставки'"></datepicker-field>
-                    </div>
+                    @if(post?.id) {
+                        <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                            <datepicker-field formControlName="deliveryDate"
+                                [label]="'Дата Планирумой Доставки'"></datepicker-field>
+                        </div>
+                    }
                     <div class="flex flex-col justify-center mb-3 max-w-full w-full col-items-1">
                         <div class="text-lg flex items-center justify-center mb-3">
                             Данные по Характеру груза
                         </div>
                     </div>
                     <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                        <custom-input-field [label]="'Характер груза'" [isTextarea]="true"
-                            formControlName="cargoCharacter"></custom-input-field>
+                        <custom-input-field [label]="'Что везем?'" [isTextarea]="true" formControlName="cargoCharacter">
+                        </custom-input-field>
                     </div>
                     <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                        <custom-input-field [label]="'Комментарий'" [isTextarea]="true"
+                        <custom-input-field [label]="'Комментарий к характеру груза'" [isTextarea]="true"
                             formControlName="cargoCharacterComment"></custom-input-field>
                     </div>
-                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                        <custom-input-field [label]="'Размер, В*Ш*Г, см'"
-                            formControlName="cargoCharacterSize"></custom-input-field>
+                    <div class="flex flex-col justify-between mb-3 max-w-[49%] col-items-2">
+                        <span class="text-center mb-2">Габариты, см</span>
+                        <div class="flex justify-between">
+                            <custom-input-field class="w-[30%]" [label]="'Высота'" formControlName="height"
+                                [maxLength]="3"></custom-input-field>
+                            <custom-input-field class="w-[30%]" [label]="'Ширина'" formControlName="width"
+                                [maxLength]="3"></custom-input-field>
+                            <custom-input-field class="w-[30%]" [label]="'Глубина'" formControlName="depth"
+                                [maxLength]="3"></custom-input-field>
+                        </div>
+
                     </div>
                     <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                        <div class="flex w-full h-full items-center">Совокупный размер: {{form.get('cargoCharacterSizeAll').value}} см3</div>
-                    </div>
-                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                        <mat-checkbox formControlName="isFragile"
-                            class="example-ripple-checkbox">Жидкий/хрупкий</mat-checkbox>
+                        <div class="flex w-full h-full items-center">Совокупный размер: <span
+                                class="font-medium mx-1">{{form.get('cargoCharacterSizeAll').value}}</span> см3</div>
                     </div>
                     <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
                         <custom-input-field [label]="'Вес, в кг'"
                             formControlName="cargoCharacterWeight"></custom-input-field>
+                    </div>
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <mat-checkbox formControlName="isFragile"
+                            class="example-ripple-checkbox">Жидкий/хрупкий</mat-checkbox>
                     </div>
                     <div class="flex flex-col justify-center mb-3 max-w-full w-full col-items-1">
                         <mat-accordion class="example-headers-align" multi>
@@ -225,7 +255,7 @@
                                 </div>
                                 <div class="flex flex-row justify-between gap-3 flex-wrap col-items-1">
                                     <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                                        <custom-input-field [label]="'ФИО контакта на адресе'"
+                                        <custom-input-field [label]="'ФИО получателя'"
                                             formControlName="additionalContactFullName"></custom-input-field>
                                     </div>
                                     <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
@@ -245,7 +275,8 @@
                             </mat-expansion-panel>
                             <mat-expansion-panel>
                                 <mat-expansion-panel-header>
-                                    <mat-panel-title> Дополнительная информация </mat-panel-title>
+                                    <mat-panel-title> Дополнительная информация / Дополнительные услуги
+                                    </mat-panel-title>
                                 </mat-expansion-panel-header>
                                 <div class="text-lg flex items-center justify-center mb-3">
                                     Данные по Получателю
@@ -277,6 +308,18 @@
                                         <mat-checkbox formControlName="additionalFriagle"
                                             class="example-ripple-checkbox">Жидкий/хрупкий</mat-checkbox>
                                     </div>
+                                    <div class="flex flex-col justify-between mb-3 max-w-[100%] col-items-1">
+                                        <custom-input-field [label]="'Доставка С Адреса:'" formControlName="addressFrom"
+                                            [matAutoCompleteOptions]="addressesInGroup" [isAddToFavorite]="true"
+                                            (addAddressToFavorite)="addAddressToFavorite($event)">
+                                        </custom-input-field>
+                                    </div>
+                                    <div class="flex flex-col justify-between mb-3 max-w-[100%] col-items-1">
+                                        <custom-input-field [label]="'Доставка На Адрес:'" formControlName="addressTo"
+                                            [matAutoCompleteOptions]="addressesInGroup" [isAddToFavorite]="true"
+                                            (addAddressToFavorite)="addAddressToFavorite($event)">
+                                        </custom-input-field>
+                                    </div>
                                 </div>
 
                             </mat-expansion-panel>
@@ -294,7 +337,7 @@
         </div>
         <div class="flex justify-center flex-col">
             @if(!form?.valid) {
-                <div class="text-red-600 my-2 text-center">*Внимание! Не все обязательные поля заполенены!*</div>
+            <div class="text-red-600 my-2 text-center">*Внимание! Не все обязательные поля заполенены!*</div>
             }
             @if(userService.isUserUser(this.currentUser)) {
             <div class="flex flex-row text-xl font-bold text-green-700 justify-center">

@@ -14,6 +14,7 @@ import { RolesService } from './api/roles.service';
 import { AddressesService } from './api/addresses.service';
 import { AddressTypes } from '../components/address-out/address-out.component';
 import { EventNameEnum, WebSocketService } from './api/socket/web-socket.service';
+import { CargoStatusesEnum, DeliveryTypesEnum } from '../components/dialogs/post-dialog/post-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -44,6 +45,48 @@ export class StateService implements OnDestroy {
   currentUser$: BehaviorSubject<any> = new BehaviorSubject(null);
 
   postsUpdatesSignal = new Subject<any>();
+
+  deliveryTypes = [
+    {
+      id: DeliveryTypesEnum.Pickup,
+      name: 'Самовывоз из офиса или пункта выдачи заказов (ПВЗ).',
+    },
+    {
+      id: DeliveryTypesEnum.CourierDelivery,
+      name: 'Курьерская доставка',
+    },
+  ];
+
+  cargoStatuses = [
+    {
+      id: CargoStatusesEnum.WaitCargo,
+      name: 'В Ожидании забора груза',
+    },
+    // {
+    //   id: CargoStatusesEnum.WaitInOurWarehouse,
+    //   name: 'В Ожидании забора груза',
+    // },
+    {
+      id: CargoStatusesEnum.OnTheWayOnOurDelivery,
+      name: 'В пути',
+    },
+    {
+      id: CargoStatusesEnum.WaitInWarehouse,
+      name: 'Ожидает на Складе ',
+    },
+    {
+      id: CargoStatusesEnum.ReadyForPickup,
+      name: 'Готово к выдаче',
+    },
+    {
+      id: CargoStatusesEnum.Issued,
+      name: 'Выдано',
+    },
+    {
+      id: CargoStatusesEnum.Cancelled,
+      name: 'Отменено',
+    },
+  ];
 
   constructor(
     private usersSerive: UserService,
@@ -144,7 +187,7 @@ export class StateService implements OnDestroy {
     this.addressesService
       .getFilteredAddress({ addressType: AddressTypes.OutAddress })
       .subscribe((res: any) => {
-        console.log('console', res);
+        console.log('loadAddresesOut', res);
         this.addressesOutSubject.next(res);
       });
   }

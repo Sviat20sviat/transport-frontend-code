@@ -212,7 +212,7 @@ body {
     padding: 20px;
     border-radius: 8px;
     border: 1px solid #9c9c9c;
-    flex: 0 1 22%;
+    flex: 1 1 22%;
     .flex {
       margin-bottom: 8px;
       flex-direction: column;
@@ -228,6 +228,13 @@ body {
 .close-dialog-button {
   font-size: 22px;
   cursor: pointer;
+  margin-left: 8px;
+}
+
+.single-line-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 @media (max-width: 736px) {

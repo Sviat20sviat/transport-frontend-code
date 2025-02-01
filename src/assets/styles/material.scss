@@ -101,3 +101,24 @@ button.d-button.mat-mdc-raised-button {
   color: red;
   font-size: 24px;
 }
+
+.mdc-text-field--filled.mdc-text-field--disabled .mdc-text-field__input {
+  color: rgb(0 0 0) !important;
+}
+div.mat-mdc-menu-panel {
+  background-color: #ffffff !important;
+  max-width: fit-content !important;
+}
+div.mat-mdc-select-panel {
+  background-color: #ffffff !important;
+}
+.mat-mdc-option {
+  color: #000 !important;
+}
+
+.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled):not(.mat-mdc-option-multiple) {
+  background-color: #00774f !important;
+}
+div.mat-mdc-autocomplete-panel {
+  background-color: #fff !important;
+}

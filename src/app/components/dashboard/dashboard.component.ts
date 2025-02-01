@@ -27,7 +27,7 @@ import {
 import { ProfileDetailsComponent } from '../profile-details/profile-details.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { PostsTableComponent } from '../posts-table/posts-table.component';
-import { PostStatusesEnum } from '../dialogs/post-dialog/post-dialog.component';
+import { CargoStatusesEnum, PostStatusesEnum } from '../dialogs/post-dialog/post-dialog.component';
 import { DriverInfoComponent } from '../driver-info/driver-info.component';
 import { MatInputModule } from '@angular/material/input';
 import {
@@ -45,6 +45,8 @@ import { AddressOutComponent } from '../address-out/address-out.component';
 import { MutualSettlementsComponent } from '../mutual-settlements/mutual-settlements.component';
 import { InputFieldComponent } from '../shared/input-field/input-field.component';
 import { ContactsComponent } from '../contacts/contacts.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { SelectFieldComponent } from '../shared/select-field/select-field.component';
 // declare var ymaps:any;
 
 @Component({
@@ -72,6 +74,8 @@ import { ContactsComponent } from '../contacts/contacts.component';
     MutualSettlementsComponent,
     InputFieldComponent,
     ContactsComponent,
+    MatMenuModule,
+    // SelectFieldComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -500,6 +504,25 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   showContacts() {
     this.selectedTab = TabsEnum.Contacts;
     localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
+  }
+
+  getCargoStatus(status: number) {
+    switch (status) {
+      case CargoStatusesEnum.WaitCargo:
+        return 'В Ожидании забора груза';
+        case CargoStatusesEnum.OnTheWayOnOurDelivery:
+        return 'В пути';
+        case CargoStatusesEnum.WaitInWarehouse:
+        return 'Ожидает на Складе';
+        case CargoStatusesEnum.ReadyForPickup:
+        return 'Готово к выдаче';
+        case CargoStatusesEnum.Issued:
+        return 'Выдано';
+        case CargoStatusesEnum.Cancelled:
+        return 'Отменено';
+      default:
+        return 'В пути';
+    }
   }
 }
 

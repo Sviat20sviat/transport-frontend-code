@@ -37,7 +37,7 @@ export class AddressInComponent {
   }
 
   createAddress() {
-    this.dialogsManager.openAddressDialog(null, AddressTypes.OutAddress);
+    this.dialogsManager.openAddressDialog(null, AddressTypes.InAddress);
   }
 
   openAddressDialog(address) {

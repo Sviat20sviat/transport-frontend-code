@@ -105,7 +105,7 @@
 
                     </div>
                     <div class="flex overflow-auto max-h-[800px]">
-                        <div class="post-card-container driver-post-card-container">
+                        <div class="post-card-container driver-post-card-container w-full">
                             @for (post of posts; track $index) {
                             <div class="post-card-item cursor-pointer" (click)="openPostDialog(post)">
                                 <div class="flex justify-between mb-2">
@@ -113,15 +113,15 @@
                                     <span>{{post?.id}}</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="post-card-title">Автор:</span>
+                                    <span class="post-card-title">Заказчик:</span>
                                     <span>{{post?.customer?.firstName + ' ' + post?.customer?.lastName}} </span>
                                 </div>
-                                @if(post?.customer?.id !== post?.author?.id) {
+                                <!-- @if(post?.customer?.id !== post?.author?.id) { -->
                                 <div class="flex justify-between">
-                                    <span class="post-card-title">Заказчик:</span>
+                                    <span class="post-card-title">Автор:</span>
                                     <span>{{post?.author?.firstName + ' ' + post?.author?.lastName}} </span>
                                 </div>
-                                }
+                                <!-- } -->
                         
                                 <div class="flex justify-between">
                                     <span class="post-card-title">Создано:</span>

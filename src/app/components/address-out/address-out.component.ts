@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { NgxUiLoaderModule } from 'ngx-ui-loader';
 import { DialogsManagerService } from '../../services/dialogs-manager.service';
 import { AddressesService } from '../../services/api/addresses.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
     selector: 'address-out',
@@ -18,7 +19,8 @@ import { AddressesService } from '../../services/api/addresses.service';
         MatSelectModule,
         MatButtonModule,
         NgxUiLoaderModule,
-        MatInputModule, FormsModule, MatButtonModule, MatIconModule
+        MatInputModule, FormsModule, MatButtonModule, MatIconModule,
+        MatTooltipModule
     ],
     templateUrl: './address-out.component.html',
     styleUrl: './address-out.component.scss'

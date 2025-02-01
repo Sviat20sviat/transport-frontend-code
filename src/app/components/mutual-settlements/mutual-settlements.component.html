@@ -11,47 +11,23 @@
 
 <div class="content overflow-auto w-full">
     <div class="flex flex-col w-full mt-2 tab-group">
-        <div class="flex">
-            <div class="flex mr-8">
-                <div class="tab-group-header flex mb-2">
-                    <div class="flex tab-group-header-item cursor-pointer p-3" [ngClass]="{'selected-tab': selectedTabIndex == 1}" (click)="selectTab(1)">Пользователи </div>
-                    <div class="flex tab-group-header-item cursor-pointer p-3" [ngClass]="{'selected-tab': selectedTabIndex == 2}" (click)="selectTab(2)">Водители</div>
-                    <div class="flex tab-group-header-item cursor-pointer p-3" [ngClass]="{'selected-tab': selectedTabIndex == 3}" (click)="selectTab(3)">Персонал</div>
-        
-                </div>
-                <div class="flex w-[400px] date-range-input ml-8">
-                    <mat-form-field class="w-full" (click)="picker.open()">
-                        <mat-label>Выберите даты</mat-label>
-                        <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
-                          <input matStartDate formControlName="fromTime" placeholder="Начало Периода">
-                          <input matEndDate formControlName="toTime" placeholder="Конец Периода">
-                        </mat-date-range-input>
-                        <!-- <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint> -->
-                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                        <mat-date-range-picker #picker></mat-date-range-picker>
-                      
-                        @if (range.controls['fromTime'].hasError('matStartDateInvalid')) {
-                          <mat-error>Invalid start date</mat-error>
-                        }
-                        @if (range.controls['toTime'].hasError('matEndDateInvalid')) {
-                          <mat-error>Invalid end date</mat-error>
-                        }
-                    </mat-form-field>
-                </div>
-                <div class="flex">
-                    <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold" (click)="createSettlement()">
-                        Сформировать
-                    </button>
-                </div>
-                  
-                  <!-- <p>Selected range: {{range.value | json}}</p> -->
+        <div class="flex justify-between">
+            <div class="tab-group-header flex mb-2">
+                <div class="flex tab-group-header-item cursor-pointer p-3" [ngClass]="{'selected-tab': selectedTabIndex == 1}" (click)="selectTab(1)">Пользователи </div>
+                <div class="flex tab-group-header-item cursor-pointer p-3" [ngClass]="{'selected-tab': selectedTabIndex == 2}" (click)="selectTab(2)">Водители</div>
+                <div class="flex tab-group-header-item cursor-pointer p-3" [ngClass]="{'selected-tab': selectedTabIndex == 3}" (click)="selectTab(3)">Персонал</div>
+            </div>
+            <div class="flex mt-1.5 mr-5">
+                <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold" [matMenuTriggerFor]="filterMenu">
+                    Фильтр
+                </button>
             </div>
         </div>
 
-        <div class="flex overflow-auto max-h-[800px]">
+        <div class="flex overflow-auto max-h-[800px] mutual-table">
             <table class="w-full">
                 <thead class="table-header">
-                    <tr class="sam_row px-2">
+                    <tr class="first-row px-2">
                         <th class="py-3 px-1">
                             <span class="font-medium text-white pl-2"></span>
                         </th>
@@ -74,7 +50,7 @@
                             <span class="font-medium text-white">Конечное сальдо</span>
                         </th>
                     </tr>
-                    <tr>
+                    <tr class="second-row">
                         <th class="py-3 px-1">
                             <span class="font-medium text-white">№</span>
                         </th>
@@ -116,10 +92,10 @@
                         <td class="pl-2 py-3">
                             {{settlement.document?.createdAt | date: 'medium'}}
                         </td>
-                        <td class="py-3 px-1 text-link" (click)="$event.stopPropagation();openDocument()" matTooltip="Полная информация по Документу">
+                        <td class="py-3 px-1 text-link" (click)="$event.stopPropagation();openDocument(settlement?.document?.id)" matTooltip="Полная информация по Документу">
                             Документ№ {{settlement?.document?.id}}
                         </td>
-                        <td class="py-3 px-1 text-link" (click)="$event.stopPropagation();openUser()" matTooltip="Полная информация по Пользователю">
+                        <td class="py-3 px-1 text-link" (click)="$event.stopPropagation();openUser(settlement?.user?.id)" matTooltip="Полная информация по Пользователю">
                             {{settlement?.user?.email}}
                         </td>
                         @if (index == 0 || mutualSettlements[index -1]?.user?.documents[0].userBalanseBefore != settlement?.user?.documents[0].userBalanseBefore) {
@@ -219,3 +195,35 @@
 </div>
 <ngx-ui-loader [fgsColor]="'#ffffff'" [loaderId]="loaderId" [fgsType]="'three-bounce'"></ngx-ui-loader>
 
+<mat-menu #filterMenu="matMenu">
+    <div class="flex flex-col px-2">
+        <div class="flex justify-end font-medium text-lg underline my-3 cursor-pointer" (click)="$event.stopPropagation();clearFilter()">
+            Очистить
+        </div>
+        <select-field [label]="'Пользователь'" [options]="usersUsers"formControlName="docType" (click)="$event.stopPropagation()" [nameKey]="'email'"></select-field>
+        <div class="flex w-[288px] date-range-input">
+            <mat-form-field class="w-full" (click)="picker.open();$event.stopPropagation()">
+                <mat-label>Выберите даты</mat-label>
+                <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+                  <input matStartDate formControlName="fromTime" placeholder="Начало Периода">
+                  <input matEndDate formControlName="toTime" placeholder="Конец Периода">
+                </mat-date-range-input>
+                <!-- <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint> -->
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+              
+                @if (range.controls['fromTime'].hasError('matStartDateInvalid')) {
+                  <mat-error>Invalid start date</mat-error>
+                }
+                @if (range.controls['toTime'].hasError('matEndDateInvalid')) {
+                  <mat-error>Invalid end date</mat-error>
+                }
+            </mat-form-field>
+        </div>
+        <div class="flex">
+            <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold w-full" (click)="createSettlement();$event.stopPropagation()">
+                Сформировать
+            </button>
+        </div>
+    </div>
+</mat-menu>

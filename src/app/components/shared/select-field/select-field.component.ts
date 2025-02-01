@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Host, Injector, Input, OnInit, Optional, Output, SkipSelf } from '@angular/core';
 import { FormControlDirective, getValueAccessor } from '../../../directives/form-directive';
-import { FormsModule, NG_VALIDATORS, NgControl, ReactiveFormsModule, UntypedFormControl } from '@angular/forms';
+import { FormBuilder, FormControl, FormsModule, NG_VALIDATORS, NgControl, ReactiveFormsModule, UntypedFormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { InputFieldComponent } from '../input-field/input-field.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { debounce, debounceTime, timer } from 'rxjs';
 
 @Component({
     selector: 'select-field',
@@ -41,19 +42,43 @@ export class SelectFieldComponent extends FormControlDirective implements OnInit
   @Input() isDeselectEnabled = false;
   @Input() isMultiple = false;
   @Input() notRequired;
+  @Input() isFilterComponent = true;
   @Output() selectedValueChanged = new EventEmitter<any>();
   formControl: UntypedFormControl;
   copyOptions;
   selectedValues;
   isSelectionChanged = false;
   isRequired = false;
+  filterField: FormControl;
 
   constructor(
     @Optional() @Host() @SkipSelf()
     private injector: Injector,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private fb: FormBuilder,
   ) {
     super();
+    this.filterField = this.fb.control('');
+    this.filterField.valueChanges.pipe(debounceTime(500)).subscribe(value => {
+      if (value) {
+        this.options = this.copyOptions.filter(option => option[this.nameKey].toLowerCase().includes(value.toLowerCase()));
+        if(!this.options?.length && this.formControl?.value) {
+          console.log('this.formControl',this.formControl?.value);
+          const selectedOption = this.copyOptions.find(option => option.id == this.formControl?.value);
+          if(selectedOption) {
+            this.options.push(selectedOption);
+          };
+        };
+        if(!this.options?.length && !this.formControl?.value) {
+          timer(5000).subscribe(() => {
+            this.options = [...this.copyOptions];
+            this.filterField.reset();
+          });
+        };
+      } else {
+        this.options = this.copyOptions;
+      };
+    });
   }
 
   ngAfterViewInit(): void {
@@ -139,5 +164,7 @@ export class SelectFieldComponent extends FormControlDirective implements OnInit
     return false;
   }
 
-  
+  onFilter(value) {
+    console.log('value',value);
+  }
 }

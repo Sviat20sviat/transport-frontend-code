@@ -50,6 +50,9 @@
                 <th class="py-3 px-1">
                     <span class="font-medium text-white">Изменен</span>
                 </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Действия</span>
+                </th>
             </tr>
         </thead>
         <tbody class="table-body">
@@ -96,7 +99,10 @@
                 <td class="py-3 px-1">
                     {{address?.updatedAt | date: 'medium'}}
                 </td>
-
+                <td class="pr-2 py-3">
+                    <img src="/assets/images/icons/svg/delete_.svg" alt="i" class="cursor-pointer w-6 h-6" [matTooltip]="'Удалить'"
+                        (click)="$event.stopPropagation(); ">
+                </td>
             </tr>
             }
         </tbody>
