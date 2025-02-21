@@ -68,7 +68,7 @@ export class DialogsManagerService {
       maxHeight: "98vh",
       width:  "100%",
       maxWidth: "800px",
-      height:  "100%"
+      height:  "auto"
     });
   }
 
@@ -78,7 +78,7 @@ export class DialogsManagerService {
       maxHeight: "98vh",
       width:  "100%",
       maxWidth: "800px",
-      height:  "100%"
+      height:  "auto"
     });
   }
 

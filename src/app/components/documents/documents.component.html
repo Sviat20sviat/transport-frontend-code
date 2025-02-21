@@ -5,11 +5,11 @@
     </div>
     <!-- } -->
 
-    <button mat-raised-button (click)="openDocumentDilaog()" class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold">
+    <button mat-raised-button (click)="openDocumentDialog()" class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold">
         Создать документ
     </button>
 </div>
-<div class="content overflow-auto w-full">
+<div class="content overflow-auto w-full documents-table">
     <table class="w-full">
         <thead class="table-header">
             <tr class="sam_row px-2">
@@ -21,6 +21,9 @@
                 </th>
                 <th class="py-3 px-1">
                     <span class="font-medium text-white">Тип документа</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Статус</span>
                 </th>
                 <th class="py-3 px-1">
                     <span class="font-medium text-white">Сумма</span>
@@ -61,7 +64,7 @@
         </thead>
         <tbody class="table-body">
             @for (document of documents; track document.id; let index = $index) {
-            <tr class="cursor-pointer"  (click)="openDocumentDilaog(document)">
+            <tr class="cursor-pointer"  (click)="openDocumentDialog(document)" [ngClass]="{'bg-orange-300':document.status === 2}">
                 <td class="pl-2 py-3">
                     {{document?.id}}
                 </td>
@@ -70,6 +73,9 @@
                 </td>
                 <td class="py-3 px-1">
                     <div class="text-container">{{ getDocType(document?.docType)}}</div>
+                </td>
+                <td class="py-3 px-1">
+                    <div class="text-container">{{ getDocStatus(document?.status)}}</div>
                 </td>
                 <td class="py-3 px-1">
                     {{document?.sum}}
@@ -85,19 +91,19 @@
 
 
                 <td class="py-3 px-1">
-                    <div class="text-container">Клиент№ {{document?.clientId}}</div>
+                    <div class="text-container" [matTooltip]="'Показать полную информацию по Клиенту'" (click)="$event.stopPropagation(); openUser(document?.clientId)">Клиент№ {{document?.clientId}}</div>
                 </td>
 
                 <td class="py-3 px-1">
-                    <div class="text-container">Оператор№ {{document?.recipientId || '--'}}</div>
+                    <div class="text-container" [matTooltip]="'Показать полную информацию по Оператору'" (click)="$event.stopPropagation(); openUser(document?.recipientId)">Оператор№ {{document?.recipientId || '--'}}</div>
                 </td>
 
                 <td class="py-3 px-1">
-                    <div class="text-container"> {{ document?.postBasisId ? ("Заказ№ " + document?.postBasisId) : '--'}}</div>
+                    <div class="text-container" [matTooltip]="'Показать полную информацию по Заказу'" (click)="$event.stopPropagation(); openPost(document?.postBasisId)"> {{ document?.postBasisId ? ("Заказ№ " + document?.postBasisId) : '--'}}</div>
                 </td>
 
                 <td class="py-3 px-1">
-                    <div class="text-container">{{ document?.documentBasisId ? ('Документ№ ' + document?.documentBasisId) : '--'}}</div>
+                    <div class="text-container" [matTooltip]="'Показать полную информацию по Документу'" (click)="$event.stopPropagation();">{{ document?.documentBasisId ? ('Документ№ ' + document?.documentBasisId) : '--'}}</div>
                 </td>
 
                 <!-- <td class="py-3 px-1">

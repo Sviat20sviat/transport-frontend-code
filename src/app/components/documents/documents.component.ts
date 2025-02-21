@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,6 +11,7 @@ import { DialogsManagerService } from '../../services/dialogs-manager.service';
 import { DocumentsService } from '../../services/api/documents.service';
 import { StateService } from '../../services/state.service';
 import { Subject, finalize, takeUntil } from 'rxjs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
     selector: 'documents',
@@ -24,11 +25,12 @@ import { Subject, finalize, takeUntil } from 'rxjs';
         FormsModule,
         MatButtonModule,
         MatIconModule,
+        MatTooltipModule
     ],
     templateUrl: './documents.component.html',
     styleUrl: './documents.component.scss'
 })
-export class DocumentsComponent implements OnDestroy {
+export class DocumentsComponent implements OnInit, OnDestroy {
   documents = [
     {
       id: 3743,
@@ -44,6 +46,7 @@ export class DocumentsComponent implements OnDestroy {
       sum: 2200,
       updatedAt: 1731261062000,
       isSystem: false,
+      status: 1
     },
   ];
   loaderId = 'document-component';
@@ -56,29 +59,44 @@ export class DocumentsComponent implements OnDestroy {
   ) {
     this.getAllDocuments();
   }
+
+  ngOnInit(): void {
+    this.stateService.documentsUpdatesSignal.pipe(takeUntil(this.unsubscribeAll$)).subscribe((res) => {
+      if (res) {
+        this.getAllDocuments();
+      }
+    });
+  }
+
   ngOnDestroy(): void {
     this.unsubscribeAll$.next(null);
     this.unsubscribeAll$.complete();
   }
 
-  openDocumentDilaog(doc?) {
+  openDocumentDialog(doc?) {
     console.log('openDocumentDilaog');
     this.dialogsManager.openDocumentDialog(doc).afterClosed().subscribe(res => {
       if(res) {
-        this.stateService.loadDocuments();
+        this.getAllDocuments();
       };
     });
   }
 
   getAllDocuments() {
     this.ngxService.startLoader(this.loaderId);
-    this.stateService.documents$.pipe(finalize(() => this.ngxService.stopLoader(this.loaderId)),takeUntil(this.unsubscribeAll$)).subscribe((data) => {
-      console.log('documents', data);
-      this.ngxService.stopLoader(this.loaderId)
-      if (data) {
-        this.documents = data;
+    this.documentsService.getAllDocuments().pipe(finalize(() => this.ngxService.stopLoader(this.loaderId))).subscribe((res) => {
+      if (!res) {
+        return;
       };
-    })
+      this.documents = res;
+    });
+    // this.stateService.documents$.pipe(finalize(() => this.ngxService.stopLoader(this.loaderId)),takeUntil(this.unsubscribeAll$)).subscribe((data) => {
+    //   console.log('documents', data);
+    //   this.ngxService.stopLoader(this.loaderId)
+    //   if (data) {
+    //     this.documents = data;
+    //   };
+    // })
   }
 
   getDocType(index: documentType): string {
@@ -91,6 +109,38 @@ export class DocumentsComponent implements OnDestroy {
       default:
         return '---';
     }
+  }
+
+  getDocStatus(index): string {
+    switch (index) {
+      case 1:
+        return 'Проведен';
+
+      case 2:
+        return 'Отменен';
+      default:
+        return 'Проведен';
+    }
+  }
+
+  openUser(userId) {
+    if(!userId) {
+      return;
+    };
+    this.stateService.users$.pipe(takeUntil(this.unsubscribeAll$)).subscribe((users) => {
+      const user = users.find(user => user.id === userId);
+      this.dialogsManager.openUserDialog(user);
+    });
+  }
+
+  openPost(postId) {
+    if(!postId) {
+      return;
+    };
+    this.stateService.posts$.pipe(takeUntil(this.unsubscribeAll$)).subscribe((posts) => {
+      const post = posts.find(post => post.id === postId);
+      this.dialogsManager.openPostDialog(post);
+    });
   }
 }
 

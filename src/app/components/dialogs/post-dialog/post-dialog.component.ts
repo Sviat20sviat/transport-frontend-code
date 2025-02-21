@@ -250,7 +250,6 @@ export class PostDialogComponent implements OnInit, OnDestroy {
       height: [
         null,
         [
-          Validators.required,
           Validators.pattern('[0-9]*'),
           Validators.maxLength(3),
         ],
@@ -258,7 +257,6 @@ export class PostDialogComponent implements OnInit, OnDestroy {
       width: [
         null,
         [
-          Validators.required,
           Validators.pattern('[0-9]*'),
           Validators.maxLength(3),
         ],
@@ -266,7 +264,6 @@ export class PostDialogComponent implements OnInit, OnDestroy {
       depth: [
         null,
         [
-          Validators.required,
           Validators.pattern('[0-9]*'),
           Validators.maxLength(3),
         ],

@@ -13,7 +13,7 @@ import { DatepickerFieldComponent } from '../../shared/datepicker-field/datepick
 import { SelectFieldComponent } from '../../shared/select-field/select-field.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { AddressesService } from '../../../services/api/addresses.service';
 import { DialogsManagerService } from '../../../services/dialogs-manager.service';
 
@@ -50,7 +50,8 @@ export class AddressDialogComponent {
     private fb: FormBuilder,
     private addressesService: AddressesService,
     private ngxService: NgxUiLoaderService,
-    private dialogsManager: DialogsManagerService
+    private dialogsManager: DialogsManagerService,
+    private dialogRef: MatDialogRef<AddressDialogComponent>,
   ) {
     this.form = this.fb.group({
       organization: ['', Validators.required],
@@ -62,7 +63,7 @@ export class AddressDialogComponent {
       phone: [''],
       addressStatus: ['', Validators.required],
       comment: ['', Validators.required],
-      updatedAt: ['', Validators.required],
+      // updatedAt: ['', Validators.required],
     });
 
     if(data?.address) {
@@ -87,7 +88,10 @@ export class AddressDialogComponent {
     this.ngxService.startLoader(this.loaderId);
     this.addressesService.createAddress(values).subscribe((res) => {
       console.log('createAddress',res);
-      this.dialogsManager.openInfoMessageDialog('УСПЕШНО СОЗДАН НОВЫЙ АДРЕС!')
+      this.dialogsManager.openInfoMessageDialog('УСПЕШНО СОЗДАН НОВЫЙ АДРЕС!').afterClosed().subscribe(() => {
+        this.ngxService.stopLoader(this.loaderId);
+        this.dialogRef.close(res);
+      });
     });
   }
 

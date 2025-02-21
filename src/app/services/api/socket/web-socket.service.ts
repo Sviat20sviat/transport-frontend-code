@@ -35,5 +35,12 @@ export class WebSocketService {
 export enum EventNameEnum {
   OnPostCreate = 'OnPostCreate',
   OnPostUpdate = 'OnPostUpdate',
-  OnPostDelete = 'OnPostDelete'
+  OnPostDelete = 'OnPostDelete',
+  OnDocumentCreate = 'OnDocumentCreate',
+  OnDocumentUpdate = 'OnDocumentUpdate',
+  OnDocumentDelete = 'OnDocumentDelete',
+  OnUserCreate = 'OnUserCreate',
+  OnUserUpdate = 'OnUserUpdate',
+  OnUserDelete = 'OnUserDelete',
+  OnUserBanned = 'OnUserBanned',
 }

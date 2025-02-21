@@ -45,6 +45,7 @@ export class StateService implements OnDestroy {
   currentUser$: BehaviorSubject<any> = new BehaviorSubject(null);
 
   postsUpdatesSignal = new Subject<any>();
+  documentsUpdatesSignal = new Subject<any>();
 
   deliveryTypes = [
     {
@@ -228,6 +229,19 @@ export class StateService implements OnDestroy {
     this.webSocketService.on(EventNameEnum.OnPostCreate).subscribe((data) => {
       console.log('webSocketService =====>>>>',data);
       this.postsUpdatesSignal.next(data);
+    });
+
+    this.webSocketService.on(EventNameEnum.OnDocumentCreate).subscribe((data) => {
+      console.log('webSocketService =====>>>>',data);
+      this.documentsUpdatesSignal.next(data);
+    });
+    this.webSocketService.on(EventNameEnum.OnDocumentUpdate).subscribe((data) => {
+      console.log('webSocketService =====>>>>',data);
+      this.documentsUpdatesSignal.next(data);
+    });
+    this.webSocketService.on(EventNameEnum.OnDocumentDelete).subscribe((data) => {
+      console.log('webSocketService =====>>>>',data);
+      this.documentsUpdatesSignal.next(data);
     });
   }
 }

@@ -29,5 +29,7 @@ export class DocumentsService {
     return this.http.delete(this.server.serverAddress + '/documents/'+ id);
   }
 
-
+  updateDocument(data, id) {
+    return this.http.put(this.server.serverAddress + '/documents/' + id, data);
+  }
 }

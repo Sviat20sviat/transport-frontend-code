@@ -75,23 +75,35 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
         toTime: ['', [Validators.required]],
       }),
     });
+    this.loadData();
+  }
+
+  ngOnInit(): void {
+    this.stateService.documentsUpdatesSignal.pipe(takeUntil(this.unsubscribeAll$)).subscribe((res) => {
+      if (res) {
+        this.loadData();
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribeAll$.next(null);
+    this.unsubscribeAll$.complete();
+  }
+
+  loadData() {
+    this.ngxService.startLoader(this.loaderId);
     combineLatest({
       clients: this.stateService.clients$,
-      documents: this.stateService.documents$,
+      documents: this.documentsService.getAllDocuments(),
     })
       .pipe(takeUntil(this.unsubscribeAll$))
       .subscribe(({ clients, documents }) => {
         this.usersUsers = clients;
         this.documents = documents?.filter((d) => d.userBalanseAfter);
         this.setData();
+        this.ngxService.stopLoader(this.loaderId);
       });
-  }
-
-  ngOnInit(): void {}
-
-  ngOnDestroy(): void {
-    this.unsubscribeAll$.next(null);
-    this.unsubscribeAll$.complete();
   }
 
   createSettlement() {
@@ -108,7 +120,7 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
 
     const createdAt = { fromTime: fromTime, toTime: toTime };
     this.documentsService
-      .getAllDocuments(createdAt)
+      .getAllDocuments()
       .pipe(takeUntil(this.unsubscribeAll$))
       .subscribe({
         next: (res) => {
@@ -145,7 +157,7 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
     let index = 1;
     this.usersUsers = this.usersUsers.map((user) => {
       user.documents = this.documents.filter(
-        (document) => document.clientId == user.id
+        (document) => document.status === 1 && document.clientId == user.id
       );
       user?.documents?.forEach((document) => {
         let settlement = {
@@ -195,5 +207,42 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
     this.filterForm.reset();
     this.range.reset();
     // this.setData();
+  }
+
+  getAfterDebtSaldo(user) {
+    let credit = 0;
+    let debt = 0;
+
+    user?.documents.forEach((document) => {
+      if (document.docType === 1) {
+        credit += (+document.sum);
+      } else {
+        debt += (+document.sum);
+      };
+    });
+
+    return debt - credit;
+
+
+    console.log('getAfterSaldo',user);
+    if(user?.documents[0]?.status === 1) {
+      return user?.documents[0]?.userBalanseAfter;
+
+    } else {
+      console.log('else',);
+      let findDocumentSaldo;
+      for (const document of user?.documents || []) {
+        if (document.status === 1) {
+          findDocumentSaldo = document.userBalanseAfter;
+          console.log('findDocumentSaldo', document, findDocumentSaldo);
+          break;
+        }
+      }
+      if(!findDocumentSaldo) {
+        return 0;
+      } else {
+        return findDocumentSaldo;
+      }
+    };
   }
 }

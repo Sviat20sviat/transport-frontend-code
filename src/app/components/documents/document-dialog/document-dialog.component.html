@@ -62,11 +62,14 @@
                     <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
                         <custom-input-field [label]="'Комментарии'" formControlName="comment" [isTextarea]="true"></custom-input-field>
                     </div>
-                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                        <button mat-raised-button class="d-button h-[52px] w-[200px] text-base  uppercase font-semibold" (click)="deleteDocument()">
-                            Удалить документ
-                        </button>
-                    </div>
+                    @if(document?.id && document?.status == 1) {
+                        <div class="flex flex-col justify-center items-center mb-3 max-w-full col-items-1">
+                            <button mat-raised-button class="d-button h-[52px] w-[200px] text-base  uppercase font-semibold" (click)="cancelDocument()">
+                                Отменить Документ
+                            </button>
+                        </div>
+                    }
+
                 </div>
                 <!-- <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
                     <custom-input-field [label]="'Что везем?'" [isTextarea]="true"

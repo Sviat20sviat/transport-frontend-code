@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject, OnDestroy } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { UsersComponent } from '../../users/users.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -15,7 +15,7 @@ import { SelectFieldComponent } from '../../shared/select-field/select-field.com
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DocumentsService } from '../../../services/api/documents.service';
 import { StateService } from '../../../services/state.service';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, timer } from 'rxjs';
 import { DialogsManagerService } from '../../../services/dialogs-manager.service';
 @Component({
     selector: 'document-dialog',
@@ -37,7 +37,7 @@ import { DialogsManagerService } from '../../../services/dialogs-manager.service
     templateUrl: './document-dialog.component.html',
     styleUrl: './document-dialog.component.scss'
 })
-export class DocumentDialogComponent implements OnDestroy {
+export class DocumentDialogComponent implements OnInit, OnDestroy {
 
   document;
   loaderId = 'document-dialog';
@@ -80,6 +80,15 @@ export class DocumentDialogComponent implements OnDestroy {
     });
     this.form.patchValue(data?.document);
     this.document = data.document;
+
+  }
+  ngOnInit(): void {
+    timer(0).subscribe(() => {
+      if(this.document?.id) {
+        this.form.disable();
+      };
+    });
+
   }
   ngOnDestroy(): void {
     this.unsubscribeAll$.next(null);
@@ -141,5 +150,21 @@ export class DocumentDialogComponent implements OnDestroy {
       };
     });
 
+  }
+
+  cancelDocument() {
+    this.dialogsManager.openInfoMessageDialog("Внимание! Документ пометится как ОТМЕНЕННЫЙ. Вы действительно хотите продолжить?", true).afterClosed().subscribe((confirm) => {
+      if(confirm) {
+        const data = {
+          status: 2,
+        };
+        this.documentsService.updateDocument(data, this.document.id,).subscribe((res) => {
+          console.log('console',res);
+          this.dialogsManager.openInfoMessageDialog("Документ отменен успешно!").afterClosed().subscribe(() => {
+            this.dialogRef.close(true);
+          })
+        });
+      };
+    });
   }
 }

@@ -18,8 +18,11 @@
                 <div class="flex tab-group-header-item cursor-pointer p-3" [ngClass]="{'selected-tab': selectedTabIndex == 3}" (click)="selectTab(3)">Персонал</div>
             </div>
             <div class="flex mt-1.5 mr-5">
-                <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold" [matMenuTriggerFor]="filterMenu">
+                <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold" [matMenuTriggerFor]="filterSettlementMenu">
                     Фильтр
+                </button>
+                <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold ml-3" (click)="createSettlement()">
+                    Сформировать
                 </button>
             </div>
         </div>
@@ -84,7 +87,7 @@
                     </tr>
                 </thead>
                 <tbody class="table-body">
-                    @for (settlement of mutualSettlements; track settlement.id; let index = $index) {
+                    @for (settlement of mutualSettlements; track $index; let index = $index) {
                     <tr class="cursor-pointer" (click)="openSettlementDialog(settlement)">
                         <td class="pl-2 py-3">
                             {{index +1}}
@@ -100,17 +103,17 @@
                         </td>
                         @if (index == 0 || mutualSettlements[index -1]?.user?.documents[0].userBalanseBefore != settlement?.user?.documents[0].userBalanseBefore) {
                             <td class="py-3 px-1 start-saldo text-red-600" [attr.rowspan]="calcUserDataLength(settlement?.user?.id)">
-                                @if(settlement?.user?.documents[0].userBalanseBefore < 0) {
-                                    {{settlement?.user?.documents[0].userBalanseBefore || 0}}
-                                } @else if(settlement?.user?.documents[0].userBalanseBefore >= 0) {
+                                @if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore < 0) {
+                                    {{settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore || 0}}
+                                } @else if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore >= 0) {
                                     0
                                 }
                                 
                             </td>
                             <td class="py-3 px-1 start-saldo text-green-600" [attr.rowspan]="calcUserDataLength(settlement?.user?.id)">
-                                @if(settlement?.user?.documents[0].userBalanseBefore > 0) {
-                                    +{{settlement?.user?.documents[0].userBalanseBefore || 0}}
-                                } @else if(settlement?.user?.documents[0].userBalanseBefore <= 0) {
+                                @if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore > 0) {
+                                    +{{settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore || 0}}
+                                } @else if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore <= 0) {
                                     0
                                 }
                             </td>
@@ -132,17 +135,17 @@
                         </td>
                            @if (index == 0 || mutualSettlements[index -1]?.user?.documents[settlement?.user?.documents?.length -1]?.userBalanseAfter != settlement?.user?.documents[settlement?.user?.documents?.length -1]?.userBalanseAfter) {
                             <td class="py-3 px-1 end-saldo text-red-600" [attr.rowspan]="calcUserDataLength(settlement?.user?.id)">
-                                @if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseAfter < 0) {
-                                    {{settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseAfter || 0}}
-                                } @else if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseAfter >= 0) {
+                                @if(getAfterDebtSaldo(settlement?.user) || getAfterDebtSaldo(settlement?.user) === 0) {
+                                    {{getAfterDebtSaldo(settlement?.user) || 0}}
+                                } @else if(settlement?.user?.documents[0].userBalanseAfter >= 0) {
                                     0
                                 }
                                 
                             </td>
                             <td class="py-3 px-1 end-saldo text-green-600" [attr.rowspan]="calcUserDataLength(settlement?.user?.id)">
-                                @if(settlement?.user?.documents[settlement?.user?.documents?.length -1]?.userBalanseAfter > 0) {
-                                    +{{settlement?.user?.documents[settlement?.user?.documents?.length -1]?.userBalanseAfter || 0}}
-                                } @else if(settlement?.user?.documents[settlement?.user?.documents?.length -1]?.userBalanseAfter <= 0) {
+                                @if(settlement?.user?.documents[0]?.userBalanseAfter > 0) {
+                                    +{{settlement?.user?.documents[0]?.userBalanseAfter || 0}}
+                                } @else if(settlement?.user?.documents[0]?.userBalanseAfter <= 0) {
                                     0
                                 }
                             </td>
@@ -195,20 +198,20 @@
 </div>
 <ngx-ui-loader [fgsColor]="'#ffffff'" [loaderId]="loaderId" [fgsType]="'three-bounce'"></ngx-ui-loader>
 
-<mat-menu #filterMenu="matMenu">
+<mat-menu #filterSettlementMenu="matMenu">
     <div class="flex flex-col px-2">
         <div class="flex justify-end font-medium text-lg underline my-3 cursor-pointer" (click)="$event.stopPropagation();clearFilter()">
             Очистить
         </div>
-        <select-field [label]="'Пользователь'" [options]="usersUsers"formControlName="docType" (click)="$event.stopPropagation()" [nameKey]="'email'"></select-field>
-        <div class="flex w-[288px] date-range-input">
+        <!-- <select-field [label]="'Пользователь'" [options]="usersUsers"formControlName="docType" (click)="$event.stopPropagation()" [nameKey]="'email'"></select-field> -->
+        <!-- <div class="flex w-[288px] date-range-input">
             <mat-form-field class="w-full" (click)="picker.open();$event.stopPropagation()">
                 <mat-label>Выберите даты</mat-label>
                 <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
                   <input matStartDate formControlName="fromTime" placeholder="Начало Периода">
                   <input matEndDate formControlName="toTime" placeholder="Конец Периода">
                 </mat-date-range-input>
-                <!-- <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint> -->
+                <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
                 <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-date-range-picker #picker></mat-date-range-picker>
               
@@ -219,7 +222,7 @@
                   <mat-error>Invalid end date</mat-error>
                 }
             </mat-form-field>
-        </div>
+        </div> -->
         <div class="flex">
             <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold w-full" (click)="createSettlement();$event.stopPropagation()">
                 Сформировать
