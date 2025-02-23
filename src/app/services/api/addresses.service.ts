@@ -21,7 +21,7 @@ export class AddressesService {
     return this.http.post(this.server.serverAddress + '/addresses' + '/create', data);
   }
 
-  getFilteredAddress(data: {organization?: string, name?: string, addressStatus?: string, addressType?: number}) {
+  getFilteredAddress(data: AddressFilterData) {
     return this.http.post(this.server.serverAddress + '/addresses' + '/getFiltered', data);
   }
 
@@ -33,4 +33,19 @@ export class AddressesService {
     return this.http.post(this.server.serverAddress + '/addresses' + '/update' + `/${id}`, data); 
   }
 
+}
+
+export interface AddressFilterData {
+  organization?: string;
+  district?: string;
+  name?: string;
+  address?: string;
+  phone?: string;
+  addressStatusId?: number;
+  addressType?: number;
+  location?: string;
+  createdAt?: {
+    fromTime: number;
+    toTime: number;
+  };
 }

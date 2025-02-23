@@ -13,8 +13,8 @@ export class DocumentsService {
     private http: HttpClient
   ) { }
 
-  getAllDocuments(createdAt?): Observable<any> {
-    return this.http.post(this.server.serverAddress + '/documents/getFiltered', {createdAt});
+  getAllDocuments(data?: {createdAt?, userId?, salesChannel?}): Observable<any> {
+    return this.http.post(this.server.serverAddress + '/documents/getFiltered', data || {});
   }
 
   getDocumentById(id): Observable<any> {

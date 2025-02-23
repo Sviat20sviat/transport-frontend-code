@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
 import { StateService } from './services/state.service';
@@ -9,15 +9,16 @@ import { DialogsManagerService } from './services/dialogs-manager.service';
 import * as moment from 'moment';
 import 'moment/locale/ru';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
-import { filter, interval } from 'rxjs';
+import { Subject, filter, interval, takeUntil } from 'rxjs';
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent {
+export class AppComponent implements OnInit, OnDestroy {
   title = 'transport-frontend';
+  unsubscribeAll$: Subject<any> = new Subject();
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -76,7 +77,25 @@ export class AppComponent {
           this.promptUserForUpdate();
         });
     }
+
   }
+
+  ngOnInit(): void {
+    this.stateService.userBannedSignal$.pipe(takeUntil(this.unsubscribeAll$)).subscribe((user) => {
+      console.log('console',user);
+      console.log('this.stateService.currentUser$.value',this.stateService.currentUser$.value);
+      if(user?.id && user?.id == this.stateService.currentUser$.value?.id) {
+        this.dialogsManager.openInfoMessageDialog('Вы были забанены. Пожалуйста, прекратите пользоваться сервисом. Для подачи аппеляции свяжитесь с Администрацией.');
+        this.authService.logout();
+      };
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribeAll$.next(null);
+    this.unsubscribeAll$.complete();
+  }
+
   private promptUserForUpdate(): void {
     if (confirm('New version available. Would you like to update?')) {
       this.sw.activateUpdate().then(() => {

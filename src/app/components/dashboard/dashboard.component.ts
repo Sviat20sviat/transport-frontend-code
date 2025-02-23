@@ -524,6 +524,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         return 'В пути';
     }
   }
+
+  cancelPostByUser(post) {
+    console.log('cancelPostByUser',post);
+    this.dialogsManager.openInfoMessageDialog("Для отмены вашего объявления, пожалуйста, свяжитесь с Оператором по телефону +7 (000) 123-45-67 или напишите на почту info@example.com.");
+  }
 }
 
 export enum TabsEnum {

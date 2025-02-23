@@ -45,6 +45,47 @@ export class AddressDialogComponent {
   form: FormGroup;
   loaderId = 'address-dialog';
 
+  addressStatuses = [
+    {
+      id: 1,
+      name: 'Активный'
+    },
+    {
+      id: 2,
+      name: 'Неактивный'
+    },
+    {
+      id: 3,
+      name: 'Популярный'
+    },
+    {
+      id: 4,
+      name: 'Непопулярный'
+    },
+    {
+      id: 5,
+      name: 'Новый'
+    },
+    {
+      id: 6,
+      name: 'Временный'
+    },
+    {
+      id: 7,
+      name: 'Постоянный'
+    },
+  ];
+  located = [
+    {
+      id: 1,
+      name: 'В здании'
+    },
+    {
+      id: 2,
+      name: 'Обособлено'
+    },
+  ];
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { address, addressType },
     private fb: FormBuilder,
@@ -58,12 +99,13 @@ export class AddressDialogComponent {
       district: ['', Validators.required],
       name: ['', Validators.required],
       address: ['', Validators.required],
-      build: ['', Validators.required],
+      // build: ['', Validators.required],
       coordinates: ['', Validators.required],
       phone: [''],
-      addressStatus: ['', Validators.required],
+      // addressStatus: ['', Validators.required],
       comment: ['', Validators.required],
-      // updatedAt: ['', Validators.required],
+      location: ['', Validators.required],
+      addressStatusId: ['', Validators.required],
     });
 
     if(data?.address) {
@@ -75,6 +117,15 @@ export class AddressDialogComponent {
   edit() {
     const values = this.form.value;
     this.addressesService.updateAddress(this.address.id, values).subscribe(res => {
+      if(!res) {
+        this.dialogsManager.openInfoMessageDialog('НЕ УДАЛОСЬ ОБНОВИТЬ АДРЕС!').afterClosed().subscribe(() => {
+          this.ngxService.stopLoader(this.loaderId);
+        });
+      }
+      this.dialogsManager.openInfoMessageDialog('АДРЕС ОБНОВЛЕН!').afterClosed().subscribe(() => {
+        this.ngxService.stopLoader(this.loaderId);
+        this.dialogRef.close(res);
+      });
       console.log('updateAddress',res);
     })
 

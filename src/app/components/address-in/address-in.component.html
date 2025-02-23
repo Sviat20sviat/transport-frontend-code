@@ -1,10 +1,7 @@
 <div class="flex flex-row justify-between mb-2">
-    <!-- @if(isShowTitle) { -->
     <div class="text-xl flex items-center">
-        Адреса Внутренние
+        Адреса Внетренние
     </div>
-    <!-- } -->
-
     <div class="flex">
         <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold mr-4" [matMenuTriggerFor]="filterMenu">
             Фильтр
@@ -14,6 +11,7 @@
         Добавить адрес
     </button>
     </div>
+
 </div>
 
 <div class="content overflow-auto w-full">
@@ -24,7 +22,7 @@
                     <span class="font-medium text-white pl-2">Номер</span>
                 </th>
                 <th class="py-3 px-1">
-                    <span class="font-medium text-white">Время</span>
+                    <span class="font-medium text-white">Дата создания</span>
                 </th>
                 <th class="py-3 px-1">
                     <span class="font-medium text-white">Организация</span>
@@ -85,7 +83,7 @@
                 </td>
 
                 <td class="py-3 px-1">
-                    {{address?.build}}
+                    {{getLocationById(address?.location)}}
                 </td>
                 <td class="py-3 px-1">
                     {{address?.coordinates}}
@@ -96,7 +94,7 @@
                 </td>
 
                 <td class="py-3 px-1">
-                    {{address?.addressStatus}}
+                    {{getAddressStatusById(address?.addressStatusId)}}
                 </td>
 
                 <td class="py-3 px-1">
@@ -110,7 +108,6 @@
                     <img src="/assets/images/icons/svg/delete_.svg" alt="i" class="cursor-pointer w-6 h-6" [matTooltip]="'Удалить'"
                         (click)="$event.stopPropagation(); delete(address, index)">
                 </td>
-
             </tr>
             }
         </tbody>
@@ -118,15 +115,21 @@
 
 </div>
 <mat-menu #filterMenu="matMenu">
-    <div class="flex flex-col px-2">
+    <div class="flex flex-col px-2" [formGroup]="filterForm">
         <div class="flex justify-end font-medium text-lg underline my-3 cursor-pointer" (click)="$event.stopPropagation();clearFilter()">
             Очистить
         </div>
-        <!-- <select-field [label]="'Пользователь'" [options]="usersUsers"formControlName="docType" (click)="$event.stopPropagation()" [nameKey]="'email'"></select-field> -->
-        <!-- <div class="flex w-[288px] date-range-input">
+        <custom-input-field [label]="'Организация'" formControlName="organization" (click)="$event.stopPropagation()"></custom-input-field>
+        <custom-input-field [label]="'Город/местность'" formControlName="district" (click)="$event.stopPropagation()"></custom-input-field>
+        <custom-input-field [label]="'Название ПВЗ'" formControlName="name" (click)="$event.stopPropagation()"></custom-input-field>
+        <custom-input-field [label]="'Адрес'" formControlName="address" (click)="$event.stopPropagation()"></custom-input-field>
+        <custom-input-field [label]="'Телефон'" formControlName="phone" (click)="$event.stopPropagation()"></custom-input-field>
+        <select-field [label]="'Статус Адресов'" [options]="addressStatuses" formControlName="addressStatusId" (click)="$event.stopPropagation()" [nameKey]="'name'"></select-field>
+        <select-field [label]="'Расположение'" [options]="located" formControlName="location" (click)="$event.stopPropagation()" [nameKey]="'name'"></select-field>
+        <div class="flex w-[288px] date-range-input">
             <mat-form-field class="w-full" (click)="picker.open();$event.stopPropagation()">
                 <mat-label>Период Создания</mat-label>
-                <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+                <mat-date-range-input formGroupName="createdAt" [rangePicker]="picker">
                   <input matStartDate formControlName="fromTime" placeholder="Начало Периода">
                   <input matEndDate formControlName="toTime" placeholder="Конец Периода">
                 </mat-date-range-input>
@@ -140,9 +143,9 @@
                   <mat-error>Invalid end date</mat-error>
                 }
             </mat-form-field>
-        </div> -->
+        </div>
         <div class="flex">
-            <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold w-full" (click)="getFiltered();$event.stopPropagation()">
+            <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold w-full" (click)="getAll();$event.stopPropagation()">
                 Сформировать
             </button>
         </div>

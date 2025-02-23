@@ -9,7 +9,7 @@ import { PostsService } from '../../services/api/posts.service';
 import { StateService } from '../../services/state.service';
 import { Subject, finalize, takeUntil } from 'rxjs';
 import { DialogsManagerService } from '../../services/dialogs-manager.service';
-import { PostStatusesEnum } from '../dialogs/post-dialog/post-dialog.component';
+import { CargoStatusesEnum, PostStatusesEnum } from '../dialogs/post-dialog/post-dialog.component';
 
 @Component({
     selector: 'driver-info',
@@ -112,6 +112,35 @@ export class DriverInfoComponent implements OnInit, OnDestroy {
             this.getDriverPosts();
           });
       });
+  }
+  
+  setCargoStatus(post) {
+    this.dialogsManager
+    .openInfoMessageDialog(
+      'Вы действительно забрали товар?',
+      true
+    )
+    .afterClosed()
+    .subscribe((confirm) => {
+      if (!confirm) {
+        return;
+      }
+      this.ngxService.startLoader(this.loaderId);
+      this.postsService
+        .updatePost({
+          driverId: this.currentUser.id,
+          cargoStatus: CargoStatusesEnum.OnTheWayOnOurDelivery,
+          id: post.id,
+        })
+        .pipe(finalize(() => this.ngxService.stopLoader(this.loaderId)))
+        .subscribe((res) => {
+          console.log('res', res);
+          this.dialogsManager.openInfoMessageDialog(
+            'Успешно!'
+          );
+          this.getDriverPosts();
+        });
+    });
   }
 
   setCancelByDriver(post) {

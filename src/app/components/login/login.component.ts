@@ -96,6 +96,11 @@ export class LoginComponent implements OnInit {
 
     this.authService.login(values.email, values.password)?.subscribe({
       next(res) {
+        console.log('login',res);
+        if(res?.user?.banned) {
+          self.dialogsManager.openInfoMessageDialog("Аккаунт заблокирован!");
+          return;
+        }
         if (res?.token?.token) {
           self.dialogsManager.openInfoMessageDialog("Успешно!")
           self.authService.accessToken = res.token.token;
@@ -104,6 +109,7 @@ export class LoginComponent implements OnInit {
         }
       },
       error(err) {
+        console.log('err',err);
         self.dialogsManager.openInfoMessageDialog('Email или пароль неверные!')
       }
     });

@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule, JsonPipe } from '@angular/common';
 import {
+  Form,
   FormBuilder,
   FormGroup,
   FormsModule,
@@ -47,16 +48,29 @@ import { SelectFieldComponent } from '../shared/select-field/select-field.compon
   styleUrl: './mutual-settlements.component.scss',
 })
 export class MutualSettlementsComponent implements OnInit, OnDestroy {
-  loaderId = 'mutual-settlements';
+  loaderId = 'mutual-settlements1';
   unsubscribeAll$: Subject<any> = new Subject();
 
   mutualSettlements = [];
   selectedTabIndex = 1;
-  range: FormGroup;
   filterForm: FormGroup;
 
   usersUsers = [];
   documents = [];
+  saleChannels = [
+    {
+      id: null,
+      name:"Все",
+    },
+    {
+      id: 1,
+      name:"Наличные",
+    },
+    {
+      id: 2,
+      name:"Банковским переводом",
+    },
+  ];
   constructor(
     private fb: FormBuilder,
     private stateService: StateService,
@@ -64,15 +78,12 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
     private ngxService: NgxUiLoaderService,
     private dialogsManager: DialogsManagerService
   ) {
-    this.range = fb.group({
-      fromTime: ['', [Validators.required]],
-      toTime: ['', [Validators.required]],
-    });
     this.filterForm = fb.group({
-      user: ['', [Validators.required]],
+      user: ['', []],
+      salesChannel: ['', []],
       range: fb.group({
-        fromTime: ['', [Validators.required]],
-        toTime: ['', [Validators.required]],
+        fromTime: ['', []],
+        toTime: ['', []],
       }),
     });
     this.loadData();
@@ -107,20 +118,15 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
   }
 
   createSettlement() {
-    const values = this.range.value;
-    console.log('values', values);
-    if (!values.fromTime || !values.toTime) {
-      return;
-    }
+    const values = this.filterForm.value;
     this.ngxService.startLoader(this.loaderId);
-    const fromTime = moment(values.fromTime).startOf('day').unix();
-    const toTime = moment(values.toTime).endOf('day').unix();
-    console.log('fromTime', fromTime);
-    console.log('toTime', toTime);
+    const fromTime = moment(values?.range.fromTime).startOf('day').unix();
+    const toTime = moment(values?.range.toTime).endOf('day').unix();
 
     const createdAt = { fromTime: fromTime, toTime: toTime };
+    const userId = values.user;
     this.documentsService
-      .getAllDocuments()
+      .getAllDocuments({createdAt, userId, salesChannel: values.salesChannel})
       .pipe(takeUntil(this.unsubscribeAll$))
       .subscribe({
         next: (res) => {
@@ -161,8 +167,9 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
       );
       user?.documents?.forEach((document) => {
         let settlement = {
-          user: user,
+          user,
           document,
+          post: document?.postBasisId ? this.stateService.postsMap.get(document?.postBasisId) : null,
           index,
         };
 
@@ -205,7 +212,6 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
 
   clearFilter() {
     this.filterForm.reset();
-    this.range.reset();
     // this.setData();
   }
 
@@ -244,5 +250,9 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
         return findDocumentSaldo;
       }
     };
+  }
+
+  get range(): FormGroup {
+    return (this.filterForm.get('range') as FormGroup);
   }
 }

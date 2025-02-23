@@ -13,7 +13,7 @@
 </div>
 
 <div class="content overflow-auto w-full" [ngClass]="{'dash-table': isDashboard}">
-    <table class="w-full">
+    <table class="w-full minimum-text">
         <thead class="table-header">
             <tr class="sam_row px-2">
                 <th class="py-3 px-1">
@@ -63,9 +63,9 @@
                 <th class="py-3 px-1">
                     <span class="font-medium text-white">Статус груза</span>
                 </th>
-                <th class="py-3 px-1">
+                <!-- <th class="py-3 px-1">
                     <span class="font-medium text-white">План. дата постаки</span>
-                </th>
+                </th> -->
                 <th class="py-3 px-1">
                     <span class="font-medium text-white">Вид доставки</span>
                 </th>
@@ -76,7 +76,7 @@
                     <span class="font-medium text-white">Изменен</span>
                 </th>
                 <th class="py-3 px-1">
-                    <span class="font-medium text-white">Действия</span>
+                    <span class="font-medium text-white"></span>
                 </th>
 
             </tr>
@@ -84,88 +84,88 @@
         <tbody class="table-body">
             @for (post of posts; track post.id; let index = $index) {
             <tr class="cursor-pointer" (click)="$event.stopPropagation(); openPostDialog(post)">
-                <td class="pl-2 py-3">
+                <td class="pl-2">
                     {{post?.id}}
                 </td>
-                <td class="py-3 px-1 text-link" (click)="$event.stopPropagation(); openUserDialog(post?.author)" matTooltip="Показать полную информацию по пользователю">
+                <td class="px-1 text-link" (click)="$event.stopPropagation(); openUserDialog(post?.author)" matTooltip="Показать полную информацию по пользователю">
                     <!-- <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold">
                         Показать
                     </button> -->
                     {{post?.author?.firstName}} {{post?.author?.lastName}} 
                 </td>
-                <td class="py-3 px-1 text-link" (click)="$event.stopPropagation(); openUserDialog(post?.customer)" matTooltip="Показать полную информацию по пользователю">
+                <td class="px-1 text-link" (click)="$event.stopPropagation(); openUserDialog(post?.customer)" matTooltip="Показать полную информацию по пользователю">
                     <!-- <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold">
                         Показать
                     </button> -->
                     {{post?.customer?.firstName}} {{post?.customer?.lastName}} 
                 </td>
-                <td class="py-3 px-1">
-                    {{post?.createdAt | date: 'medium'}}
+                <td class="px-1">
+                    {{post?.createdAt | date: 'dd MMM HH:mm'}}
                 </td>
-                <td class="py-3 px-1">
+                <td class="px-1">
                     {{getAddressFrom(post?.addressFromId)}}
                 </td>
-                <td class="py-3 px-1">
+                <td class="px-1">
                     {{getAddressTo(post?.addressToId)}}
                 </td>
 
 
-                <td class="py-3 px-1">
+                <td class="px-1">
                     <div class="text-container">{{post?.addressTo ? "Нет": "Да"}}</div>
                 </td>
-                <td class="py-3 px-1 text-link" matTooltip="Показать полную информацию по пользователю" (click)="openUserDialog(post?.driver)">
+                <td class="px-1 text-link" [matTooltip]="post?.driver?.id ?'Показать полную информацию по Водителю' : null" (click)="$event.stopPropagation(); openUserDialog(post?.driver)">
                     <!-- <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold">
                         Показать
                     </button> -->
                     {{post?.driver?.firstName || '-'}} {{post?.driver?.lastName || '-'}}
                 </td>
 
-                <td class="py-3 px-1">
-                    <div class="text-container">{{post?.price || '--'}}</div>
+                <td class="px-1">
+                    <div class="text-container font-semibold">{{post?.price || '--'}}</div>
                 </td>
 
-                <td class="py-3 px-1">
-                    <div class="text-container">{{post?.commission || '--'}}</div>
+                <td class="px-1">
+                    <div class="text-container font-semibold">{{post?.commission || '--'}}</div>
                 </td>
 
-                <td class="py-3 px-1">
-                    <div class="text-container">{{post?.summ || '--'}}</div>
+                <td class="px-1">
+                    <div class="text-container font-semibold">{{post?.summ || '--'}}</div>
                 </td>
 
-                <td class="py-3 px-1">
-                    <div class="text-container">{{post?.paid || '--'}}</div>
+                <td class="px-1" [ngClass]="{'bg-orange-200' : (post?.paid - post?.summ < 0), 'bg-green-200' : (post?.paid - post?.summ >= 0)}">
+                    <div class="text-container font-semibold">{{post?.paid || '--'}}</div>
                 </td>
 
-                <td class="py-3 px-1">
-                    <div class="text-container">{{post?.paid - post?.summ}}</div>
+                <td class="px-1">
+                    <div class="text-container font-semibold">{{post?.paid - post?.summ}}</div>
                 </td>
 
 
 
 
-                <td class="py-3">
+                <td class="">
                     <div class="executing-status-badge" [ngClass]="'status-' +(post?.status)">
                         {{getPostExecutingStatus((post?.status))}}
                     </div>
 
                 </td>
-                <td class="py-3 px-1">
+                <td class="px-1">
                     <div class="text-container">{{getCargoStatus(post?.cargoStatus)}}</div>
                 </td>
-                <td class="py-3 px-1">
+                <!-- <td class=" px-1">
                     <div class="text-container">{{post?.deliveryDate}}</div>
-                </td>
-                <td class="py-3 px-1">
+                </td> -->
+                <td class="px-1">
                     <div class="text-container">{{getDeliveryType(post?.deliveryType)}}</div>
                 </td>
-                <td class="py-3 px-1">
+                <td class="px-1">
                     <div class="text-container">{{post?.content}}</div>
                 </td>
-                <td class="py-3 px-1">
-                    {{post?.updatedAt | date: 'medium'}}
+                <td class="px-1">
+                    {{post?.updatedAt | date: 'dd MMM HH:mm'}}
                 </td>
-                <td class="pr-2 py-3">
-                    <img src="/assets/images/icons/svg/delete_.svg" alt="i" class="cursor-pointer w-6 h-6"
+                <td class="pr-2">
+                    <img src="/assets/images/icons/svg/delete_.svg" alt="i" class="cursor-pointer w-8 h-8"
                         (click)="$event.stopPropagation(); deletePost(post)">
                 </td>
             </tr>

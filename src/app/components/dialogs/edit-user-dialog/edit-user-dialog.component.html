@@ -106,6 +106,30 @@
                                 </div>
 
                             </mat-expansion-panel>
+                            <mat-expansion-panel>
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title> Объявления Принадлежащие пользователю - {{user?.selectedPosts?.length}} </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                <div class="flex flex-col">
+                                    @for (post of user?.selectedPosts; track $index) {
+                                        <div class="flex p-4 cursor-pointer on-hover justify-between" (click)="openPostDialog(post)">
+                                            <div class="mr-4">№ {{post.id}}</div>
+                                            <div class="mr-4"> {{post.title}}</div>
+                                            <div class="mr-4">Создано {{post.createdAt | date : 'medium'}}</div>
+                                            <div class="executing-status-badge" [ngClass]="'status-' +(post?.status)">
+                                                {{getPostExecutingStatus((post?.status))}}
+                                            </div>
+                                        </div>
+                                    } @empty {
+                                        <div class="flex p-4 text-center">
+                                            Нет ни одного объявления
+                                        </div>
+                                    }
+
+
+                                </div>
+
+                            </mat-expansion-panel>
                         </mat-accordion>
                     </div>
                     <div class="flex flex-col justify-center mb-3 max-w-[100%] col-items-1 items-center">

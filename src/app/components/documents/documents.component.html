@@ -4,10 +4,15 @@
         {{"Документы"}}
     </div>
     <!-- } -->
+    <div class="flex">
+        <button mat-raised-button (click)="openDocumentDialog()" class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold">
+            Создать документ
+        </button>
+        <button mat-raised-button [matMenuTriggerFor]="filterSettlementMenu" class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold ml-3">
+            Фильтр
+        </button>
+    </div>
 
-    <button mat-raised-button (click)="openDocumentDialog()" class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold">
-        Создать документ
-    </button>
 </div>
 <div class="content overflow-auto w-full documents-table">
     <table class="w-full">
@@ -95,7 +100,13 @@
                 </td>
 
                 <td class="py-3 px-1">
-                    <div class="text-container" [matTooltip]="'Показать полную информацию по Оператору'" (click)="$event.stopPropagation(); openUser(document?.recipientId)">Оператор№ {{document?.recipientId || '--'}}</div>
+                    @if(document?.recipientId !== document?.clientId) {
+                        <div class="text-container" [matTooltip]="'Показать полную информацию по Оператору'" (click)="$event.stopPropagation(); openUser(document?.recipientId)">Оператор№ {{document?.recipientId || '--'}}</div>
+                    } 
+                    @else {
+                        --
+                    }
+                    
                 </td>
 
                 <td class="py-3 px-1">
@@ -126,3 +137,36 @@
 
 </div>
 <ngx-ui-loader [fgsColor]="'#ffffff'" [loaderId]="loaderId" [fgsType]="'three-bounce'"></ngx-ui-loader>
+<mat-menu #filterSettlementMenu="matMenu">
+    <div class="flex flex-col px-2" [formGroup]="filterForm">
+        <div class="flex justify-end font-medium text-lg underline my-3 cursor-pointer" (click)="$event.stopPropagation();clearFilter()">
+            Очистить
+        </div>
+        <select-field [label]="'По Контрагенту'" [options]="usersUsers" formControlName="user" (click)="$event.stopPropagation()" [nameKey]="'email'"></select-field>
+        <select-field [label]="'По Каналу продаж'" [options]="saleChannels" formControlName="salesChannel" (click)="$event.stopPropagation()" [nameKey]="'name'"></select-field>
+        <div class="flex w-[288px] date-range-input">
+            <mat-form-field class="w-full" (click)="picker.open();$event.stopPropagation()">
+                <mat-label>За Период</mat-label>
+                <mat-date-range-input formGroupName="range" [rangePicker]="picker">
+                  <input matStartDate formControlName="fromTime" placeholder="Начало Периода">
+                  <input matEndDate formControlName="toTime" placeholder="Конец Периода">
+                </mat-date-range-input>
+                <!-- <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint> -->
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+              
+                @if (range.controls['fromTime'].hasError('matStartDateInvalid')) {
+                  <mat-error>Invalid start date</mat-error>
+                }
+                @if (range.controls['toTime'].hasError('matEndDateInvalid')) {
+                  <mat-error>Invalid end date</mat-error>
+                }
+            </mat-form-field>
+        </div>
+        <div class="flex">
+            <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold w-full" (click)="getAllDocuments();$event.stopPropagation()">
+                Сформировать
+            </button>
+        </div>
+    </div>
+</mat-menu>

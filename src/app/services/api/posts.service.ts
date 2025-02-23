@@ -28,6 +28,9 @@ export class PostsService {
   createPost(data: CreatePostData, user) {
     console.log('createPost!',data,user);
     data.userId = user?.id;
+    if(!data?.customerId) {
+      data.customerId = user?.id;
+    };
     return this.http.post(this.server.serverAddress + '/posts', data);
   }
 

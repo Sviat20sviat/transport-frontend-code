@@ -39,10 +39,9 @@ export class DialogsManagerService {
   openUserDialog(user?): MatDialogRef<EditUserDialogComponent> {
     return this.dialogRef.open(EditUserDialogComponent, {
       data: {user},
-      maxHeight: "98vh",
+      maxHeight: "auto",
       width:  "100%",
       maxWidth: "800px",
-      height:  "100%"
     });
   }
 

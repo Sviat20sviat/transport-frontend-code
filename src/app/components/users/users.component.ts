@@ -47,7 +47,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.getFilteredUsers(UserRolesEnum.Admin);
+    this.getFilteredUsers(this.selectedUseTypeTabIndex);
 
     // this.searchControl.valueChanges
     //   .pipe(debounceTime(800), takeUntil(this.unsubscribeAll$))
@@ -56,6 +56,9 @@ export class UsersComponent implements OnInit, OnDestroy {
     //   });
     this.stateService.roles$.subscribe((roles) => {
       console.log('roles', roles);
+    });
+    this.stateService.usersUpdatesSignal.pipe(takeUntil(this.unsubscribeAll$)).subscribe(() => {
+      this.getFilteredUsers();
     });
   }
 

@@ -144,7 +144,7 @@
         <div class="text-xl flex items-center mb-4">
             Объявления пользователей
         </div>
-        <div class="flex mb-[-60px]">
+        <div class="flex relative z-10 mb-[-60px]">
             <div class="tab-group-header flex ">
                 <div class="flex tab-group-header-item cursor-pointer p-3"
                     [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 1}" (click)="selectPostTypeTab(1)">Ожидают
@@ -252,9 +252,9 @@
                     </div>
                     <div class="flex items-center mt-auto">
                         @if(true) {
-                        <button mat-raised-button [disabled]="true"
+                        <button mat-raised-button
                             class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
-                            (click)="$event.stopPropagation();">
+                            (click)="$event.stopPropagation(); cancelPostByUser(post)">
                             Отменить Заказ
                         </button>
                         }

@@ -336,7 +336,7 @@
             </div>
         </div>
         <div class="flex justify-center flex-col">
-            @if(!form?.valid) {
+            @if(!form?.valid && !post?.id) {
             <div class="text-red-600 my-2 text-center">*Внимание! Не все обязательные поля заполенены!*</div>
             }
             @if(userService.isUserUser(this.currentUser)) {

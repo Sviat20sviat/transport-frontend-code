@@ -290,9 +290,11 @@ export class PostDialogComponent implements OnInit, OnDestroy {
       this.setPriceCalc();
     } else {
       this.validateFormForUser();
-      setTimeout(() => {
-        this.form.disable();
-      }, 0);
+      if(this.post?.id) {
+        setTimeout(() => {
+          this.form.disable();
+        }, 0);
+      };
     }
   }
 
@@ -398,7 +400,9 @@ export class PostDialogComponent implements OnInit, OnDestroy {
   }
 
   create() {
+    console.log('create',);
     const values = this.form?.value;
+    console.log('values',);
     const createPostData: CreatePostData = {
       title: values.title,
       content: values.content,
@@ -433,7 +437,7 @@ export class PostDialogComponent implements OnInit, OnDestroy {
       additionalFloor: values.additionalFloor,
       additionalFriagle: values.additionalFriagle || false,
       userId: values.userId || null,
-      customerId: values.customerId,
+      customerId: values.customerId || values.userId,
       price: values.price || 0,
       commission: values.commission || 0,
       summ: values.summ || 0,
@@ -449,9 +453,10 @@ export class PostDialogComponent implements OnInit, OnDestroy {
     console.log(createPostData);
     console.log('values', values);
     if (
-      !this.userService.isUserAdmin(this.currentUser) &&
-      !this.userService.isUserOperator(this.currentUser)
+      !this.isAdmin() &&
+      !this.isOperator()
     ) {
+      console.log('USERUSER',this.currentUser);
       values.customerId = this.currentUser.id;
     }
 

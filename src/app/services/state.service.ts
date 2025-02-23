@@ -34,6 +34,7 @@ export class StateService implements OnDestroy {
 
   users$: Observable<any[]> = this.usersSubject.asObservable();
   posts$: Observable<any[]> = this.postsSubject.asObservable();
+  postsMap: Map<number, any> = new Map();
   documents$: Observable<any[]> = this.documentsSubject.asObservable();
   warehouses$: Observable<any[]> = this.warehousesSubject.asObservable();
   roles$: Observable<any[]> = this.rolesSubject.asObservable();
@@ -46,6 +47,8 @@ export class StateService implements OnDestroy {
 
   postsUpdatesSignal = new Subject<any>();
   documentsUpdatesSignal = new Subject<any>();
+  usersUpdatesSignal = new Subject<any>();
+  userBannedSignal$: BehaviorSubject<any> = new BehaviorSubject(null);
 
   deliveryTypes = [
     {
@@ -127,8 +130,13 @@ export class StateService implements OnDestroy {
     this.postsService.getPosts().subscribe((res) => {
       if (!res) {
         return;
-      }
+      };
+
       this.postsSubject.next(res);
+      this.postsMap.clear();
+      res?.forEach(element => {
+        this.postsMap.set(element.id,element);
+      });
     });
   }
 
@@ -242,6 +250,23 @@ export class StateService implements OnDestroy {
     this.webSocketService.on(EventNameEnum.OnDocumentDelete).subscribe((data) => {
       console.log('webSocketService =====>>>>',data);
       this.documentsUpdatesSignal.next(data);
+    });
+
+    this.webSocketService.on(EventNameEnum.OnUserBanned).subscribe((data) => {
+      console.log('webSocketService =====>>>>',data);
+      this.userBannedSignal$.next(data);
+    });
+    this.webSocketService.on(EventNameEnum.OnUserCreate).subscribe((data) => {
+      console.log('webSocketService =====>>>>',data);
+      this.usersUpdatesSignal.next(data);
+    });
+    this.webSocketService.on(EventNameEnum.OnUserDelete).subscribe((data) => {
+      console.log('webSocketService =====>>>>',data);
+      this.usersUpdatesSignal.next(data);
+    });
+    this.webSocketService.on(EventNameEnum.OnUserUpdate).subscribe((data) => {
+      console.log('webSocketService =====>>>>',data);
+      this.usersUpdatesSignal.next(data);
     });
   }
 }

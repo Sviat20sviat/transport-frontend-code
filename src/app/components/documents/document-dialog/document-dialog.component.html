@@ -1,8 +1,11 @@
 <div class="flex flex-col h-full">
-    <div class="flex justify-between px-6 pt-6 dialog-header">
+    <div class="flex justify-between px-6 pt-6 dialog-header" [ngClass]="{'document-cancelled': document?.status == 2}">
         <div class="text-xl flex items-center mb-3">
             @if(document?.id) {
                 ДОКУМЕНТ № {{document?.id}}
+                @if(document?.status == 2) {
+                    <span class="font-semibold ml-4">ОТМЕНЕН</span>
+                }
             } @else {
                 СОЗДАТЬ ДОКУМЕНТ
             }
@@ -12,12 +15,12 @@
             @if (document?.id) {
                 <div class="flex flex-col">
                     <div class="flex justify-between">
-                        <div class="inline-flex font-medium justify-end mr-4">Создано</div>
+                        <div class="inline-flex font-medium justify-end mr-4">Создан</div>
                         <div class="flex">{{document?.createdAt | date: 'medium'}}</div>
                     </div>
                     @if(document?.updatedAt && document?.updatedAt !== document?.createdAt) {
                         <div class="flex justify-between">
-                            <div class="inline-flex font-medium justify-end mr-4">Изменено</div>
+                            <div class="inline-flex font-medium justify-end mr-4">Изменен</div>
                             <div class="flex">{{document?.updatedAt | date: 'medium'}}</div>
                         </div>
                     }
@@ -36,6 +39,11 @@
                         Данные по Документу
                     </div>
                 </div>
+                @if(document?.postBasisId) {
+                    <div class="flex mb-3 max-w-full w-full col-items-1">
+                        Заказ-основание: <span class="text-link ml-4" (click)="openPostDialog()">Заказ№ {{documentBasisPost?.id}}</span>
+                    </div>
+                }
                 <div class="flex flex-row justify-between gap-3 flex-wrap col-items-1">
                     <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
                         <select-field [label]="'Тип Документа'" [options]="doctypes"formControlName="docType" ></select-field>
@@ -44,15 +52,23 @@
                         <custom-input-field [label]="'Сумма'" formControlName="sum"></custom-input-field>
                     </div>
                     <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                        <custom-input-field [label]="'Адрес, откуда'" formControlName="addresFrom"></custom-input-field>
+                        <custom-input-field [label]="'Адрес, откуда'" formControlName="addressFrom"></custom-input-field>
                     </div>
                     <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                        <custom-input-field [label]="'Адрес, куда'" formControlName="addresTo"></custom-input-field>
+                        <custom-input-field [label]="'Адрес, куда'" formControlName="addressTo"></custom-input-field>
                     </div>
                     <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
                         <!-- <custom-input-field [label]="'Клиент'" formControlName="clientId"></custom-input-field> -->
                         <select-field [label]="'Клиент'" [options]="clients" [nameKey]="'email'" formControlName="clientId" ></select-field>
                     </div>
+
+                    @if(form.get('docType')?.value == 2) {
+                    <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                        <!-- <custom-input-field [label]="'Клиент'" formControlName="clientId"></custom-input-field> -->
+                        <select-field [label]="'Вид Оплаты'" [options]="saleChannels" [nameKey]="'name'" formControlName="salesChannel" ></select-field>
+                    </div>
+                    }
+
                     <!-- <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
                         <custom-input-field [label]="'Курьер'" formControlName="recipient"></custom-input-field>
                     </div> -->

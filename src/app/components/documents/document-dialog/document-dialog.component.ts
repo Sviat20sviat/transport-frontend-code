@@ -40,6 +40,7 @@ import { DialogsManagerService } from '../../../services/dialogs-manager.service
 export class DocumentDialogComponent implements OnInit, OnDestroy {
 
   document;
+  documentBasisPost;
   loaderId = 'document-dialog';
   form: FormGroup;
   doctypes = [
@@ -51,6 +52,16 @@ export class DocumentDialogComponent implements OnInit, OnDestroy {
       id: 2,
       name: "Пополнение счета Пользователя"
     }
+  ];
+  saleChannels = [
+    {
+      id: 1,
+      name:"Наличные",
+    },
+    {
+      id: 2,
+      name:"Банковским переводом",
+    },
   ];
   unsubscribeAll$: Subject<any> = new Subject();
   clients = [];
@@ -67,13 +78,13 @@ export class DocumentDialogComponent implements OnInit, OnDestroy {
     this.form = fb.group({
       docType: [null, Validators.required],
       sum: [0, [Validators.required, Validators.pattern('[0-9]*')]],
-      addresFrom: [null, Validators.required],
-      addresTo: [null, Validators.required],
+      addressFrom: [null, Validators.required],
+      addressTo: [null, Validators.required],
       clientId: [null, Validators.required],
       // recipient: [null, Validators.required],
       // stutus: [null, Validators.required],
       comment: ['', ],
-      
+      salesChannel : [1, ],
     });
     this.stateService.clients$.pipe(takeUntil(this.unsubscribeAll$)).subscribe((value) => {
       this.clients = value;
@@ -83,12 +94,14 @@ export class DocumentDialogComponent implements OnInit, OnDestroy {
 
   }
   ngOnInit(): void {
+    if(this.document?.postBasisId) {
+      this.documentBasisPost = this.stateService.postsMap.get(this.document?.postBasisId);
+    };
     timer(0).subscribe(() => {
       if(this.document?.id) {
         this.form.disable();
       };
     });
-
   }
   ngOnDestroy(): void {
     this.unsubscribeAll$.next(null);
@@ -120,8 +133,9 @@ export class DocumentDialogComponent implements OnInit, OnDestroy {
       "clientId": values?.clientId,
       "recipientId": values?.clientId,
       "postBasisId": values?.postBasisId,
-      "documentBasisId": values?.documentBasisId
-    }
+      "documentBasisId": values?.documentBasisId,
+      "salesChannel": values?.salesChannel
+    };
 
     this.documentsService.createDocument(req).subscribe(res => {
       console.log('console',res);
@@ -166,5 +180,12 @@ export class DocumentDialogComponent implements OnInit, OnDestroy {
         });
       };
     });
+  }
+
+  openPostDialog() {
+    if(!this.documentBasisPost) {
+      return;
+    };
+    this.dialogsManager.openPostDialog(this.documentBasisPost);
   }
 }
