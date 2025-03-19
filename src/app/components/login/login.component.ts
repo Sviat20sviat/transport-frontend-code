@@ -55,8 +55,8 @@ export class LoginComponent implements OnInit {
       nickname: fb.control('', [Validators.required, Validators.minLength(4), Validators.maxLength(14)]),
       firstName: ['', [Validators.required,]],
       lastName: ['', [Validators.required,]],
-      phoneNumber: fb.control('', [Validators.required, Validators.pattern(phoneMask)]),
-      phoneNumberSecond: fb.control('', [Validators.pattern(phoneMask)]),
+      phoneNumber: fb.control('', [Validators.required, this.validatorsService.phoneNumberValidator]),
+      phoneNumberSecond: fb.control('', [this.validatorsService.phoneNumberValidator]), 
       isDriver: fb.control(false),
     })
   }

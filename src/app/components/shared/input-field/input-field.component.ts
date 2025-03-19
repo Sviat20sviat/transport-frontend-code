@@ -44,8 +44,10 @@ export class InputFieldComponent extends FormControlDirective implements OnInit,
   @Input() matAutoCompleteOptions = [];
   @Input() matAutoCompleteOptionKey = 'name';
   @Input() matAutoCompleteOptionValueKey = 'address';
+  @Input() matAutoCompleteOptionSecondKey= 'address';
   @Input() isAddToFavorite: boolean = false;
   @Output() addAddressToFavorite: EventEmitter<any> = new EventEmitter<any>();
+  @Output() selectOptionClick: EventEmitter<any> = new EventEmitter<any>();
   @Input() maxLength: number;
   matAutoCompleteOptionsFiltered: any[];
   isAlreadyUsed = false;
@@ -139,6 +141,10 @@ export class InputFieldComponent extends FormControlDirective implements OnInit,
 
   usedAddress() {
 
+  }
+
+  selectOption(option) {
+    this.selectOptionClick.emit(option);
   }
 
 }

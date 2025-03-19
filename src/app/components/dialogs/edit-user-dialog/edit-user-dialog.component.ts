@@ -65,6 +65,10 @@ export class EditUserDialogComponent implements OnInit {
     
   ) {
     this.user = data?.user;
+    this.userService.getUserById(this.user.id).subscribe((user) => {
+      this.user = user;
+      this.form.patchValue(this.user);
+    });
     console.log('CONSOLE!', data);
     this.initForm();
     this.initPasswordForm();
@@ -85,6 +89,11 @@ export class EditUserDialogComponent implements OnInit {
         // this.form.disable();
       };
     };
+    this.stateService.usersUpdatesSignal.subscribe((user) => {
+      if (user?.id && user.id === this.user.id) {
+        this.user = {...this.user, ...user};
+      };
+    });
   }
 
   ngOnInit(): void {}

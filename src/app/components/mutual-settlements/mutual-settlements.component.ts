@@ -52,10 +52,12 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
   unsubscribeAll$: Subject<any> = new Subject();
 
   mutualSettlements = [];
+  mutualSettlementsForDrivers = [];
   selectedTabIndex = 1;
   filterForm: FormGroup;
 
   usersUsers = [];
+  usersDrivers = [];
   documents = [];
   saleChannels = [
     {
@@ -79,22 +81,23 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
     private dialogsManager: DialogsManagerService
   ) {
     this.filterForm = fb.group({
-      user: ['', []],
-      salesChannel: ['', []],
+      userId: [null, []],
+      salesChannel: [null, []],
       range: fb.group({
-        fromTime: ['', []],
-        toTime: ['', []],
+        fromTime: [null, []],
+        toTime: [null, []],
       }),
     });
-    this.loadData();
+    this.getSettlements();
   }
 
   ngOnInit(): void {
     this.stateService.documentsUpdatesSignal.pipe(takeUntil(this.unsubscribeAll$)).subscribe((res) => {
       if (res) {
-        this.loadData();
+        this.getSettlements();
       }
     });
+    this.setFilterFormDefaultValues();
   }
 
   ngOnDestroy(): void {
@@ -102,48 +105,70 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
     this.unsubscribeAll$.complete();
   }
 
-  loadData() {
+  getSettlements() {
+    console.log('loadData',);
+    const values = this.filterForm.value;
+
+    let fromTime = moment(values?.range.fromTime).startOf('day').unix();
+    let toTime = moment(values?.range.toTime).endOf('day').unix();
+    console.log('fromTimetoTime',fromTime,toTime);
+    if(!fromTime || !toTime) {
+      fromTime = moment().startOf('month').unix();
+      toTime = moment().endOf('month').unix();
+    };
+    const createdAt = { fromTime: fromTime, toTime: toTime };
+
+    const data = {
+      userId: values?.userId,
+      createdAt,
+      salesChannelId: values?.salesChannel,
+    }
+
     this.ngxService.startLoader(this.loaderId);
     combineLatest({
       clients: this.stateService.clients$,
-      documents: this.documentsService.getAllDocuments(),
+      documents: this.documentsService.getAllDocuments(data),
     })
       .pipe(takeUntil(this.unsubscribeAll$))
       .subscribe(({ clients, documents }) => {
         this.usersUsers = clients;
-        this.documents = documents?.filter((d) => d.userBalanseAfter);
+        this.usersDrivers =  Array.from(this.stateService.driversMap.values());
+        console.log('this.usersDrivers',this.usersDrivers);
+        this.mutualSettlements = [];
+        this.documents = documents?.filter((d) => d.userBalanseAfter || d.userBalanseAfter === 0 );
         this.setData();
         this.ngxService.stopLoader(this.loaderId);
       });
   }
 
-  createSettlement() {
-    const values = this.filterForm.value;
-    this.ngxService.startLoader(this.loaderId);
-    const fromTime = moment(values?.range.fromTime).startOf('day').unix();
-    const toTime = moment(values?.range.toTime).endOf('day').unix();
+  // createSettlement() {
+  //   console.log('createSettlement',);
+  //   const values = this.filterForm.value;
+  //   this.ngxService.startLoader(this.loaderId);
+  //   const fromTime = moment(values?.range.fromTime).startOf('day').unix();
+  //   const toTime = moment(values?.range.toTime).endOf('day').unix();
 
-    const createdAt = { fromTime: fromTime, toTime: toTime };
-    const userId = values.user;
-    this.documentsService
-      .getAllDocuments({createdAt, userId, salesChannel: values.salesChannel})
-      .pipe(takeUntil(this.unsubscribeAll$))
-      .subscribe({
-        next: (res) => {
-          if (!res) {
-            return;
-          }
-          this.mutualSettlements = [];
-          this.documents = res;
-          this.setData();
-          this.ngxService.stopLoader(this.loaderId);
-        },
-        error: (err) => {
-          this.ngxService.stopLoader(this.loaderId);
-          console.error('err', err);
-        }
-      });
-  }
+  //   const createdAt = { fromTime: fromTime, toTime: toTime };
+  //   const userId = values.user;
+  //   this.documentsService
+  //     .getAllDocuments({createdAt, userId, salesChannel: values.salesChannel})
+  //     .pipe(takeUntil(this.unsubscribeAll$))
+  //     .subscribe({
+  //       next: (res) => {
+  //         if (!res) {
+  //           return;
+  //         }
+  //         this.mutualSettlements = [];
+  //         this.documents = res;
+  //         this.setData();
+  //         this.ngxService.stopLoader(this.loaderId);
+  //       },
+  //       error: (err) => {
+  //         this.ngxService.stopLoader(this.loaderId);
+  //         console.error('err', err);
+  //       }
+  //     });
+  // }
 
   openSettlementDialog(settlement) {}
 
@@ -152,8 +177,10 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
     if (index == 1) {
       this.mutualSettlements = [];
       this.setData();
-    } else {
+    } else if(index == 2) {
       this.mutualSettlements = [];
+      this.mutualSettlementsForDrivers = [];
+      this.setDataForDrivers();
     }
   }
 
@@ -182,10 +209,47 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
     console.log('this.mutualSettlements', this.mutualSettlements);
   }
 
+  setDataForDrivers() {
+    console.log('usersDrivers', this.usersDrivers);
+    console.log('document', this.documents);
+    let index = 1;
+    this.mutualSettlementsForDrivers = [];
+    this.usersDrivers = this.usersDrivers.map((user) => {
+      user.documents = this.documents.filter(
+        (document) => document.status === 1 && document.clientId == user.id
+      );
+      user?.selectedByDriverPosts?.forEach((post) => {
+        let settlement = {
+          user,
+          document,
+          post: post,
+          index,
+        };
+
+        this.mutualSettlementsForDrivers.push(settlement);
+        index++;
+      });
+      return user;
+    });
+    console.log('this.usersUsers MAPPED', this.usersUsers);
+    console.log('this.mutualSettlementsForDrivers', this.mutualSettlementsForDrivers);
+  }
+
   calcUserDataLength(userId): number {
     const allWithUser = this.mutualSettlements.filter(
       (settlement) => settlement.user.id == userId
     );
+    if (!allWithUser?.length) {
+      return 1;
+    }
+    return allWithUser?.length;
+  }
+
+  calcDriverDataLength (userId): number {
+    const allWithUser = this.mutualSettlementsForDrivers.filter(
+      (settlement) => settlement.user.id == userId
+    );
+    console.log('allWithUser',allWithUser?.length);
     if (!allWithUser?.length) {
       return 1;
     }
@@ -202,12 +266,21 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
   }
 
   openUser(id) {
-    const user = this.usersUsers.find((user) => user.id == id);
+    const user = this.usersUsers.find((user) => user.id == id) || this.usersDrivers.find((user) => user.id == id);
     if (!user) {
       this.dialogsManager.openInfoMessageDialog('Пользователь не найден');
       return;
     };
     this.dialogsManager.openUserDialog(user);
+  }
+
+  openPostDialog(id) {
+    const post = this.stateService.postsMap.get(id);
+    if (!post) {
+      this.dialogsManager.openInfoMessageDialog('Пост не найден');
+      return;
+    };
+    this.dialogsManager.openPostDialog(post);
   }
 
   clearFilter() {
@@ -216,6 +289,7 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
   }
 
   getAfterDebtSaldo(user) {
+    return user?.documents[0]?.userBalanseAfter;
     let credit = 0;
     let debt = 0;
 
@@ -254,5 +328,25 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
 
   get range(): FormGroup {
     return (this.filterForm.get('range') as FormGroup);
+  }
+
+  setFilterFormDefaultValues() {
+    console.log('setFilterFormDefaultValues',);
+    this.filterForm.patchValue({
+      range: {
+        fromTime: new Date(moment().startOf('month').unix()*1000),
+        toTime: new Date(moment().endOf('month').unix()*1000),
+      },
+    });
+    console.log('this.filterForm',this.filterForm?.value);
+  }
+
+  getDriverSum(user): number {
+    let sum = 0;
+    this.mutualSettlementsForDrivers.filter(m => m.user.id == user.id).forEach(m => {
+      console.log('m',m);
+      sum += Number(m.post?.commission);
+    });
+    return sum;
   }
 }

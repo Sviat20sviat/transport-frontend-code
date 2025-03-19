@@ -11,9 +11,9 @@
       @for (group of matAutoCompleteOptionsFiltered; track group) {
         <mat-optgroup [label]="group.name">
           @for (option of group.items;  track option) {
-            <mat-option [value]="option[matAutoCompleteOptionValueKey] || option[matAutoCompleteOptionKey]">
+            <mat-option [value]="option[matAutoCompleteOptionValueKey] || option[matAutoCompleteOptionKey]" (click)="selectOption(option)">
               <span>{{option[matAutoCompleteOptionKey]}}</span> |
-              <span>{{option[matAutoCompleteOptionValueKey]}}</span>
+              <span>{{option[matAutoCompleteOptionSecondKey]}}</span>
             </mat-option>
           }
         </mat-optgroup>

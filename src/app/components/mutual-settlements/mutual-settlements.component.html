@@ -21,181 +21,360 @@
                 <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold" [matMenuTriggerFor]="filterSettlementMenu">
                     Фильтр
                 </button>
-                <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold ml-3" (click)="createSettlement()">
+                <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold ml-3" (click)="getSettlements()">
                     Сформировать
                 </button>
             </div>
         </div>
 
         <div class="flex overflow-auto max-h-[800px] mutual-table">
-            <table class="w-full">
-                <thead class="table-header">
-                    <tr class="first-row px-2">
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white pl-2"></span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white"></span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white"></span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white"></span>
-                        </th>
-                        <th class="py-3 px-1 text-center" colspan="2">
-                            <span class="font-medium text-white">Начальное сальдо</span>
-                        </th>
-                        <th class="py-3 px-1 text-center" colspan="2">
-                            <span class="font-medium text-white">За период</span>
-                        </th>
-                        <th class="py-3 px-1 text-center" colspan="2">
-                            <span class="font-medium text-white">Конечное сальдо</span>
-                        </th>
-                    </tr>
-                    <tr class="second-row">
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">№</span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">Дата</span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">Основание  </span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">Контрагент</span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">Зaдолженность</span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">Переплата</span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">Зaдолженность</span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">Переплата</span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">Зaдолженность</span>
-                        </th>
-                        <th class="py-3 px-1">
-                            <span class="font-medium text-white">Переплата</span>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="table-body">
-                    @for (settlement of mutualSettlements; track $index; let index = $index) {
-                    <tr class="cursor-pointer" (click)="openSettlementDialog(settlement)">
-                        <td class="pl-2 py-3">
-                            {{index +1}}
-                        </td>
-                        <td class="pl-2 py-3">
-                            {{settlement.document?.createdAt | date: 'medium'}}
-                        </td>
-                        <td class="py-3 px-1">
-                            @if(settlement?.document?.id) {
-                                <span (click)="$event.stopPropagation();openDocument(settlement?.document?.id)" matTooltip="Полная информация по Документу" class="text-link">Документ№ {{settlement?.document?.id}}</span>
-                            }
-                            @if(settlement?.post?.id) {
-                                <span class="text-link">, Заказ№ {{settlement?.post?.id}}</span>
-                            }
-                        </td>
-                        <td class="py-3 px-1 text-link" (click)="$event.stopPropagation();openUser(settlement?.user?.id)" matTooltip="Полная информация по Пользователю">
-                            {{settlement?.user?.email}}
-                        </td>
-                        @if (index == 0 || mutualSettlements[index -1]?.user?.documents[0].userBalanseBefore != settlement?.user?.documents[0].userBalanseBefore) {
-                            <td class="py-3 px-1 start-saldo text-red-600" [attr.rowspan]="calcUserDataLength(settlement?.user?.id)">
-                                @if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore < 0) {
-                                    {{settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore || 0}}
-                                } @else if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore >= 0) {
-                                    0
-                                }
-                                
+            @switch (this.selectedTabIndex) {
+            @case (1) {
+                <table class="w-full">
+                    <thead class="table-header">
+                        <tr class="first-row px-2">
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white pl-2"></span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white"></span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white"></span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white"></span>
+                            </th>
+                            <th class="py-3 px-1 text-center" colspan="2">
+                                <span class="font-medium text-white">Начальное сальдо</span>
+                            </th>
+                            <th class="py-3 px-1 text-center" colspan="2">
+                                <span class="font-medium text-white">За период</span>
+                            </th>
+                            <th class="py-3 px-1 text-center" colspan="2">
+                                <span class="font-medium text-white">Конечное сальдо</span>
+                            </th>
+                        </tr>
+                        <tr class="second-row">
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white">№</span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white">Дата</span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white">Основание  </span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white">Контрагент</span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white">Зaдолженность</span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white">Переплата</span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white">Зaдолженность</span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white">Переплата</span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white">Зaдолженность</span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white">Переплата</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-body">
+                        @for (settlement of mutualSettlements; track $index; let index = $index) {
+                        <tr class="cursor-pointer" (click)="openSettlementDialog(settlement)">
+                            <td class="pl-2 py-3">
+                                {{index +1}}
                             </td>
-                            <td class="py-3 px-1 start-saldo text-green-600" [attr.rowspan]="calcUserDataLength(settlement?.user?.id)">
-                                @if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore > 0) {
-                                    +{{settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore || 0}}
-                                } @else if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore <= 0) {
-                                    0
+                            <td class="pl-2 py-3">
+                                {{settlement.document?.createdAt | date: 'medium'}}
+                            </td>
+                            <td class="py-3 px-1">
+                                @if(settlement?.document?.id) {
+                                    <span (click)="$event.stopPropagation();openDocument(settlement?.document?.id)" matTooltip="Полная информация по Документу" class="text-link">Документ№ {{settlement?.document?.id}}</span>
+                                }
+                                @if(settlement?.post?.id) {
+                                    <span class="text-link">, Заказ№ {{settlement?.post?.id}}</span>
                                 }
                             </td>
+                            <td class="py-3 px-1 text-link" (click)="$event.stopPropagation();openUser(settlement?.user?.id)" matTooltip="Полная информация по Пользователю">
+                                {{settlement?.user?.email}}
+                            </td>
+                            @if (index == 0 || mutualSettlements[index -1]?.user?.documents[0].userBalanseBefore != settlement?.user?.documents[0].userBalanseBefore) {
+                                <td class="py-3 px-1 start-saldo text-red-600" [attr.rowspan]="calcUserDataLength(settlement?.user?.id)">
+                                    @if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore < 0) {
+                                        {{settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore || 0}}
+                                    } @else if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore >= 0) {
+                                        0
+                                    }
+                                    
+                                </td>
+                                <td class="py-3 px-1 start-saldo text-green-600" [attr.rowspan]="calcUserDataLength(settlement?.user?.id)">
+                                    @if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore > 0) {
+                                        +{{settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore || 0}}
+                                    } @else if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore <= 0) {
+                                        0
+                                    }
+                                </td>
+                            }
+    
+                            <td class="py-3 px-1 middle-saldo text-red-600">
+                                @if(settlement?.document?.docType == 1) {
+                                    -{{settlement?.document?.sum}}
+                                } @else if(settlement?.document?.docType == 2) {
+                                    0
+                                }
+                            </td>
+                            <td class="py-3 px-1 middle-saldo text-green-600">
+                                @if(settlement?.document?.docType == 2) {
+                                    +{{settlement?.document?.sum}}
+                                } @else if(settlement?.document?.docType == 1) {
+                                    0
+                                }
+                            </td>
+                               @if (index == 0 || mutualSettlements[index -1]?.user?.documents[settlement?.user?.documents?.length -1]?.userBalanseAfter != settlement?.user?.documents[settlement?.user?.documents?.length -1]?.userBalanseAfter) {
+                                <td class="py-3 px-1 end-saldo text-red-600" [attr.rowspan]="calcUserDataLength(settlement?.user?.id)">
+                                    @if(getAfterDebtSaldo(settlement?.user) || getAfterDebtSaldo(settlement?.user) === 0) {
+                                        {{getAfterDebtSaldo(settlement?.user) || 0}}
+                                    } @else if(settlement?.user?.documents[0].userBalanseAfter >= 0) {
+                                        0
+                                    }
+                                    
+                                </td>
+                                <td class="py-3 px-1 end-saldo text-green-600" [attr.rowspan]="calcUserDataLength(settlement?.user?.id)">
+                                    @if(settlement?.user?.documents[0]?.userBalanseAfter > 0) {
+                                        +{{settlement?.user?.documents[0]?.userBalanseAfter || 0}}
+                                    } @else if(settlement?.user?.documents[0]?.userBalanseAfter <= 0) {
+                                        0
+                                    }
+                                </td>
+                            }
+    
+                            <!-- <td class="py-3 px-1">
+                                {{settlement?.organization}}
+                            </td> -->
+                            <!-- <td class="py-3 px-1">
+                                {{settlement?.district}}
+                            </td> -->
+                            <!-- <td class="py-3 px-1">
+                                {{settlement?.name}}
+                            </td> -->
+                            <!-- <td class="py-3 px-1">
+                                {{settlement?.settlement}}
+                            </td> -->
+            
+                            <!-- <td class="py-3 px-1">
+                                {{settlement?.build}}
+                            </td>
+                            <td class="py-3 px-1">
+                                {{settlement?.coordinates}}
+                            </td>
+            
+                            <td class="py-3 px-1">
+                                {{settlement?.phone}}
+                            </td>
+            
+                            <td class="py-3 px-1">
+                                {{settlement?.settlementStatus}}
+                            </td>
+            
+                            <td class="py-3 px-1">
+                                {{settlement?.comment}}
+                            </td>
+            
+                            <td class="py-3 px-1">
+                                {{settlement?.updatedAt | date: 'medium'}}
+                            </td> -->
+            
+                        </tr>
                         }
-
-                        <td class="py-3 px-1 middle-saldo text-red-600">
-                            @if(settlement?.document?.docType == 1) {
-                                -{{settlement?.document?.sum}}
-                            } @else if(settlement?.document?.docType == 2) {
-                                0
-                            }
-                        </td>
-                        <td class="py-3 px-1 middle-saldo text-green-600">
-                            @if(settlement?.document?.docType == 2) {
-                                +{{settlement?.document?.sum}}
-                            } @else if(settlement?.document?.docType == 1) {
-                                0
-                            }
-                        </td>
-                           @if (index == 0 || mutualSettlements[index -1]?.user?.documents[settlement?.user?.documents?.length -1]?.userBalanseAfter != settlement?.user?.documents[settlement?.user?.documents?.length -1]?.userBalanseAfter) {
-                            <td class="py-3 px-1 end-saldo text-red-600" [attr.rowspan]="calcUserDataLength(settlement?.user?.id)">
-                                @if(getAfterDebtSaldo(settlement?.user) || getAfterDebtSaldo(settlement?.user) === 0) {
-                                    {{getAfterDebtSaldo(settlement?.user) || 0}}
-                                } @else if(settlement?.user?.documents[0].userBalanseAfter >= 0) {
-                                    0
-                                }
-                                
+                    </tbody>
+                </table>
+            }
+            @case(2) {
+                <table class="w-full">
+                    <thead class="table-header">
+                        <tr class="first-row px-2">
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white pl-2"></span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white"></span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white"></span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white"></span>
+                            </th>
+                            <th class="py-3 px-1 text-center" colspan="2">
+                                <span class="font-medium text-white">Начальное сальдо</span>
+                            </th>
+                            <th class="py-3 px-1 text-center" colspan="2">
+                                <span class="font-medium text-white">За период</span>
+                            </th>
+                            <th class="py-3 px-1 text-center" colspan="2">
+                                <span class="font-medium text-white">Конечное сальдо</span>
+                            </th>
+                        </tr>
+                        <tr class="second-row">
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white">№</span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white">Дата</span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white">Основание  </span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white">Контрагент</span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white">Зaдолженность</span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white">Переплата</span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white">Зaдолженность</span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white">Переплата</span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white">Зaдолженность</span>
+                            </th>
+                            <th class="py-3 px-1">
+                                <span class="font-medium text-white">Переплата</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-body">
+                        @for (settlement of mutualSettlementsForDrivers; track $index; let index = $index) {
+                        <tr class="cursor-pointer" (click)="openSettlementDialog(settlement)">
+                            <td class="pl-2 py-3">
+                                {{index +1}}
                             </td>
-                            <td class="py-3 px-1 end-saldo text-green-600" [attr.rowspan]="calcUserDataLength(settlement?.user?.id)">
-                                @if(settlement?.user?.documents[0]?.userBalanseAfter > 0) {
-                                    +{{settlement?.user?.documents[0]?.userBalanseAfter || 0}}
-                                } @else if(settlement?.user?.documents[0]?.userBalanseAfter <= 0) {
-                                    0
+                            <td class="pl-2 py-3">
+                                {{settlement.document?.createdAt | date: 'medium'}}
+                            </td>
+                            <td class="py-3 px-1">
+                                @if(settlement?.document?.id) {
+                                    <span (click)="$event.stopPropagation();openDocument(settlement?.document?.id)" matTooltip="Полная информация по Документу" class="text-link">Документ№ {{settlement?.document?.id}}</span>
+                                }
+                                @if(settlement?.post?.id) {
+                                    <span class="text-link" (click)="openPostDialog(settlement?.post?.id)"> Заказ№ {{settlement?.post?.id}}</span>
                                 }
                             </td>
+                            <td class="py-3 px-1 text-link" (click)="$event.stopPropagation();openUser(settlement?.user?.id)" matTooltip="Полная информация по Пользователю">
+                                {{settlement?.user?.email}}
+                            </td>
+                            @if (index == 0 || mutualSettlementsForDrivers[index -1]?.user?.id != settlement?.user?.id) {
+                                <td class="py-3 px-1 start-saldo text-red-600" [attr.rowspan]="calcDriverDataLength(settlement?.user?.id)">
+                                    <!-- @if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore < 0) {
+                                        {{settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore || 0}}
+                                    } @else if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore >= 0) {
+                                        0
+                                    } -->
+                                    0
+                                </td>
+                                <td class="py-3 px-1 start-saldo text-green-600" [attr.rowspan]="calcDriverDataLength(settlement?.user?.id)">
+                                    <!-- @if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore > 0) {
+                                        +{{settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore || 0}}
+                                    } @else if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore <= 0) {
+                                        0
+                                    } -->
+                                    0
+                                </td>
+                            }
+    
+                            <td class="py-3 px-1 middle-saldo text-red-600">
+                                <!-- @if(settlement?.document?.docType == 1) {
+                                    -{{settlement?.document?.sum}}
+                                } @else if(settlement?.document?.docType == 2) {
+                                    0
+                                } -->
+                                0
+                            </td>
+                            <td class="py-3 px-1 middle-saldo text-green-600">
+                                <!-- @if(settlement?.document?.docType == 2) {
+                                    +{{settlement?.document?.sum}}
+                                } @else if(settlement?.document?.docType == 1) {
+                                    0
+                                } -->
+                                +{{settlement?.post?.commission}}
+                            </td>
+                            @if (index == 0 || mutualSettlementsForDrivers[index -1]?.user?.id != settlement?.user?.id) {
+                                <td class="py-3 px-1 end-saldo text-red-600" [attr.rowspan]="calcDriverDataLength(settlement?.user?.id)">
+                                    <!-- @if(getAfterDebtSaldo(settlement?.user) || getAfterDebtSaldo(settlement?.user) === 0) {
+                                        {{getAfterDebtSaldo(settlement?.user) || 0}}
+                                    } @else if(settlement?.user?.documents[0].userBalanseAfter >= 0) {
+                                        0
+                                    } -->
+                                    0
+                                </td>
+                                <td class="py-3 px-1 end-saldo text-green-600" [attr.rowspan]="calcDriverDataLength(settlement?.user?.id)">
+                                    <!-- @if(settlement?.user?.documents[0]?.userBalanseAfter > 0) {
+                                        +{{settlement?.user?.documents[0]?.userBalanseAfter || 0}}
+                                    } @else if(settlement?.user?.documents[0]?.userBalanseAfter <= 0) {
+                                        0
+                                    } -->
+                                    {{getDriverSum(settlement?.user) || 0}}
+                                </td>
+                            }
+    
+                            <!-- <td class="py-3 px-1">
+                                {{settlement?.organization}}
+                            </td> -->
+                            <!-- <td class="py-3 px-1">
+                                {{settlement?.district}}
+                            </td> -->
+                            <!-- <td class="py-3 px-1">
+                                {{settlement?.name}}
+                            </td> -->
+                            <!-- <td class="py-3 px-1">
+                                {{settlement?.settlement}}
+                            </td> -->
+            
+                            <!-- <td class="py-3 px-1">
+                                {{settlement?.build}}
+                            </td>
+                            <td class="py-3 px-1">
+                                {{settlement?.coordinates}}
+                            </td>
+            
+                            <td class="py-3 px-1">
+                                {{settlement?.phone}}
+                            </td>
+            
+                            <td class="py-3 px-1">
+                                {{settlement?.settlementStatus}}
+                            </td>
+            
+                            <td class="py-3 px-1">
+                                {{settlement?.comment}}
+                            </td>
+            
+                            <td class="py-3 px-1">
+                                {{settlement?.updatedAt | date: 'medium'}}
+                            </td> -->
+            
+                        </tr>
                         }
+                    </tbody>
+                </table>
+            }
+            }
 
-                        <!-- <td class="py-3 px-1">
-                            {{settlement?.organization}}
-                        </td> -->
-                        <!-- <td class="py-3 px-1">
-                            {{settlement?.district}}
-                        </td> -->
-                        <!-- <td class="py-3 px-1">
-                            {{settlement?.name}}
-                        </td> -->
-                        <!-- <td class="py-3 px-1">
-                            {{settlement?.settlement}}
-                        </td> -->
-        
-                        <!-- <td class="py-3 px-1">
-                            {{settlement?.build}}
-                        </td>
-                        <td class="py-3 px-1">
-                            {{settlement?.coordinates}}
-                        </td>
-        
-                        <td class="py-3 px-1">
-                            {{settlement?.phone}}
-                        </td>
-        
-                        <td class="py-3 px-1">
-                            {{settlement?.settlementStatus}}
-                        </td>
-        
-                        <td class="py-3 px-1">
-                            {{settlement?.comment}}
-                        </td>
-        
-                        <td class="py-3 px-1">
-                            {{settlement?.updatedAt | date: 'medium'}}
-                        </td> -->
-        
-                    </tr>
-                    }
-                </tbody>
-            </table>
         </div>
     </div>
 
@@ -208,7 +387,7 @@
         <div class="flex justify-end font-medium text-lg underline my-3 cursor-pointer" (click)="$event.stopPropagation();clearFilter()">
             Очистить
         </div>
-        <select-field [label]="'По Контрагенту'" [options]="usersUsers" formControlName="user" (click)="$event.stopPropagation()" [nameKey]="'email'"></select-field>
+        <select-field [label]="'По Контрагенту'" [options]="usersUsers" formControlName="userId" (click)="$event.stopPropagation()" [nameKey]="'email'"></select-field>
         <select-field [label]="'По Каналу продаж'" [options]="saleChannels" formControlName="salesChannel" (click)="$event.stopPropagation()" [nameKey]="'name'"></select-field>
         <div class="flex w-[288px] date-range-input">
             <mat-form-field class="w-full" (click)="picker.open();$event.stopPropagation()">
@@ -230,7 +409,7 @@
             </mat-form-field>
         </div>
         <div class="flex">
-            <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold w-full" (click)="createSettlement();$event.stopPropagation()">
+            <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold w-full" (click)="getSettlements();$event.stopPropagation()">
                 Сформировать
             </button>
         </div>

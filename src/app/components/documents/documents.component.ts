@@ -39,24 +39,7 @@ import moment from 'moment';
     styleUrl: './documents.component.scss'
 })
 export class DocumentsComponent implements OnInit, OnDestroy {
-  documents = [
-    {
-      id: 3743,
-      createdAt: 1731261051000,
-      addressFrom: 'Болгария',
-      addressTo: 'Сухум',
-      clientId: 31233,
-      recipientId: 4322,
-      postBasisId: 1,
-      documentBasisId: 1,
-      comment: 'Комментарий',
-      docType: 1,
-      sum: 2200,
-      updatedAt: 1731261062000,
-      isSystem: false,
-      status: 1
-    },
-  ];
+  documents = [];
   loaderId = 'document-component';
   unsubscribeAll$: Subject<any> = new Subject();
   filterForm: FormGroup;

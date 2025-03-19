@@ -207,24 +207,28 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   showUsers() {
     console.log('showUsers!');
     this.selectedTab = TabsEnum.Users;
+    this.leftOpened = false;
     localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
   }
 
   showDashboard() {
     console.log('showDashboard!');
     this.selectedTab = TabsEnum.Dashboard;
+    this.leftOpened = false;
     localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
   }
 
   showUserDashboard() {
     console.log('showUserDashboard!');
     this.selectedTab = TabsEnum.UserDashboard;
+    this.leftOpened = false;
     localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
   }
 
   showDriverDashboard() {
     console.log('showDriverDashboard!');
     this.selectedTab = TabsEnum.DriverDashboard;
+    this.leftOpened = false;
     localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
   }
 
@@ -244,6 +248,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     if (this.isAdmin() || this.isOperator()) {
+      console.log('this.isAdmin() || this.isOperator()',);
       this.postsService.getPosts().subscribe((posts) => {
         console.log('CONSOLE!', posts);
         this.allPosts = posts;
@@ -253,11 +258,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     if (!this.isAdmin() && !this.isOperator() && !this.isDriver()) {
+      console.log('NOTTTTTTTTTTTTTTTTTTTTT====>>>',);
       this.postsService
         .getFilteredPosts({ customerId: this.currentUser?.id })
         .pipe(finalize(() => this.ngxService.stopLoader(this.loaderId)))
         .subscribe((posts: any) => {
-          this.userPosts = posts;
+          console.log('this.userPosts',this.userPosts);
+          this.userPosts = posts.filter(post => post.customer.id == this.currentUser?.id);
         });
     }
   }
@@ -380,12 +387,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   showSettings() {
     this.selectedTab = TabsEnum.ProfileDetails;
+    this.leftOpened = false;
     localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
   }
 
   showDriverPosts() {
     console.log('showDriverPosts');
     this.selectedTab = 'DriverDeliveries';
+    this.leftOpened = false;
     localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
   }
 
@@ -438,26 +447,31 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   showDocuments() {
     this.selectedTab = TabsEnum.Documents;
+    this.leftOpened = false;
     localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
   }
 
   showMap() {
     this.selectedTab = TabsEnum.Map;
+    this.leftOpened = false;
     localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
   }
 
   showInAddresses() {
     this.selectedTab = TabsEnum.InAddresses;
+    this.leftOpened = false;
     localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
   }
 
   showOutAddresses() {
     this.selectedTab = TabsEnum.OutAddresses;
+    this.leftOpened = false;
     localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
   }
 
   showMutualSettlements() {
     this.selectedTab = TabsEnum.MutualSettlements;
+    this.leftOpened = false;
     localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
   }
 
@@ -503,6 +517,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   showContacts() {
     this.selectedTab = TabsEnum.Contacts;
+    this.leftOpened = false;
     localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
   }
 

@@ -39,6 +39,7 @@ export class StateService implements OnDestroy {
   warehouses$: Observable<any[]> = this.warehousesSubject.asObservable();
   roles$: Observable<any[]> = this.rolesSubject.asObservable();
   clients$: Observable<any[]> = this.clientsSubject.asObservable();
+  driversMap: Map<number, any> = new Map();
 
   addresesIn$: Observable<any[]> = this.addressesInSubject.asObservable();
   addressesOut$: Observable<any[]> = this.addressesOutSubject.asObservable();
@@ -106,6 +107,7 @@ export class StateService implements OnDestroy {
     this.loadDocuments();
     this.loadWarehouses();
     this.loadClients();
+    this.loadDrivers();
 
     this.loadAddresesIn();
     this.loadAddresesOut();
@@ -178,6 +180,27 @@ export class StateService implements OnDestroy {
             }
             console.log('getFilteredUsers', res);
             this.clientsSubject.next(res);
+          });
+      }
+    });
+  }
+
+  private loadDrivers() {
+    this.roles$.pipe(takeUntil(this.unsubscribeAll$)).subscribe((roles) => {
+      if (roles?.length) {
+        const clientRole = roles.find((role) => role.value == 'Driver');
+        console.log('clientRole', clientRole);
+        this.usersSerive
+          .getFilteredUsers(clientRole.id)
+          .subscribe((res: any) => {
+            if (!res) {
+              return;
+            }
+            console.log('getFilteredUsers', res);
+            this.driversMap.clear();
+            res?.forEach(element => {
+              this.driversMap.set(element.id, element);
+            });
           });
       }
     });
@@ -267,6 +290,11 @@ export class StateService implements OnDestroy {
     this.webSocketService.on(EventNameEnum.OnUserUpdate).subscribe((data) => {
       console.log('webSocketService =====>>>>',data);
       this.usersUpdatesSignal.next(data);
+    });
+
+    this.usersUpdatesSignal.subscribe((data) => {
+      console.log('usersUpdatesSignal', data);
+      this.loadUsers();
     });
   }
 }

@@ -102,6 +102,14 @@
     background-color: #08c873;
   }
 
+  button.d-button {
+    font-family: "poppins";
+    color: #fafafa !important;
+    height: 52px;
+    letter-spacing: 0.8px;
+    background-color: #ff0000;
+  }
+
   button.s-button[disabled] {
     background-color: #99a8a1;
   }

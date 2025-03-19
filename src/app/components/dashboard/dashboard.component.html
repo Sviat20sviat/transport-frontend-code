@@ -142,9 +142,9 @@
 
     <ng-template #dashboard>
         <div class="text-xl flex items-center mb-4">
-            Объявления пользователей
+            Заказы пользователей
         </div>
-        <div class="flex relative z-10 mb-[-60px]">
+        <div class="flex relative z-10 mb-[-60px] mr-[200px]">
             <div class="tab-group-header flex ">
                 <div class="flex tab-group-header-item cursor-pointer p-3"
                     [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 1}" (click)="selectPostTypeTab(1)">Ожидают
@@ -183,13 +183,13 @@
     <ng-template #usersDashboard>
         <div class="flex flex-row justify-between mb-2 user flex-wrap">
             <div class="text-xl flex items-center">
-                Ваши Объявления
+                Ваши Заказы
             </div>
             <div class="flex">
 
                 <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
                     (click)="openPostDialog()">
-                    Создать объявление
+                    Создать Заказ
                 </button>
             </div>
 
@@ -207,6 +207,7 @@
                 </button>
             </div> -->
             <div class="post-card-container">
+                
                 @for (post of userPosts; track $index) {
                 <div class="post-card-item cursor-pointer" (click)="openPostDialog(post)">
                     <div class="flex justify-between mb-2">
@@ -251,13 +252,20 @@
                             {{getPostExecutingStatus((post?.status))}}</div>
                     </div>
                     <div class="flex items-center mt-auto">
-                        @if(true) {
+                        @if(post?.status == 0) {
                         <button mat-raised-button
-                            class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
+                            class="d-button h-[52px] w-[200px] text-base  uppercase font-semibold"
                             (click)="$event.stopPropagation(); cancelPostByUser(post)">
                             Отменить Заказ
                         </button>
                         }
+                    </div>
+                    <div class="flex items-center mt-auto">
+                        <button mat-raised-button
+                            class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
+                            >
+                            Открыть Заказ
+                        </button>
                     </div>
                 </div>
                 }
@@ -305,6 +313,14 @@
                 <div class="flex justify-between">
                     <span class="post-card-title">Описание:</span>
                     <span class="single-line-text">{{post?.content}}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="post-card-title">Коммиссия:</span>
+                    <span class="single-line-text">{{post?.commission}}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="post-card-title">Cумма:</span>
+                    <span class="single-line-text">{{post?.summ}}</span>
                 </div>
                 <div class="flex justify-between">
                     <span class="post-card-title">Статус:</span>

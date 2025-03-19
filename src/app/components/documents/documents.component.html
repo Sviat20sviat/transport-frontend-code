@@ -1,7 +1,7 @@
 <div class="flex flex-row justify-between mb-2">
     <!-- @if(isShowTitle) { -->
     <div class="text-xl flex items-center">
-        {{"Документы"}}
+        {{"Платежные Документы"}}
     </div>
     <!-- } -->
     <div class="flex">
@@ -34,10 +34,10 @@
                     <span class="font-medium text-white">Сумма</span>
                 </th>
                 <th class="py-3 px-1">
-                    <span class="font-medium text-white">Откуда, адрес</span>
+                    <span class="font-medium text-white">Откуда</span>
                 </th>
                 <th class="py-3 px-1">
-                    <span class="font-medium text-white">Куда, адрес</span>
+                    <span class="font-medium text-white">Куда</span>
                 </th>
 
                 <th class="py-3 px-1">
@@ -82,7 +82,7 @@
                 <td class="py-3 px-1">
                     <div class="text-container">{{ getDocStatus(document?.status)}}</div>
                 </td>
-                <td class="py-3 px-1">
+                <td class="py-3 px-1"  [ngClass]="{'bg-orange-200' : (document?.docType === 1), 'bg-green-200' : (document?.docType === 2)}">
                     {{document?.sum}}
                 </td>
                 <td class="py-3 px-1">
@@ -96,7 +96,10 @@
 
 
                 <td class="py-3 px-1">
-                    <div class="text-container" [matTooltip]="'Показать полную информацию по Клиенту'" (click)="$event.stopPropagation(); openUser(document?.clientId)">Клиент№ {{document?.clientId}}</div>
+                    <div class="text-container" [matTooltip]="'Показать полную информацию по Клиенту'" (click)="$event.stopPropagation(); openUser(document?.clientId)">
+                        Клиент№ {{document?.clientId}}
+                        {{document?.client?.id}}
+                    </div>
                 </td>
 
                 <td class="py-3 px-1">

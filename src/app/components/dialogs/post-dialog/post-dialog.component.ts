@@ -103,6 +103,59 @@ export class PostDialogComponent implements OnInit, OnDestroy {
   addressesInGroup = [];
   addressesOutGroup = [];
   addAddressToFavorite$: BehaviorSubject<any>;
+
+  titles = [
+    {
+      name: "Малогабаритные грузоперевозки с маркетплейсов Адлер - Сухум (сборным грузом)",
+      items: [
+        {name: "До 4.5 литр. до 2кг", id: 1, commission: 45, sum: 300},
+        {name: "До 12 литр. до 5кг", id: 2, commission: 127, sum: 850},
+        {name: "До 30 литр. до 12кг", id: 3,commission: 277, sum: 1850},
+        {name: "До 60 литр. до 18кг", id: 4, commission: 405,sum: 2700},
+        {name: "До 110 литр. до 20кг", id: 5, commission: 510,sum: 3400},
+        {name: "До 150 литр. до 30кг", id: 6, commission: 555,sum: 3700},
+      ]
+    },
+    {
+      name: "Трансфер (индивидуальная поездка)",
+      items: [
+        { name: "Аэропорт Сочи - Цандрипш", id: 7, commission: 3375, sum: 4500 },
+        { name: "Аэропорт Сочи - Холодная речка", id: 8, commission: 3375, sum: 4500 },
+        { name: "Аэропорт Сочи - Гагра", id: 9, commission: 3750, sum: 5000 },
+        { name: "Аэропорт Сочи - Алахадзы", id: 10, commission: 4125, sum: 5500 },
+        { name: "Аэропорт Сочи - Пицунда", id: 11, commission: 4125, sum: 5500 },
+        { name: "Аэропорт Сочи - Лидзава", id: 12, commission: 4500, sum: 6000 },
+        { name: "Аэропорт Сочи - Монашеское ущелье", id: 4, commission: 4875, sum: 6500 },
+        { name: "Аэропорт Сочи - Мюсера", id: 13, commission: 4875, sum: 6500 },
+        { name: "Аэропорт Сочи - Гудаута", id: 14, commission: 4875, sum: 6500 },
+        { name: "Аэропорт Сочи - Новый Афон", id: 15, commission: 5250, sum: 7000 },
+        { name: "Аэропорт Сочи - Сухум", id: 16, commission: 5625, sum: 7500 },
+        { name: "Аэропорт Сочи - Агудзера", id: 17, commission: 6000, sum: 8000 },
+        { name: "Аэропорт Сочи - Дранда, Бабушара", id: 18, commission: 6000, sum: 8000 },
+        { name: "Аэропорт Сочи - Кындги", id: 19, commission: 6375, sum: 8500 },
+        { name: "Аэропорт Сочи - Тамыш", id: 20, commission: 6750, sum: 9000 },
+        { name: "Аэропорт Сочи - Очамчира", id: 21, commission: 7125, sum: 9500 },
+        { name: "Аэропорт Сочи - Ткварчал", id: 22, commission: 7875, sum: 10500 },
+        { name: "Аэропорт Сочи - Гал", id: 23, commission: 7875, sum: 10500 }
+      ]
+    },
+    {
+      name: "Грузоперевозки до 3 тонн (индивидуальная поездка)",
+      items: [
+        { name: "Сухум - Цандрипш", id: 24, sum: 12500, commission: 9375 },
+        { name: "Сухум - Гагра", id: 25, sum: 9000, commission: 6750 },
+        { name: "Сухум - Гудаута", id: 26, sum: 6000, commission: 4500 },
+        { name: "Сухум - Новый Афон", id: 27, sum: 4500, commission: 3375 },
+        { name: "Сухум - Сухум", id: 28, sum: 1700, commission: 1275 },
+        { name: "Сухум - Агудзера", id: 29, sum: 4200, commission: 3150 },
+        { name: "Сухум - Дранда", id: 30, sum: 5200, commission: 3900 },
+        { name: "Сухум - Адзюбжа/Лабра", id: 31, sum: 7700, commission: 5775 },
+        { name: "Сухум - Очамчира", id: 32, sum: 10000, commission: 7500 },
+        { name: "Сухум - Ткварчал", id: 33, sum: 10000, commission: 7500 },
+        { name: "Сухум - Гал", id: 34, sum: 14500, commission: 10875 }
+      ]
+    }
+  ];
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { post },
     public dialogRef: MatDialogRef<PostDialogComponent>,
@@ -140,12 +193,24 @@ export class PostDialogComponent implements OnInit, OnDestroy {
     });
     this.form.get('addressTo').valueChanges.subscribe((value: string) => {
       if(value?.length) {
-        this.form.get('deliveryType').setValue(DeliveryTypesEnum.CourierDelivery);
+        const isExistTo = this.addressesIn.find((item) => item.address === value);
+        const isExistFrom = this.addressesOut.find((item) => item.address ===  this.form.get('addressFrom').value);
+        if(isExistTo && isExistFrom) {
+          this.form.get('deliveryType').setValue(DeliveryTypesEnum.Pickup);
+        } else {
+          this.form.get('deliveryType').setValue(DeliveryTypesEnum.CourierDelivery);
+        };
       };
     });
     this.form.get('addressFrom').valueChanges.subscribe((value: string) => {
       if(value?.length) {
-        this.form.get('deliveryType').setValue(DeliveryTypesEnum.CourierDelivery);
+        const isExistFrom = this.addressesOut.find((item) => item.address === value);
+        const isExistTo = this.addressesIn.find((item) => item.address ===  this.form.get('addressTo').value);
+        if(isExistTo && isExistFrom) {
+          this.form.get('deliveryType').setValue(DeliveryTypesEnum.Pickup);
+        } else {
+          this.form.get('deliveryType').setValue(DeliveryTypesEnum.CourierDelivery);
+        };
       };
     });
     combineLatest({
@@ -205,21 +270,21 @@ export class PostDialogComponent implements OnInit, OnDestroy {
 
   initForm() {
     this.form = this.fb.group({
-      title: ['', Validators.required],
-      content: ['', Validators.required],
+      title: [''],
+      content: [''],
 
-      addressFrom: [''],
-      addressTo: ['',],
+      addressFrom: ['', Validators.required],
+      addressTo: ['', Validators.required],
 
-      addressFromId: ['', Validators.required],
-      addressToId: ['', Validators.required],
+      addressFromId: [null],
+      addressToId: [null],
 
       postNaming: [''],
       warehouse: [''],
       cargoStatus: [1],
       deliveryDate: [null],
       deliveryType: [null, Validators.required],
-      trackCode: ['', Validators.required],
+      trackCode: [''],
       orderNumber: [''],
       cargoPickupComment: [''],
       cargoCharacter: [''],
@@ -615,6 +680,12 @@ export class PostDialogComponent implements OnInit, OnDestroy {
     } else {
       return validNumbers.reduce((acc, current) => acc * current, 1);
     };
+  }
+
+  selectPostTitle(event) {
+    this.form.get('summ').setValue(event.sum);
+    this.form.get('commission').setValue(event.commission);
+    this.form.get('price').setValue(event.sum - event.commission);
   }
 }
 

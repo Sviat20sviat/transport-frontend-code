@@ -14,7 +14,7 @@ export class DocumentsService {
   ) { }
 
   getAllDocuments(data?: {createdAt?, userId?, salesChannel?}): Observable<any> {
-    return this.http.post(this.server.serverAddress + '/documents/getFiltered', data || {});
+    return this.http.post(this.server.serverAddress + '/documents/getFiltered', data || {salesChannel: null});
   }
 
   getDocumentById(id): Observable<any> {

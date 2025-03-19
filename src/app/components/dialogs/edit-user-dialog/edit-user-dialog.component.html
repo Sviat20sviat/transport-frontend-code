@@ -52,33 +52,51 @@
                 <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
                     <custom-input-field [label]="'Email'" formControlName="email"></custom-input-field>
                 </div>
-                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                    <custom-input-field [label]="'ИНН'" formControlName="inn"></custom-input-field>
+                <div class="flex justify-between items-center mb-3 max-w-[50%] col-items-2">
+                    <span>Баланс:</span> 
+                    <div class="flex">
+                        <span class="text-xl font-bold mr-2" [ngClass]="{'text-green-700': (user?.balance || 0) >= 0, 'text-red-700': (user?.balance || 0) < 0}">{{user.balance}}</span> руб
+                    </div> 
                 </div>
-                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                    <custom-input-field [label]="'КПП'" formControlName="kpp"></custom-input-field>
+                <div class="flex flex-col justify-center mb-3 max-w-[100%] col-items-1 items-center">
+                    <mat-accordion class="example-headers-align w-full" multi>
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title> Дополнительная Информация </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div class="flex flex-row justify-between gap-3 flex-wrap">
+                                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                                    <custom-input-field [label]="'ИНН'" formControlName="inn"></custom-input-field>
+                                </div>
+                                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                                    <custom-input-field [label]="'КПП'" formControlName="kpp"></custom-input-field>
+                                </div>
+                                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                                    <custom-input-field [label]="'ОГРН'" formControlName="ogrn"></custom-input-field>
+                                </div>
+                                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                                    <custom-input-field [label]="'ОКПО'" formControlName="ocpo"></custom-input-field>
+                                </div>
+                                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                                    <custom-input-field [label]="'К/С Банка'" formControlName="bankAccount"></custom-input-field>
+                                </div>
+                                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                                    <custom-input-field [label]="'P/С Клиента'" formControlName="userBankAccount"></custom-input-field>
+                                </div>
+                                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                                    <custom-input-field [label]="'БИК'" formControlName="bic"></custom-input-field>
+                                </div>
+                                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                                    <custom-input-field [label]="'Прописка'" formControlName="registrationAddress"></custom-input-field>
+                                </div>
+                                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                                    <custom-input-field [label]="'Факт. Адрес'" formControlName="realAddress"></custom-input-field>
+                                </div>
+                            </div>
+                        </mat-expansion-panel>
+                    </mat-accordion>
                 </div>
-                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                    <custom-input-field [label]="'ОГРН'" formControlName="ogrn"></custom-input-field>
-                </div>
-                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                    <custom-input-field [label]="'ОКПО'" formControlName="ocpo"></custom-input-field>
-                </div>
-                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                    <custom-input-field [label]="'К/С Банка'" formControlName="bankAccount"></custom-input-field>
-                </div>
-                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                    <custom-input-field [label]="'P/С Клиента'" formControlName="userBankAccount"></custom-input-field>
-                </div>
-                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                    <custom-input-field [label]="'БИК'" formControlName="bic"></custom-input-field>
-                </div>
-                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                    <custom-input-field [label]="'Прописка'" formControlName="registrationAddress"></custom-input-field>
-                </div>
-                <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
-                    <custom-input-field [label]="'Факт. Адрес'" formControlName="realAddress"></custom-input-field>
-                </div>
+
                 @if(user?.id) {
                     <div class="flex flex-col justify-center mb-3 max-w-[100%] col-items-1 items-center">
                         <mat-accordion class="example-headers-align w-full" multi>

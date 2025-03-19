@@ -237,6 +237,10 @@ body {
   text-overflow: ellipsis;
 }
 
+.mdc-list-item__primary-text {
+  color:#656565;
+}
+
 @media (max-width: 736px) {
   .post-card-item {
     flex: 1 1 22% !important;
