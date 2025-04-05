@@ -14,7 +14,8 @@ import { RolesService } from './api/roles.service';
 import { AddressesService } from './api/addresses.service';
 import { AddressTypes } from '../components/address-out/address-out.component';
 import { EventNameEnum, WebSocketService } from './api/socket/web-socket.service';
-import { CargoStatusesEnum, DeliveryTypesEnum } from '../components/dialogs/post-dialog/post-dialog.component';
+import { CargoStatusesEnum, DeliveryTypesEnum, PostStatusesEnum } from '../components/dialogs/post-dialog/post-dialog.component';
+import { WarehousesService } from './api/warehouses.service';
 
 @Injectable({
   providedIn: 'root',
@@ -76,13 +77,17 @@ export class StateService implements OnDestroy {
       name: 'В пути',
     },
     {
-      id: CargoStatusesEnum.WaitInWarehouse,
-      name: 'Ожидает на Складе ',
+      id: CargoStatusesEnum.WaitConfirmation,
+      name: 'Ожидает Подтверждения',
     },
     {
-      id: CargoStatusesEnum.ReadyForPickup,
-      name: 'Готово к выдаче',
+      id: CargoStatusesEnum.WaitInWarehouse,
+      name: 'На Складе',
     },
+    // {
+    //   id: CargoStatusesEnum.ReadyForPickup,
+    //   name: 'Готово к выдаче',
+    // },
     {
       id: CargoStatusesEnum.Issued,
       name: 'Выдано',
@@ -93,13 +98,41 @@ export class StateService implements OnDestroy {
     },
   ];
 
+  statuses = [
+    {
+      id: 0,
+      value: 'Не одобрено',
+    },
+    {
+      id: 1,
+      value: 'Одобрено',
+    },
+    {
+      id: 2,
+      value: 'В pаботе',
+    },
+    {
+      id: 3,
+      value: 'Выполнено',
+    },
+    {
+      id: 4,
+      value: 'Отменено',
+    },
+    {
+      id: 5,
+      value: 'ЧП',
+    },
+  ];
+
   constructor(
     private usersSerive: UserService,
     private postsService: PostsService,
     private documentsService: DocumentsService,
     private rolesService: RolesService,
     private addressesService: AddressesService,
-    private webSocketService: WebSocketService
+    private webSocketService: WebSocketService,
+    private warehousesService: WarehousesService
   ) {
     this.loadRoles();
     this.loadUsers();
@@ -152,10 +185,12 @@ export class StateService implements OnDestroy {
   }
 
   private loadWarehouses() {
-    this.warehousesSubject.next([
-      { id: 1, location: 'NY' },
-      { id: 2, location: 'LA' },
-    ]);
+    this.warehousesService.getAll().subscribe((res) => {
+      if (!res) {
+        return;
+      }
+      this.warehousesSubject.next(res);
+    });
   }
 
   private loadRoles() {
@@ -224,6 +259,7 @@ export class StateService implements OnDestroy {
       });
   }
 
+
   getAllData(): Observable<{
     users: any[];
     posts: any[];
@@ -252,23 +288,28 @@ export class StateService implements OnDestroy {
     this.webSocketService.on(EventNameEnum.OnPostUpdate).subscribe((data) => {
       console.log('webSocketService =====>>>>',data);
       this.postsUpdatesSignal.next(data);
+      this.loadPosts();
     });
     this.webSocketService.on(EventNameEnum.OnPostDelete).subscribe((data) => {
       console.log('webSocketService =====>>>>',data);
       this.postsUpdatesSignal.next(data);
+      this.loadPosts();
     });
     this.webSocketService.on(EventNameEnum.OnPostCreate).subscribe((data) => {
       console.log('webSocketService =====>>>>',data);
       this.postsUpdatesSignal.next(data);
+      this.loadPosts();
     });
 
     this.webSocketService.on(EventNameEnum.OnDocumentCreate).subscribe((data) => {
       console.log('webSocketService =====>>>>',data);
       this.documentsUpdatesSignal.next(data);
+      this.loadDocuments();
     });
     this.webSocketService.on(EventNameEnum.OnDocumentUpdate).subscribe((data) => {
       console.log('webSocketService =====>>>>',data);
       this.documentsUpdatesSignal.next(data);
+      this.loadDocuments();
     });
     this.webSocketService.on(EventNameEnum.OnDocumentDelete).subscribe((data) => {
       console.log('webSocketService =====>>>>',data);
@@ -278,23 +319,87 @@ export class StateService implements OnDestroy {
     this.webSocketService.on(EventNameEnum.OnUserBanned).subscribe((data) => {
       console.log('webSocketService =====>>>>',data);
       this.userBannedSignal$.next(data);
+      this.loadUsers();
     });
     this.webSocketService.on(EventNameEnum.OnUserCreate).subscribe((data) => {
       console.log('webSocketService =====>>>>',data);
       this.usersUpdatesSignal.next(data);
+      this.loadUsers();
     });
     this.webSocketService.on(EventNameEnum.OnUserDelete).subscribe((data) => {
       console.log('webSocketService =====>>>>',data);
       this.usersUpdatesSignal.next(data);
+      this.loadUsers();
     });
     this.webSocketService.on(EventNameEnum.OnUserUpdate).subscribe((data) => {
       console.log('webSocketService =====>>>>',data);
       this.usersUpdatesSignal.next(data);
+      this.loadUsers();
     });
 
     this.usersUpdatesSignal.subscribe((data) => {
       console.log('usersUpdatesSignal', data);
       this.loadUsers();
+      
     });
+  }
+
+  getPostExecutingStatus(status: number): string {
+    switch (status) {
+      case 0:
+        return 'Не одобрено';
+      case 1:
+        return 'Одобрено';
+      case 2:
+        return 'В работе';
+      case 3:
+        return 'Выполено';
+      case 4:
+        return 'Отменено';
+      case 5:
+        return 'ЧП';
+      default:
+        return 'Не одобрено';
+    }
+  }
+
+  getPostExecutingStatusFromText(status: string): number {
+    switch (status) {
+      case 'Не одобрено':
+        return PostStatusesEnum.NotAllowed;
+      case 'Одобрено':
+        return PostStatusesEnum.Allowed;
+      case 'В pаботе':
+        return PostStatusesEnum.InProgress;
+      case 'Выполнено':
+        return PostStatusesEnum.Done;
+      case 'Отменено':
+        return PostStatusesEnum.Rejected;
+      case 'ЧП':
+        return PostStatusesEnum.SOS;
+      default:
+        return PostStatusesEnum.NotAllowed;
+    }
+  }
+
+  getCargoStatus(cargoStatus: CargoStatusesEnum): string {
+    switch (cargoStatus) {
+      case CargoStatusesEnum.WaitCargo:
+        return 'В Ожидании забора груза';
+      case CargoStatusesEnum.OnTheWayOnOurDelivery:
+        return 'В пути';
+      case CargoStatusesEnum.WaitConfirmation:
+        return 'Ожидает подтверждения Работником ПВЗ'; 
+      case CargoStatusesEnum.WaitInWarehouse:
+        return 'Hа Складе';
+      case CargoStatusesEnum.ReadyForPickup:
+        return 'Готово к выдаче';
+      case CargoStatusesEnum.Issued:
+        return 'Выдано';
+      case CargoStatusesEnum.Cancelled:
+        return 'Отменено';
+      default:
+        return 'В пути';
+    }
   }
 }

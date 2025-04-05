@@ -202,6 +202,22 @@ body {
     background-color: #ff1e1e;
   }
 }
+.cargo-status-badge {
+  background-color: #cecece;
+  border-radius: 4px;
+  display: inline-flex;
+  padding: 0 6px;
+  width: fit-content;
+  &.status-3 {
+    background-color: #fce83a;
+  }
+  &.status-4 {
+    background-color: #2dccff;
+  }
+  &.status-6 {
+    background-color: #56f000;
+  }
+}
 .post-card-container {
   display: flex;
   flex-wrap: wrap;
@@ -212,7 +228,7 @@ body {
     padding: 20px;
     border-radius: 8px;
     border: 1px solid #9c9c9c;
-    flex: 1 1 22%;
+    flex: 0 1 24%;
     .flex {
       margin-bottom: 8px;
       flex-direction: column;

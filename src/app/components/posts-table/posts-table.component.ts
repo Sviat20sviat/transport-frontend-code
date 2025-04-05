@@ -99,22 +99,7 @@ export class PostsTableComponent implements OnInit, OnDestroy {
 
 
   getPostExecutingStatus(status: number): string {
-    switch (status) {
-      case 0:
-        return 'Не одобрено';
-      case 1:
-        return 'Одобрено';
-      case 2:
-        return 'В работе';
-      case 3:
-        return 'Выполено';
-      case 4:
-        return 'Отменено';
-      case 5:
-        return 'ЧП';
-      default:
-        return 'Не одобрено';
-    }
+    return this.stateService.getPostExecutingStatus(status);
   }
 
   deletePost(post: any) {
@@ -159,24 +144,8 @@ export class PostsTableComponent implements OnInit, OnDestroy {
 
   }
 
-  
-  getCargoStatus(status: number) {
-    switch (status) {
-      case CargoStatusesEnum.WaitCargo:
-        return 'В Ожидании забора груза';
-        case CargoStatusesEnum.OnTheWayOnOurDelivery:
-        return 'В пути';
-        case CargoStatusesEnum.WaitInWarehouse:
-        return 'Ожидает на Складе';
-        case CargoStatusesEnum.ReadyForPickup:
-        return 'Готово к выдаче';
-        case CargoStatusesEnum.Issued:
-        return 'Выдано';
-        case CargoStatusesEnum.Cancelled:
-        return 'Отменено';
-      default:
-        return 'В пути';
-    }
+  getCargoStatus(cargoStatus: CargoStatusesEnum): string {
+    return this.stateService.getCargoStatus(cargoStatus);
   }
 
   getDeliveryType(id: number) {

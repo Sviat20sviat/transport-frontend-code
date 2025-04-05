@@ -1,0 +1,102 @@
+<div class="flex flex-col">
+    <!-- Header Section -->
+    <div class="flex justify-between px-6 pt-6 dialog-header">
+        <div class="text-xl flex items-center mb-3">
+            @if(warehouse?.id) {
+                СКЛАД № {{warehouse?.id}}
+                <div class="status-badge ml-2" [ngClass]="'status-' + (warehouse?.status)">
+                    {{warehouse?.status}}
+                </div>
+            } @else {
+                НОВЫЙ СКЛАД
+            }
+        </div>
+        <div class="flex">
+            @if(warehouse?.id) {
+                <div class="flex">
+                    <div class="inline-flex font-medium justify-end mr-4">Создан</div>
+                    <div class="flex">{{warehouse?.createdAt | date: 'medium'}}</div>
+                </div>
+            }
+            <div class="flex close-dialog-button" (click)="dialogRef.close()">X</div>
+        </div>
+    </div>
+
+    <!-- Main Content Section -->
+    <div class="flex flex-col p-3 warehouse-dialog-container h-[90vh] justify-between">
+        <div class="flex flex-col h-full overflow-auto p-3 warehouse-wrap-item">
+            <div class="flex flex-row justify-between gap-3 flex-wrap">
+                <ng-container [formGroup]="form">
+                    <!-- Warehouse Data Section -->
+                    <div class="flex flex-col justify-center mb-3 max-w-full w-full col-items-1">
+                        <div class="text-lg flex items-center justify-center mb-3">
+                            Данные по Складу
+                        </div>
+                    </div>
+
+                    <!-- Form Fields -->
+                    <div class="flex flex-col justify-between mb-3 max-w-[100%] col-items-1">
+                        <custom-input-field [label]="'Название'" formControlName="name"></custom-input-field>
+                    </div>
+
+                    <div class="flex flex-col justify-between mb-3 max-w-[100%] col-items-1">
+                        <custom-input-field [label]="'Адрес'" formControlName="address"></custom-input-field>
+                    </div>
+
+                    <div class="flex flex-row justify-between gap-3 mb-3 max-w-[100%] col-items-1">
+                        <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                            <custom-input-field [label]="'Широта'" formControlName="lat"></custom-input-field>
+                        </div>
+                        <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
+                            <custom-input-field [label]="'Долгота'" formControlName="lng"></custom-input-field>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col justify-between mb-3 max-w-[100%] col-items-1">
+                        <custom-input-field [label]="'Номер телефона'" formControlName="phoneNumber"></custom-input-field>
+                    </div>
+
+                    <div class="flex flex-col justify-between mb-3 max-w-[100%] col-items-1">
+                        <!-- <custom-input-field [label]="'Идентификатор руководителя'" formControlName="supervisorId"></custom-input-field> -->
+                        <select-field [label]="'Руководитель Склада'" [options]="users"
+                        formControlName="supervisorId" [nameKey]="'email'"></select-field>
+                    </div>
+
+                    <div class="flex flex-col justify-between mb-3 max-w-[100%] col-items-1">
+                        <custom-input-field [label]="'Статус'" formControlName="status"></custom-input-field>
+                    </div>
+
+                    <div class="flex flex-col justify-between mb-3 max-w-[100%] col-items-1">
+                        <!-- <custom-input-field [label]="''" formControlName="workerIds"></custom-input-field> -->
+                        <select-field [label]="'Работники склада'" [options]="warehouseWorkers" [isMultiple]="true"
+                        formControlName="workerIds" [nameKey]="'email'"></select-field>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+
+        <!-- Action Buttons and Validation Message -->
+        <div class="flex justify-center flex-col">
+            @if(!form?.valid && !warehouse?.id) {
+                <div class="text-red-600 my-2 text-center">*Внимание! Не все обязательные поля заполнены!*</div>
+            }
+
+            <div class="flex flex-row justify-center">
+                @if(warehouse?.id) {
+                    <button mat-raised-button class="s-button h-[52px] w-[200px] text-base uppercase font-semibold"
+                        (click)="update()" [disabled]="!form?.valid">
+                        Редактировать
+                    </button>
+                } @else {
+                    <button mat-raised-button class="s-button h-[52px] w-[200px] text-base uppercase font-semibold"
+                        (click)="create()" [disabled]="!form?.valid">
+                        Создать
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Indicator -->
+<ngx-ui-loader [fgsColor]="'#ffffff'" [loaderId]="loaderId" [fgsType]="'three-bounce'"></ngx-ui-loader>

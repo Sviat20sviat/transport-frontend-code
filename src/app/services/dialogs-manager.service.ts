@@ -9,6 +9,7 @@ import { DocumentDialogComponent } from '../components/documents/document-dialog
 import { AddressDialogComponent } from '../components/dialogs/address-dialog/address-dialog.component';
 import { AddressTypes } from '../components/address-out/address-out.component';
 import { PhotoDialogComponent } from '../components/dialogs/photo-dialog/photo-dialog.component';
+import { WarehouseDialogComponent } from '../components/dialogs/warehouse-dialog/warehouse-dialog.component';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +32,14 @@ export class DialogsManagerService {
   openCreatePostDialog(): MatDialogRef<CreatePostDialogComponent> {
     return this.dialogRef.open(CreatePostDialogComponent, {
       data: {},
+      maxHeight: "98vh",
+      width:  "800px"
+    });
+  }
+
+  openWarehouseDialog(warehouse?): MatDialogRef<WarehouseDialogComponent> {
+    return this.dialogRef.open(WarehouseDialogComponent, {
+      data: {warehouse},
       maxHeight: "98vh",
       width:  "800px"
     });

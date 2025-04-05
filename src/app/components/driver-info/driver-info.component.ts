@@ -67,47 +67,43 @@ export class DriverInfoComponent implements OnInit, OnDestroy {
   }
 
   getPostExecutingStatus(status: number): string {
-    switch (status) {
-      case 0:
-        return 'Не одобрено';
-      case 1:
-        return 'Одобрено';
-      case 2:
-        return 'В работе';
-      case 3:
-        return 'Выполено';
-      case 4:
-        return 'Отменено';
-      case 5:
-        return 'ЧП';
-      default:
-        return 'Не одобрено';
-    }
+    return this.stateService.getPostExecutingStatus(status);
   }
 
+  getCargoStatus(cargoStatus: CargoStatusesEnum): string {
+    return this.stateService.getCargoStatus(cargoStatus);
+  }
+
+
   setDoneByDriver(post) {
+    const message = post?.warehouseId ? 'Вы подтверждаете что доставили груз на назначенный Склад ? Ваше объявление закроется после подтверждения приема груза работником Склада' :'Вы действительно хотите завершить работу с объявлением? После нажатия ДА вы подтверждаете что доставили товар в место назначения.';
     this.dialogsManager
       .openInfoMessageDialog(
-        'Вы действительно хотите завершить работу с объявлением? После нажатия ДА вы подтверждаете что доставили товар в место назначения.',
+        message,
         true
       )
       .afterClosed()
       .subscribe((confirm) => {
         if (!confirm) {
           return;
-        }
+        };
         this.ngxService.startLoader(this.loaderId);
+        let data: any = {
+          driverId: this.currentUser.id,
+          id: post.id,
+        };
+        if(post?.warehouseId) {
+          data.cargoStatus = CargoStatusesEnum.WaitConfirmation;
+        } else {
+          data.status = PostStatusesEnum.Done;
+        };
         this.postsService
-          .updatePost({
-            driverId: this.currentUser.id,
-            status: PostStatusesEnum.Done,
-            id: post.id,
-          })
+          .updatePost(data)
           .pipe(finalize(() => this.ngxService.stopLoader(this.loaderId)))
           .subscribe((res) => {
             console.log('res', res);
             this.dialogsManager.openInfoMessageDialog(
-              'Вы успешно Выполнили объявление объявление!'
+              'Успешно!'
             );
             this.getDriverPosts();
           });

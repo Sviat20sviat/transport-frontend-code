@@ -33,6 +33,7 @@ import { MatInputModule } from '@angular/material/input';
 import {
   FormBuilder,
   FormControl,
+  FormGroup,
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
@@ -47,6 +48,8 @@ import { InputFieldComponent } from '../shared/input-field/input-field.component
 import { ContactsComponent } from '../contacts/contacts.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { SelectFieldComponent } from '../shared/select-field/select-field.component';
+import { WarehousesComponent } from "../warehouses/warehouses.component";
+import { WarehouseComponent } from "../warehouse/warehouse.component";
 // declare var ymaps:any;
 
 @Component({
@@ -75,8 +78,10 @@ import { SelectFieldComponent } from '../shared/select-field/select-field.compon
     InputFieldComponent,
     ContactsComponent,
     MatMenuModule,
-    // SelectFieldComponent
-  ],
+    WarehousesComponent,
+    WarehouseComponent,
+    SelectFieldComponent
+],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -92,6 +97,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   loaderId: string = 'dashboard';
   selectedPostTypeTabIndex: number = 6;
   searchControl: FormControl;
+  filterForm: FormGroup;
+  statuses = [];
+  cargoStatuses = [];
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -106,13 +114,22 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private fb: FormBuilder
   ) {
     this.serverAddress = this._serverApi.serverAddress;
+    this.statuses = this.stateService.statuses;
+    this.cargoStatuses = this.stateService.cargoStatuses;
     this.searchControl = fb.control('');
+    this.filterForm = fb.group({
+      status: [null],
+      cargoStatus: [null],
+    })
   }
 
   ngOnInit(): void {
     this.stateService.currentUser$
       .pipe(takeUntil(this.unsubscribeAll$))
       .subscribe((user) => {
+        if(!user) {
+          return;
+        };
         this.currentUser = user;
         console.log('currentUser',user);
         const localStorage = this.document.defaultView?.localStorage;
@@ -193,6 +210,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   isUser(): boolean {
     return this.currentUser?.roles?.some((role) => role.value == 'User');
   }
+  isWarehouseWorker(): boolean {
+    return this.currentUser?.roles?.some((role) => role.value == 'Warehouse Worker');
+  }
 
   openInfo() {
     return this.dialogsManager.openInfoMessageDialog(
@@ -263,8 +283,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         .getFilteredPosts({ customerId: this.currentUser?.id })
         .pipe(finalize(() => this.ngxService.stopLoader(this.loaderId)))
         .subscribe((posts: any) => {
+          if(!posts?.length) {
+            return;
+          };
           console.log('this.userPosts',this.userPosts);
-          this.userPosts = posts.filter(post => post.customer.id == this.currentUser?.id);
+          this.userPosts = posts?.filter(post => post.customer.id == this.currentUser?.id);
         });
     }
   }
@@ -321,22 +344,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getPostExecutingStatus(status: number): string {
-    switch (status) {
-      case 0:
-        return 'Не одобрено';
-      case 1:
-        return 'Одобрено';
-      case 2:
-        return 'В работе';
-      case 3:
-        return 'Выполено';
-      case 4:
-        return 'Отменено';
-      case 5:
-        return 'ЧП';
-      default:
-        return 'Не одобрено';
-    }
+    return this.stateService.getPostExecutingStatus(status)
+
   }
 
   openPostDialog(post?) {
@@ -432,8 +441,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   getFilteredPosts(status?: number) {
     this.ngxService.startLoader(this.loaderId);
-    const data = {};
-    data['status'] = status;
+    const values = this.filterForm.value;
+
+    const data: any = {
+      status: status || values?.status,
+      cargoStatus: values?.cargoStatus || null,
+    };
     if (!this.isAdmin() && !this.isOperator()) {
       data['userId'] = this.currentUser?.id;
     }
@@ -471,6 +484,18 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   showMutualSettlements() {
     this.selectedTab = TabsEnum.MutualSettlements;
+    this.leftOpened = false;
+    localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
+  }
+
+  showWarehouses() {
+    this.selectedTab = TabsEnum.Warehouses;
+    this.leftOpened = false;
+    localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
+  }
+
+  showWarehouse() {
+    this.selectedTab = TabsEnum.Warehouse;
     this.leftOpened = false;
     localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
   }
@@ -520,29 +545,30 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     this.leftOpened = false;
     localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
   }
-
-  getCargoStatus(status: number) {
-    switch (status) {
-      case CargoStatusesEnum.WaitCargo:
-        return 'В Ожидании забора груза';
-        case CargoStatusesEnum.OnTheWayOnOurDelivery:
-        return 'В пути';
-        case CargoStatusesEnum.WaitInWarehouse:
-        return 'Ожидает на Складе';
-        case CargoStatusesEnum.ReadyForPickup:
-        return 'Готово к выдаче';
-        case CargoStatusesEnum.Issued:
-        return 'Выдано';
-        case CargoStatusesEnum.Cancelled:
-        return 'Отменено';
-      default:
-        return 'В пути';
-    }
+  getCargoStatus(cargoStatus: CargoStatusesEnum): string {
+    return this.stateService.getCargoStatus(cargoStatus);
   }
 
   cancelPostByUser(post) {
     console.log('cancelPostByUser',post);
-    this.dialogsManager.openInfoMessageDialog("Для отмены вашего объявления, пожалуйста, свяжитесь с Оператором по телефону +7 (000) 123-45-67 или напишите на почту info@example.com.");
+    if(post?.status == 0) {
+      this.dialogsManager.openInfoMessageDialog("Вы действительно хотите отменить Заказ?", true).afterClosed().subscribe((confirm: boolean) => {
+        if(confirm) {
+          const data = {
+            id: post.id,
+            status: 5,
+          };
+          this.postsService.updatePost(data).subscribe((res) => {
+          });
+        }
+      });
+      return;
+    }
+    this.dialogsManager.openInfoMessageDialog("Для отмены вашего объявления, пожалуйста, свяжитесь с Оператором по телефону +7 (000) 123-45-67");
+  }
+
+  clearFilter() {
+    this.filterForm.reset();
   }
 }
 
@@ -560,4 +586,6 @@ export enum TabsEnum {
   OutAddresses = 'OutAddresses',
   MutualSettlements = 'MutualSettlements',
   Contacts = 'Contacts',
+  Warehouses = 'Warehouses',
+  Warehouse = 'Warehouse',
 }

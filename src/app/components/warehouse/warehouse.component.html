@@ -1,0 +1,124 @@
+<div class="flex flex-row justify-between mb-2">
+    <!-- @if(isShowTitle) { -->
+        @if(warehouse?.id) {
+            <div class="text-xl flex items-center">
+                Заказы на складе {{warehouse.name}}
+            </div>
+        } 
+        @else {
+            <div class="text-xl flex items-center">
+                Вы еще не зарегестрированы на складе!
+            </div>
+        }
+
+    <!-- } -->
+
+    <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
+        (click)="getData()">
+        Поиск
+    </button>
+</div>
+<div class="content overflow-auto w-full">
+    <!-- <div class="flex flex-row justify-between mb-2">
+        <div class="text-xl flex items-center">
+            Заказы пользователей
+        </div>
+        <button mat-raised-button
+            class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
+            (click)="$event.stopPropagation(); openPostDialog()">
+            Создать Заказ
+        </button>
+    </div> -->
+    <div class="post-card-container">
+        
+        @for (post of warehousePosts; track $index) {
+        <div class="post-card-item cursor-pointer" (click)="openPostDialog(post)">
+            <div class="flex justify-between">
+                <span class="post-card-title">Статус Груза:</span>
+                <div class="cargo-status-badge" [ngClass]="'status-' +(post?.cargoStatus)">
+                    {{getCargoStatus((post?.cargoStatus))}}
+                </div>
+            </div>
+            @if(post?.trackCode) {
+                <div class="flex justify-between mb-2">
+                    <span class="post-card-title">Трек-код, номер посылки:</span>
+                    <span>{{post?.trackCode}}</span>
+                </div>
+            }
+            <div class="flex justify-between mb-2">
+                <span class="post-card-title">Наименование:</span>
+                <span>{{post?.title}}</span>
+            </div>
+            <div class="flex justify-between mb-2">
+                <span class="post-card-title">Номер:</span>
+                <span>{{post?.id}}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="post-card-title">Заказчик:</span>
+                <span>{{post?.customer?.firstName + ' ' + post?.customer?.lastName}} </span>
+            </div>
+            
+            <div class="flex justify-between">
+                <span class="post-card-title">Автор:</span>
+                <span>
+                    {{post?.author?.firstName + ' ' + post?.author?.lastName}} 
+                </span>
+            </div>
+
+            <div class="flex justify-between">
+                <span class="post-card-title">Создано:</span>
+                <span>{{post?.createdAt | date: 'medium'}}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="post-card-title">Откуда, адрес:</span>
+                <span>{{post?.addressFrom}}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="post-card-title">Куда, адрес:</span>
+                <span>{{post?.addressTo}}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="post-card-title">Описание:</span>
+                <span class="single-line-text">{{post?.content}}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="post-card-title">Статус Заказа:</span>
+                <div class="executing-status-badge" [ngClass]="'status-' +(post?.status)">
+                    {{getPostExecutingStatus((post?.status))}}</div>
+            </div>
+
+            <!-- <div class="flex items-center mt-auto">
+                @if(post?.status == 0) {
+                <button mat-raised-button
+                    class="d-button h-[52px] w-[200px] text-base  uppercase font-semibold"
+                    (click)="$event.stopPropagation(); cancelPostByUser(post)">
+                    Отменить Заказ
+                </button>
+                }
+            </div> -->
+            <div class="flex items-center mt-auto">
+                <button mat-raised-button
+                    class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
+                    >
+                    Открыть Заказ
+                </button>
+            </div>
+            @if(post?.cargoStatus == 3) {
+                <div class="flex items-center mt-auto">
+                    <button mat-raised-button class="s-button h-[52px] w-[380px] text-base  uppercase font-semibold" (click)="$event.stopPropagation(); confirmCargoInPost(post)">
+                        Подтвердить Получение заказа на Склад
+                    </button>
+                </div>
+            }
+            @if(post?.cargoStatus == 4) {
+                <div class="flex items-center mt-auto">
+                    <button mat-raised-button class="s-button h-[52px] w-[380px] text-base  uppercase font-semibold" (click)="$event.stopPropagation(); confirmOrderIssue(post)">
+                        Подтвердить Выдачу Заказа
+                    </button>
+                </div>
+            }
+        </div>
+        }
+    </div>
+</div>
+<ngx-ui-loader [fgsColor]="'#ffffff'" [loaderId]="loaderId" [fgsType]="'three-bounce'"></ngx-ui-loader>

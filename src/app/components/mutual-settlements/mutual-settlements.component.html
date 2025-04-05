@@ -114,6 +114,8 @@
                                         {{settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore || 0}}
                                     } @else if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore >= 0) {
                                         0
+                                    } @else {
+                                        0
                                     }
                                     
                                 </td>
@@ -121,6 +123,8 @@
                                     @if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore > 0) {
                                         +{{settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore || 0}}
                                     } @else if(settlement?.user?.documents[settlement?.user?.documents?.length -1].userBalanseBefore <= 0) {
+                                        0
+                                    } @else {
                                         0
                                     }
                                 </td>
@@ -387,7 +391,7 @@
         <div class="flex justify-end font-medium text-lg underline my-3 cursor-pointer" (click)="$event.stopPropagation();clearFilter()">
             Очистить
         </div>
-        <select-field [label]="'По Контрагенту'" [options]="usersUsers" formControlName="userId" (click)="$event.stopPropagation()" [nameKey]="'email'"></select-field>
+        <select-field [label]="'По Контрагенту'" [options]="allUsers" formControlName="userId" (click)="$event.stopPropagation()" [nameKey]="'email'"></select-field>
         <select-field [label]="'По Каналу продаж'" [options]="saleChannels" formControlName="salesChannel" (click)="$event.stopPropagation()" [nameKey]="'name'"></select-field>
         <div class="flex w-[288px] date-range-input">
             <mat-form-field class="w-full" (click)="picker.open();$event.stopPropagation()">

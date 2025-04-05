@@ -59,6 +59,7 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
   usersUsers = [];
   usersDrivers = [];
   documents = [];
+  allUsers = [];
   saleChannels = [
     {
       id: null,
@@ -128,9 +129,11 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
     combineLatest({
       clients: this.stateService.clients$,
       documents: this.documentsService.getAllDocuments(data),
+      users: this.stateService.users$
     })
       .pipe(takeUntil(this.unsubscribeAll$))
-      .subscribe(({ clients, documents }) => {
+      .subscribe(({ clients, documents, users }) => {
+        this.allUsers = users;
         this.usersUsers = clients;
         this.usersDrivers =  Array.from(this.stateService.driversMap.values());
         console.log('this.usersDrivers',this.usersDrivers);

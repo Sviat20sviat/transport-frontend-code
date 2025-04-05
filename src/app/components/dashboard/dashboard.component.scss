@@ -8,6 +8,7 @@
         background-color: #00774f;
 
         transition: .5s;
+        z-index: 99;
 
         &.left-opened {
             width: 400px;

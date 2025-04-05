@@ -122,3 +122,9 @@ div.mat-mdc-select-panel {
 div.mat-mdc-autocomplete-panel {
   background-color: #fff !important;
 }
+.mat-pseudo-checkbox-full.mat-pseudo-checkbox-checked, .mat-pseudo-checkbox-full.mat-pseudo-checkbox-indeterminate {
+  background-color: #00774f !important;
+}
+.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) .mdc-list-item__primary-text {
+  color: #000 !important;
+}

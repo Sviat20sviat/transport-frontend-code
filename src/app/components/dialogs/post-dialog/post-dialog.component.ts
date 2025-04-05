@@ -65,34 +65,10 @@ export class PostDialogComponent implements OnInit, OnDestroy {
   driver;
   isEdit: boolean = false;
 
-  statuses = [
-    {
-      id: 0,
-      value: 'Не одобрено',
-    },
-    {
-      id: 1,
-      value: 'Одобрено',
-    },
-    {
-      id: 2,
-      value: 'В pаботе',
-    },
-    {
-      id: 3,
-      value: 'Выполнено',
-    },
-    {
-      id: 4,
-      value: 'Отменено',
-    },
-    {
-      id: 5,
-      value: 'ЧП',
-    },
-  ];
+  statuses = [];
   deliveryTypes = [];
   cargoStatuses = [];
+  warehouses = [];
   loaderId: string = 'post-dialog';
   clients;
   users;
@@ -169,6 +145,7 @@ export class PostDialogComponent implements OnInit, OnDestroy {
   ) {
     this.deliveryTypes = this.stateService.deliveryTypes;
     this.cargoStatuses = this.stateService.cargoStatuses;
+    this.statuses = this.stateService.statuses;
   }
 
   ngOnInit(): void {
@@ -203,15 +180,15 @@ export class PostDialogComponent implements OnInit, OnDestroy {
       };
     });
     this.form.get('addressFrom').valueChanges.subscribe((value: string) => {
-      if(value?.length) {
-        const isExistFrom = this.addressesOut.find((item) => item.address === value);
-        const isExistTo = this.addressesIn.find((item) => item.address ===  this.form.get('addressTo').value);
-        if(isExistTo && isExistFrom) {
-          this.form.get('deliveryType').setValue(DeliveryTypesEnum.Pickup);
-        } else {
-          this.form.get('deliveryType').setValue(DeliveryTypesEnum.CourierDelivery);
-        };
-      };
+      // if(value?.length) {
+      //   // const isExistFrom = this.addressesOut.find((item) => item.address === value);
+      //   const isExistTo = this.addressesIn.find((item) => item.address ===  this.form.get('addressTo').value);
+      //   if(isExistTo) {
+      //     this.form.get('deliveryType').setValue(DeliveryTypesEnum.Pickup);
+      //   } else {
+      //     this.form.get('deliveryType').setValue(DeliveryTypesEnum.CourierDelivery);
+      //   };
+      // };
     });
     combineLatest({
       clients: this.stateService.clients$,
@@ -219,15 +196,17 @@ export class PostDialogComponent implements OnInit, OnDestroy {
       addresesIn: this.stateService.addresesIn$,
       addresesOut: this.stateService.addressesOut$,
       users: this.stateService.users$,
+      warehouses: this.stateService.warehouses$
     })
       .pipe(takeUntil(this.unsubscribeAll$))
       .subscribe((res) => {
         this.clients = res.clients;
         this.currentUser = res.currentUser;
-        console.log('this.currentUser',this.currentUser);
+
         this.addressesIn = res.addresesIn;
         this.addressesOut = res.addresesOut;
- 
+        console.log('warehouses',res.warehouses);
+        this.warehouses = res.warehouses;
         this.addressesInGroup = this.setAutocompleteAddresses(
           this.currentUser?.favoriteAddresses,
           this.addressesIn
@@ -333,6 +312,7 @@ export class PostDialogComponent implements OnInit, OnDestroy {
           Validators.maxLength(3),
         ],
       ],
+      warehouseId: [null]
     });
   }
 
@@ -412,30 +392,17 @@ export class PostDialogComponent implements OnInit, OnDestroy {
   }
 
   getPostExecutingStatus(status: string): number {
-    switch (status) {
-      case 'Не одобрено':
-        return PostStatusesEnum.NotAllowed;
-      case 'Одобрено':
-        return PostStatusesEnum.Allowed;
-      case 'В pаботе':
-        return PostStatusesEnum.InProgress;
-      case 'Выполнено':
-        return PostStatusesEnum.Done;
-      case 'Отменено':
-        return PostStatusesEnum.Rejected;
-      case 'ЧП':
-        return PostStatusesEnum.SOS;
-      default:
-        return PostStatusesEnum.NotAllowed;
-    }
+    return this.stateService.getPostExecutingStatusFromText(status);
   }
 
   save() {
     if (!this.post?.id) {
       return;
-    }
+    };
+
     this.ngxService.startLoader(this.loaderId);
     const value = this.form.value;
+    console.log('value',value);
     const request = value;
     request.id = this.post.id;
     this.postsService.updatePost(request).subscribe((res) => {
@@ -513,6 +480,7 @@ export class PostDialogComponent implements OnInit, OnDestroy {
       height: values.height || 0,
       width: values.width || 0,
       depth: values.depth || 0,
+      warehouseId: values.warehouseId || null,
     };
 
     console.log(createPostData);
@@ -643,22 +611,7 @@ export class PostDialogComponent implements OnInit, OnDestroy {
   }
 
   getPostExecutingStatusText(status: number): string {
-    switch (status) {
-      case 0:
-        return 'Не одобрено';
-      case 1:
-        return 'Одобрено';
-      case 2:
-        return 'В работе';
-      case 3:
-        return 'Выполено';
-      case 4:
-        return 'Отменено';
-      case 5:
-        return 'ЧП';
-      default:
-        return 'Не одобрено';
-    }
+    return this.stateService.getPostExecutingStatus(status);
   }
 
   onPhotoLoad(imageUrl: string) {
@@ -687,6 +640,10 @@ export class PostDialogComponent implements OnInit, OnDestroy {
     this.form.get('commission').setValue(event.commission);
     this.form.get('price').setValue(event.sum - event.commission);
   }
+
+  getCargoStatus(cargoStatus: CargoStatusesEnum): string {
+    return this.stateService.getCargoStatus(cargoStatus);
+  }
 }
 
 export enum PostStatusesEnum {
@@ -706,7 +663,8 @@ export enum DeliveryTypesEnum {
 export enum CargoStatusesEnum {
   WaitCargo = 1,
   OnTheWayOnOurDelivery = 2,
-  WaitInWarehouse = 3,
+  WaitConfirmation = 3,
+  WaitInWarehouse = 4,
   // WaitInOurWarehouse = 4,
   ReadyForPickup = 5,
   Issued = 6,

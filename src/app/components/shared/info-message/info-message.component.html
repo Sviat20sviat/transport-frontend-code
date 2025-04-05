@@ -31,10 +31,10 @@
 
         @if (data?.isConfirm) {
             <div class="flex w-full justify-between">
-                <button mat-raised-button class="btn-primary btn-danger no-border white sm" (click)="dialogRef.close(true)">
+                <button mat-raised-button class="btn-primary no-border white sm" (click)="dialogRef.close(true)">
                     <span>Да</span>
                 </button>
-                <button mat-raised-button class="btn-primary no-border white sm" (click)="dialogRef.close(false)">
+                <button mat-raised-button class="btn-primary btn-danger no-border white sm" (click)="dialogRef.close(false)">
                     <span>Нет</span>
                 </button>
             </div>

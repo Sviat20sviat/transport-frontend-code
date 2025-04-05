@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import {
@@ -22,7 +22,7 @@ import { InputFieldComponent } from '../../shared/input-field/input-field.compon
 import { MatButtonModule } from '@angular/material/button';
 import { ValidatorsService } from '../../../services/validators.service';
 import { StateService } from '../../../services/state.service';
-import { finalize } from 'rxjs';
+import { Subject, combineLatest, finalize, take, takeUntil } from 'rxjs';
 import { AuthService } from '../../../services/api/auth.service';
 import { MatExpansionModule } from '@angular/material/expansion';
 @Component({
@@ -44,7 +44,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
     templateUrl: './edit-user-dialog.component.html',
     styleUrl: './edit-user-dialog.component.scss'
 })
-export class EditUserDialogComponent implements OnInit {
+export class EditUserDialogComponent implements OnInit, OnDestroy {
   toppings = new FormControl('', [Validators.required]);
   form: FormGroup;
   passwordForm: FormGroup | null;
@@ -52,6 +52,7 @@ export class EditUserDialogComponent implements OnInit {
   posts: any[] = [];
   user;
   loaderId: string = 'edit-user-dialog';
+  unsubscribeAll$: Subject<any> = new Subject();
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { user },
     public dialogRef: MatDialogRef<EditUserDialogComponent>,
@@ -65,29 +66,22 @@ export class EditUserDialogComponent implements OnInit {
     
   ) {
     this.user = data?.user;
-    this.userService.getUserById(this.user.id).subscribe((user) => {
-      this.user = user;
-      this.form.patchValue(this.user);
-    });
-    console.log('CONSOLE!', data);
     this.initForm();
     this.initPasswordForm();
-    this.stateService.roles$.subscribe((roles) => {
-      this.roles = roles;
-      if (this.user?.roles?.length) {
-        this.setRolesToUser();
-      }
-    });
-    this.stateService.posts$.subscribe((posts) => {
-      this.posts = posts;
-    });
+  }
 
-    if (this.user) {
-      this.form.patchValue(this.user);
-      this.setRolesToUser();
-      if(this.user.banned) {
-        // this.form.disable();
-      };
+
+  ngOnInit(): void {
+    if(this.user?.id) {
+      this.userService.getUserById(this.user.id).subscribe((user) => {
+        this.user = user;
+        this.form.patchValue(this.user);
+        combineLatest({roles: this.stateService.roles$, posts: this.stateService.posts$}).pipe(takeUntil(this.unsubscribeAll$)).subscribe(({roles, posts}) => {
+          this.roles = roles;
+          this.posts = posts;
+          this.setRolesToUser();
+        });
+      });      
     };
     this.stateService.usersUpdatesSignal.subscribe((user) => {
       if (user?.id && user.id === this.user.id) {
@@ -96,7 +90,10 @@ export class EditUserDialogComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnDestroy(): void {
+    this.unsubscribeAll$.next(true);
+    this.unsubscribeAll$.complete();
+  }
 
   initForm() {
     const phoneMask = this.validatorsService.phoneMask;
@@ -159,7 +156,8 @@ export class EditUserDialogComponent implements OnInit {
       .filter((r) => this.user.roles.some((role) => role.id == r.id))
       ?.map((r) => r?.id);
     console.log('selectedRoles', roles);
-    this.form.get('roles').patchValue(roles);
+    this.form.get('roles').setValue(roles);      
+
   }
 
   update() {
@@ -277,22 +275,7 @@ export class EditUserDialogComponent implements OnInit {
   }
 
   getPostExecutingStatus(status: number): string {
-    switch (status) {
-      case 0:
-        return 'Не одобрено';
-      case 1:
-        return 'Одобрено';
-      case 2:
-        return 'В работе';
-      case 3:
-        return 'Выполено';
-      case 4:
-        return 'Отменено';
-      case 5:
-        return 'ЧП';
-      default:
-        return 'Не одобрено';
-    }
+    return this.stateService.getPostExecutingStatus(status);
   }
 
   openPostDialog(post) {

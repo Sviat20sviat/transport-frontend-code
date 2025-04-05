@@ -52,12 +52,15 @@
                 <div class="flex flex-col justify-between mb-3 max-w-[50%] col-items-2">
                     <custom-input-field [label]="'Email'" formControlName="email"></custom-input-field>
                 </div>
+                @if(user?.id) {
                 <div class="flex justify-between items-center mb-3 max-w-[50%] col-items-2">
                     <span>Баланс:</span> 
                     <div class="flex">
-                        <span class="text-xl font-bold mr-2" [ngClass]="{'text-green-700': (user?.balance || 0) >= 0, 'text-red-700': (user?.balance || 0) < 0}">{{user.balance}}</span> руб
+                        <span class="text-xl font-bold mr-2" [ngClass]="{'text-green-700': (user?.balance || 0) >= 0, 'text-red-700': (user?.balance || 0) < 0}">{{user?.balance}}</span> руб
                     </div> 
-                </div>
+                </div>                    
+                }
+
                 <div class="flex flex-col justify-center mb-3 max-w-[100%] col-items-1 items-center">
                     <mat-accordion class="example-headers-align w-full" multi>
                         <mat-expansion-panel>

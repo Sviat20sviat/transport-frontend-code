@@ -6,13 +6,17 @@
         </div>
 
         <div class="flex flex-col mt-10 left-menu-icons-container">
+            <div class="flex mt-6 cursor-pointer icon-container" (click)="showSettings()">
+                <img class="ml-4 cursor-pointer w-6 h-6" src="/assets/images/icons/svg/user.svg" alt="i"
+                    matTooltip="Личный Кабинет">
+                <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Личный Кабинет</span>
+            </div>
             @if (isAdmin()) {
             <div class="flex mt-6 cursor-pointer icon-container" (click)="showUsers()" matTooltip="Пользователи">
-                <img class=" ml-4 cursor-pointer w-6 h-6" src="/assets/images/icons/svg/user.svg" alt="i">
+                <img class=" ml-4 cursor-pointer w-6 h-6" src="/assets/images/icons/svg/no-user-avatar.svg" alt="i">
                 <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Пользователи</span>
             </div>
             }
-
 
             @if (isAdmin() || isOperator()) {
             <div class="flex mt-6 cursor-pointer icon-container" (click)="showDashboard()" matTooltip="Объявления">
@@ -60,6 +64,18 @@
                     matTooltip="Взаиморасчеты">
                 <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Взаиморасчеты</span>
             </div>
+            <div class="flex mt-6 cursor-pointer icon-container" (click)="showWarehouses()">
+                <img class="ml-3 cursor-pointer w-8 h-8" src="/assets/images/icons/svg/open_tours.svg" alt="i"
+                    matTooltip="Склады">
+                <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Склады</span>
+            </div>
+            }
+            @if(isWarehouseWorker()) {
+                <div class="flex mt-6 cursor-pointer icon-container" (click)="showWarehouse()">
+                    <img class="ml-3 cursor-pointer w-8 h-8" src="/assets/images/icons/svg/open_tours.svg" alt="i"
+                        matTooltip="Мой Склад">
+                    <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Мой Склад</span>
+                </div>
             }
             <div class="flex mt-6 cursor-pointer icon-container" (click)="showContacts()">
                 <img class="ml-3 cursor-pointer w-8 h-8" src="/assets/images/icons/svg/start_call.svg" alt="i"
@@ -70,19 +86,11 @@
                 <img src="assets/images/icons/svg/map.svg" alt="del" class="w-[30px] h-[30px] ml-4">
                 <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Карта</span>
             </div> -->
-
-
-            <div class="flex mt-6 cursor-pointer icon-container" (click)="showSettings()">
-                <img class="ml-4 cursor-pointer w-6 h-6" src="/assets/images/icons/svg/cog-settings.svg" alt="i"
-                    matTooltip="Настройки пользователя">
-                <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Настройки пользователя</span>
-            </div>
-
         </div>
     </div>
     <div class="flex">
         <div class="flex mb-6 cursor-pointer" (click)="logout()">
-            <img (click)="logout()" class="ml-4 cursor-pointer w-6 h-6" src="/assets/images/icons/svg/exit.svg" alt="i">
+            <img (click)="logout()" class="ml-4 cursor-pointer w-6 h-6" src="/assets/images/icons/svg/wxit.svg" alt="i">
             <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Выйти</span>
         </div>
 
@@ -134,6 +142,12 @@
         @case('Contacts') {
             <contacts></contacts>
             }
+        @case('Warehouses') {
+            <warehouses></warehouses>
+            }
+        @case('Warehouse') {
+            <warehouse></warehouse>
+            }
         @default {
         <ng-container *ngTemplateOutlet="usersDashboard"></ng-container>
         }
@@ -174,6 +188,9 @@
             <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold ml-4"
                 (click)="searchPosts()">
                 Поиск
+            </button>
+            <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold ml-4" [matMenuTriggerFor]="filterMenu">
+                Фильтр
             </button>
         </div>
         <div class="flex">
@@ -314,18 +331,20 @@
                     <span class="post-card-title">Описание:</span>
                     <span class="single-line-text">{{post?.content}}</span>
                 </div>
-                <div class="flex justify-between">
-                    <span class="post-card-title">Коммиссия:</span>
-                    <span class="single-line-text">{{post?.commission}}</span>
-                </div>
-                <div class="flex justify-between">
+
+                <!-- <div class="flex justify-between">
                     <span class="post-card-title">Cумма:</span>
                     <span class="single-line-text">{{post?.summ}}</span>
-                </div>
+                </div> -->
                 <div class="flex justify-between">
                     <span class="post-card-title">Статус:</span>
                     <div class="executing-status-badge" [ngClass]="'status-' +(post?.status)">
-                        {{getPostExecutingStatus((post?.status))}}</div>
+                        {{getPostExecutingStatus((post?.status))}}
+                    </div>
+                </div>
+                <div class="flex justify-between">
+                    <span class="post-card-title">Ваша Коммиссия (Вы получите):</span>
+                    <span class="single-line-text">{{post?.commission}} руб</span>
                 </div>
                 <div class="flex items-center mt-auto">
                     @if(true) {
@@ -360,3 +379,36 @@
     </ng-template>
 </div>
 <ngx-ui-loader [fgsColor]="'#ffffff'" [loaderId]="loaderId" [fgsType]="'three-bounce'"></ngx-ui-loader>
+<mat-menu #filterMenu="matMenu">
+    <div class="flex flex-col px-2" [formGroup]="filterForm">
+        <div class="flex justify-end font-medium text-lg underline my-3 cursor-pointer" (click)="$event.stopPropagation();clearFilter()">
+            Очистить
+        </div>
+        <select-field [label]="'Статус'" [options]="statuses" formControlName="status" (click)="$event.stopPropagation()" [nameKey]="'value'"></select-field>
+        <select-field [label]="'Статус Груза'" [options]="cargoStatuses" formControlName="cargoStatus" (click)="$event.stopPropagation()" [nameKey]="'name'"></select-field>
+        <!-- <div class="flex w-[288px] date-range-input">
+            <mat-form-field class="w-full" (click)="picker.open();$event.stopPropagation()">
+                <mat-label>За Период</mat-label>
+                <mat-date-range-input formGroupName="range" [rangePicker]="picker">
+                  <input matStartDate formControlName="fromTime" placeholder="Начало Периода">
+                  <input matEndDate formControlName="toTime" placeholder="Конец Периода">
+                </mat-date-range-input>
+
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+              
+                @if (range.controls['fromTime'].hasError('matStartDateInvalid')) {
+                  <mat-error>Invalid start date</mat-error>
+                }
+                @if (range.controls['toTime'].hasError('matEndDateInvalid')) {
+                  <mat-error>Invalid end date</mat-error>
+                }
+            </mat-form-field>
+        </div> -->
+        <div class="flex">
+            <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold w-full" (click)="getFilteredPosts();$event.stopPropagation()">
+                Поиск
+            </button>
+        </div>
+    </div>
+</mat-menu>

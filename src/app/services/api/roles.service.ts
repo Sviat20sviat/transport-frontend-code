@@ -27,5 +27,6 @@ export enum UserRolesEnum {
   Admin = 1,
   User = 2,
   Driver = 3,
-  Operator = 4
+  Operator = 4,
+  WarehouseWorker = 5,
 }

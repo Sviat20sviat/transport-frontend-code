@@ -213,22 +213,7 @@ export class ProfileDetailsComponent implements OnInit, OnDestroy {
   }
 
   getPostExecutingStatus(status: number): string {
-    switch (status) {
-      case 0:
-        return 'Не одобрено';
-      case 1:
-        return 'Одобрено';
-      case 2:
-        return 'В работе';
-      case 3:
-        return 'Выполено';
-      case 4:
-        return 'Отменено';
-      case 5:
-        return 'ЧП';
-      default:
-        return 'Не одобрено';
-    }
+    return this.stateService.getPostExecutingStatus(status);
   }
   openPostDialog(post: any) {
     this.dialogsManager.openPostDialog(post);

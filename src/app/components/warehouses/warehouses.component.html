@@ -1,0 +1,100 @@
+<div class="flex flex-row justify-between mb-2">
+    <!-- @if(isShowTitle) { -->
+    <div class="text-xl flex items-center">
+        Склады
+    </div>
+    <!-- } -->
+
+    <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
+        (click)="createWarehouse()">
+        Создать Склад
+    </button>
+</div>
+<div class="content overflow-auto w-full">
+    <table class="w-full minimum-text">
+        <thead class="table-header">
+            <tr class="sam_row px-2">
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white pl-2">Номер</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white pl-2">ID</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Название</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Адрес</span>
+                </th>
+                <!-- <th class="py-3 px-1">
+                    <span class="font-medium text-white">Координаты</span>
+                </th> -->
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Телефон</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Руководитель</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Статус</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Количество Товаров</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white">Количество Работников</span>
+                </th>
+                <th class="py-3 px-1">
+                    <span class="font-medium text-white"></span>
+                </th>
+            </tr>
+        </thead>
+        <tbody class="table-body">
+            @for (warehouse of warehouses; track warehouse.id; let index = $index) {
+            <tr class="cursor-pointer" (click)="$event.stopPropagation(); openWarehousePostDialog(warehouse)" [matTooltip]="'Открыть список товаров на складе'">
+                <td class="pl-2">
+                    {{index+1}}
+                </td>
+                <td class="pl-2">
+                    {{warehouse?.id}}
+                </td>
+                <td class="px-1">
+                    {{warehouse?.name}}
+                </td>
+                <td class="px-1">
+                    {{warehouse?.address}}
+                </td>
+                <!-- <td class="px-1">
+                    {{warehouse?.coordinates?.lat}}, {{warehouse?.coordinates?.lng}}
+                </td> -->
+                <td class="px-1">
+                    {{warehouse?.phoneNumber || '-'}}
+                </td>
+                <td class="px-1 text-link" (click)="$event.stopPropagation(); openUserDialog(warehouse?.supervisor)" matTooltip="Показать полную информацию по руководителю">
+                    {{warehouse?.supervisor?.firstName || '-'}} {{warehouse?.supervisor?.lastName || '-'}}
+                </td>
+                <td class="px-1">
+                    {{warehouse?.status}}
+                </td>
+                <td class="px-1">
+                    {{warehouse?.posts?.length || 0}}
+                </td>
+                <td class="px-1">
+                    {{warehouse?.workerIds?.length || 0}}
+                </td>
+                <td class="pr-2">
+                    <div class="flex flex-row">
+                        <img src="/assets/images/icons/svg/edit__.svg" alt="i" class="cursor-pointer w-8 h-8 mr-3 bg-gray-300 rounded-md"
+                        (click)="$event.stopPropagation(); editWarehouse(warehouse)" [matTooltip]="'Редактировать'" />
+                        <img src="/assets/images/icons/svg/delete_.svg" alt="i" class="cursor-pointer w-8 h-8"
+                            (click)="$event.stopPropagation(); deleteWarehouse(warehouse)" [matTooltip]="'Удалить'">                        
+                    </div>
+
+
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<ngx-ui-loader [fgsColor]="'#ffffff'" [loaderId]="loaderId" [fgsType]="'three-bounce'"></ngx-ui-loader>

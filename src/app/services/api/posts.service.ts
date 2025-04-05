@@ -46,7 +46,7 @@ export class PostsService {
     return this.http.post(this.server.serverAddress + '/posts/update', data);
   }
 
-  getFilteredPosts(filter: {userId?: number, customerId?: number, driverId?: number,  status?: number}) {
+  getFilteredPosts(filter: {userId?: number, customerId?: number, driverId?: number,  status?: number, warehouseId?: number, cargoStatus?: number, onlyForWarehouse?:boolean}): Observable<any> {
     return this.http.post(this.server.serverAddress + '/posts/getFilteredPosts', filter);
   }
 
@@ -99,4 +99,6 @@ export interface CreatePostData {
   height: number;
   width: number;
   depth: number;
+
+  warehouseId: number | null;
 }
