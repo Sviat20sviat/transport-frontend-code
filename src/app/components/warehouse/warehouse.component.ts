@@ -11,7 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PostsService } from '../../services/api/posts.service';
-import { CargoStatusesEnum } from '../dialogs/post-dialog/post-dialog.component';
+import { CargoStatusesEnum, PostStatusesEnum } from '../dialogs/post-dialog/post-dialog.component';
 
 @Component({
   selector: 'warehouse',

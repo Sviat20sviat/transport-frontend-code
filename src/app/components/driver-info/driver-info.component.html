@@ -3,7 +3,7 @@
 </div>
 <div class="tab-group-header flex mb-3">
     <div class="flex tab-group-header-item cursor-pointer p-3"
-        [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 2}" (click)="selectPostTypeTab(0)">В работе
+        [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 2}" (click)="selectPostTypeTab(2)">В работе
     </div>
     <div class="flex tab-group-header-item cursor-pointer p-3"
         [ngClass]="{'selected-tab': selectedPostTypeTabIndex == 3}" (click)="selectPostTypeTab(3)">
@@ -58,7 +58,7 @@
         </div>
         <div class="flex justify-between">
             <span class="post-card-title">Статус Груза:</span>
-            <div class="executing-status-badge" [ngClass]="'status-' +(post?.status)">
+            <div class="cargo-status-badge" [ngClass]="'status-' +(post?.cargoStatus)">
                 {{getCargoStatus((post?.cargoStatus))}}</div>
         </div>
         <div class="flex items-center mt-auto">

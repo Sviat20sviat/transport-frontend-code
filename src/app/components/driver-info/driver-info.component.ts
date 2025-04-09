@@ -47,6 +47,11 @@ export class DriverInfoComponent implements OnInit, OnDestroy {
           this.getDriverPosts();
         }
       });
+    this.stateService.postsUpdatesSignal.pipe(takeUntil(this.unsubscribeAll$)).subscribe((post) => {
+      if (post) {
+        this.getDriverPosts();
+      }
+    });
   }
 
   ngOnDestroy(): void {

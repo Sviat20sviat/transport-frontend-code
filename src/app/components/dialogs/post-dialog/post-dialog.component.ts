@@ -650,6 +650,7 @@ export enum PostStatusesEnum {
   NotAllowed = 0,
   Allowed = 1,
   InProgress = 2,
+  AwaitingReceipt = 21,
   Done = 3,
   Rejected = 4,
   SOS = 5,

@@ -112,6 +112,10 @@ export class StateService implements OnDestroy {
       value: 'В pаботе',
     },
     {
+      id: PostStatusesEnum.AwaitingReceipt,
+      value: 'Ожидает Получения',
+    },
+    {
       id: 3,
       value: 'Выполнено',
     },
@@ -345,6 +349,7 @@ export class StateService implements OnDestroy {
   }
 
   getPostExecutingStatus(status: number): string {
+    console.log('status',status);
     switch (status) {
       case 0:
         return 'Не одобрено';
@@ -352,6 +357,8 @@ export class StateService implements OnDestroy {
         return 'Одобрено';
       case 2:
         return 'В работе';
+      case 21:
+        return 'Ожидает Получения';
       case 3:
         return 'Выполено';
       case 4:
@@ -371,6 +378,8 @@ export class StateService implements OnDestroy {
         return PostStatusesEnum.Allowed;
       case 'В pаботе':
         return PostStatusesEnum.InProgress;
+      case 'Ожидает Получения':
+          return PostStatusesEnum.AwaitingReceipt;
       case 'Выполнено':
         return PostStatusesEnum.Done;
       case 'Отменено':
