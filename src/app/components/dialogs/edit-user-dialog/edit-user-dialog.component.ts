@@ -82,6 +82,12 @@ export class EditUserDialogComponent implements OnInit, OnDestroy {
           this.setRolesToUser();
         });
       });      
+    } else {
+      combineLatest({roles: this.stateService.roles$, posts: this.stateService.posts$}).pipe(takeUntil(this.unsubscribeAll$)).subscribe(({roles, posts}) => {
+        this.roles = roles;
+        this.posts = posts;
+        this.setRolesToUser();
+      });
     };
     this.stateService.usersUpdatesSignal.subscribe((user) => {
       if (user?.id && user.id === this.user.id) {

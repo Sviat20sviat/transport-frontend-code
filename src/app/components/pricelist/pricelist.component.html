@@ -1,0 +1,75 @@
+<div class="text-xl flex items-center mb-4">
+    Прайслист
+</div>
+<div class="flex justify-between">
+    <div class="flex flex-row justify-between">
+        <div class="tab-group-header flex mb-4">
+            @for (item of pricelist; track item.id) {
+                <div class="flex tab-group-header-item cursor-pointer p-3" [ngClass]="{'selected-tab': selectedPrice?.id == item?.id}" (click)="selectPriceListItem(item)">
+                    {{item?.name}}
+                </div>
+            }
+
+
+        </div>
+    </div>
+    <div class="flex" [formGroup]="categoryForm">
+        <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold mr-4" (click)="createPriceCategory()">
+            Создать Категорию
+        </button>
+        <!-- <custom-input-field [label]="'Имя Категории'" formControlName="name"></custom-input-field> -->
+    </div>
+</div>
+<div class="flex">
+    @if(selectedPrice) {
+        <table class="w-full">
+            <thead class="table-header">
+                <tr class="sam_row px-2">
+                    <th class="py-3">
+                        <span class="font-medium text-white pl-2">Номер</span>
+                    </th>
+                    <th class="py-3">
+                        <span class="font-medium text-white">Имя</span>
+                    </th>
+                    <th class="py-3">
+                        <span class="font-medium text-white">Коммиссия</span>
+                    </th>
+                    <th class="py-3">
+                        <span class="font-medium text-white">Сумма</span>
+                    </th>
+                    <th class="py-3">
+                        <span class="font-medium text-white">Дата создания</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="table-body">
+                @for (item of selectedPrice?.items; track item.id; let index = $index) {
+                <tr class="cursor-pointer" (click)="openPriceListItem(item)">
+                    <td class="pl-2 py-3">
+                        {{index}}
+                    </td>
+                    <td class="py-3">
+                        {{item.name}}
+                    </td>
+                    <td class="py-3">
+                        {{item.commission}}
+                    </td>
+                    <td class="py-3">
+                        {{item.sum}}
+                    </td>
+                    <td class="py-3">
+                        {{item?.createdAt | date: 'shortDate'}}
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    } @else {
+        <div class="flex w-full mt-6 justify-center">
+            <span class="text-lg">Выберите категорию для отображения прайслиста!</span>
+        </div>
+    }
+
+</div>
+
+<ngx-ui-loader [fgsColor]="'#ffffff'" [loaderId]="loaderId" [fgsType]="'three-bounce'"></ngx-ui-loader>

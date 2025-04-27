@@ -50,6 +50,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { SelectFieldComponent } from '../shared/select-field/select-field.component';
 import { WarehousesComponent } from "../warehouses/warehouses.component";
 import { WarehouseComponent } from "../warehouse/warehouse.component";
+import { PricelistComponent } from "../pricelist/pricelist.component";
 // declare var ymaps:any;
 
 @Component({
@@ -80,7 +81,8 @@ import { WarehouseComponent } from "../warehouse/warehouse.component";
     MatMenuModule,
     WarehousesComponent,
     WarehouseComponent,
-    SelectFieldComponent
+    SelectFieldComponent,
+    PricelistComponent
 ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -500,6 +502,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
   }
 
+  showPriceList() {
+    this.selectedTab = TabsEnum.PriceList;
+    this.leftOpened = false;
+    localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
+  }
+
   private async loadMap(): Promise<void> {
     // const ymaps = (window as any).ymaps;
     // await ymaps3.ready;
@@ -588,4 +596,5 @@ export enum TabsEnum {
   Contacts = 'Contacts',
   Warehouses = 'Warehouses',
   Warehouse = 'Warehouse',
+  PriceList = 'PriceList',
 }

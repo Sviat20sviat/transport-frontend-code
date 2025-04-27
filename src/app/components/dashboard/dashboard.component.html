@@ -71,12 +71,17 @@
             </div>
             }
             @if(isWarehouseWorker()) {
-                <div class="flex mt-6 cursor-pointer icon-container" (click)="showWarehouse()">
-                    <img class="ml-3 cursor-pointer w-8 h-8" src="/assets/images/icons/svg/open_tours.svg" alt="i"
-                        matTooltip="Мой Склад">
-                    <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Мой Склад</span>
-                </div>
+            <div class="flex mt-6 cursor-pointer icon-container" (click)="showWarehouse()">
+                <img class="ml-3 cursor-pointer w-8 h-8" src="/assets/images/icons/svg/open_tours.svg" alt="i"
+                    matTooltip="Мой Склад">
+                <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Мой Склад</span>
+            </div>
             }
+            <div class="flex mt-6 cursor-pointer icon-container" (click)="showPriceList()">
+                <img class="ml-3 cursor-pointer w-8 h-8" src="/assets/images/icons/svg/file.svg" alt="i"
+                    matTooltip="Прайслист">
+                <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Прайслист</span>
+            </div>
             <div class="flex mt-6 cursor-pointer icon-container" (click)="showContacts()">
                 <img class="ml-3 cursor-pointer w-8 h-8" src="/assets/images/icons/svg/start_call.svg" alt="i"
                     matTooltip="Контакты для связи">
@@ -140,14 +145,17 @@
         <mutual-settlements></mutual-settlements>
         }
         @case('Contacts') {
-            <contacts></contacts>
-            }
+        <contacts></contacts>
+        }
         @case('Warehouses') {
-            <warehouses></warehouses>
-            }
+        <warehouses></warehouses>
+        }
         @case('Warehouse') {
-            <warehouse></warehouse>
-            }
+        <warehouse></warehouse>
+        }
+        @case('PriceList') {
+        <pricelist></pricelist>
+        }
         @default {
         <ng-container *ngTemplateOutlet="usersDashboard"></ng-container>
         }
@@ -189,12 +197,14 @@
                 (click)="searchPosts()">
                 Поиск
             </button>
-            <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold ml-4" [matMenuTriggerFor]="filterMenu">
+            <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold ml-4"
+                [matMenuTriggerFor]="filterMenu">
                 Фильтр
             </button>
         </div>
         <div class="flex">
-            <posts-table [currentUser]="currentUser" [posts]="allPosts" [title]="''" (postsUpdated$)="onPostUpdate($event)" [isDashboard]="true"></posts-table>
+            <posts-table [currentUser]="currentUser" [posts]="allPosts" [title]="''"
+                (postsUpdated$)="onPostUpdate($event)" [isDashboard]="true"></posts-table>
         </div>
     </ng-template>
     <ng-template #usersDashboard>
@@ -224,7 +234,7 @@
                 </button>
             </div> -->
             <div class="post-card-container">
-                
+
                 @for (post of userPosts; track $index) {
                 <div class="post-card-item cursor-pointer" (click)="openPostDialog(post)">
                     <div class="flex justify-between mb-2">
@@ -239,14 +249,14 @@
                         <span class="post-card-title">Заказчик:</span>
                         <span>{{post?.customer?.firstName + ' ' + post?.customer?.lastName}} </span>
                     </div>
-                    
+
                     <div class="flex justify-between">
                         <span class="post-card-title">Автор:</span>
                         <span>
-                            {{post?.author?.firstName + ' ' + post?.author?.lastName}} 
+                            {{post?.author?.firstName + ' ' + post?.author?.lastName}}
                         </span>
                     </div>
-    
+
                     <div class="flex justify-between">
                         <span class="post-card-title">Создано:</span>
                         <span>{{post?.createdAt | date: 'medium'}}</span>
@@ -270,8 +280,7 @@
                     </div>
                     <div class="flex items-center mt-auto">
                         @if(post?.status == 0) {
-                        <button mat-raised-button
-                            class="d-button h-[52px] w-[200px] text-base  uppercase font-semibold"
+                        <button mat-raised-button class="d-button h-[52px] w-[200px] text-base  uppercase font-semibold"
                             (click)="$event.stopPropagation(); cancelPostByUser(post)">
                             Отменить Заказ
                         </button>
@@ -279,8 +288,7 @@
                     </div>
                     <div class="flex items-center mt-auto">
                         <button mat-raised-button
-                            class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
-                            >
+                            class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold">
                             Открыть Заказ
                         </button>
                     </div>
@@ -299,7 +307,7 @@
         <div class="post-card-container">
             @for (post of checkedPosts; track $index) {
             <div class="post-card-item cursor-pointer" (click)="openPostDialog(post)">
-                
+
                 <div class="flex justify-between mb-2">
                     <span class="post-card-title">Номер:</span>
                     <span>{{post?.id}}</span>
@@ -344,7 +352,7 @@
                 </div>
                 <div class="flex justify-between">
                     <span class="post-card-title">Ваша Коммиссия (Вы получите):</span>
-                    <span class="single-line-text">{{post?.commission}} руб</span>
+                    <span class="single-line-text">{{post?.price}} руб</span>
                 </div>
                 <div class="flex items-center mt-auto">
                     @if(true) {
@@ -381,11 +389,14 @@
 <ngx-ui-loader [fgsColor]="'#ffffff'" [loaderId]="loaderId" [fgsType]="'three-bounce'"></ngx-ui-loader>
 <mat-menu #filterMenu="matMenu">
     <div class="flex flex-col px-2" [formGroup]="filterForm">
-        <div class="flex justify-end font-medium text-lg underline my-3 cursor-pointer" (click)="$event.stopPropagation();clearFilter()">
+        <div class="flex justify-end font-medium text-lg underline my-3 cursor-pointer"
+            (click)="$event.stopPropagation();clearFilter()">
             Очистить
         </div>
-        <select-field [label]="'Статус'" [options]="statuses" formControlName="status" (click)="$event.stopPropagation()" [nameKey]="'value'"></select-field>
-        <select-field [label]="'Статус Груза'" [options]="cargoStatuses" formControlName="cargoStatus" (click)="$event.stopPropagation()" [nameKey]="'name'"></select-field>
+        <select-field [label]="'Статус'" [options]="statuses" formControlName="status"
+            (click)="$event.stopPropagation()" [nameKey]="'value'"></select-field>
+        <select-field [label]="'Статус Груза'" [options]="cargoStatuses" formControlName="cargoStatus"
+            (click)="$event.stopPropagation()" [nameKey]="'name'"></select-field>
         <!-- <div class="flex w-[288px] date-range-input">
             <mat-form-field class="w-full" (click)="picker.open();$event.stopPropagation()">
                 <mat-label>За Период</mat-label>
@@ -406,7 +417,8 @@
             </mat-form-field>
         </div> -->
         <div class="flex">
-            <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold w-full" (click)="getFilteredPosts();$event.stopPropagation()">
+            <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold w-full"
+                (click)="getFilteredPosts();$event.stopPropagation()">
                 Поиск
             </button>
         </div>

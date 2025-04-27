@@ -349,7 +349,6 @@ export class StateService implements OnDestroy {
   }
 
   getPostExecutingStatus(status: number): string {
-    console.log('status',status);
     switch (status) {
       case 0:
         return 'Не одобрено';
