@@ -16,6 +16,7 @@ import { ServerService } from './server.service';
 export class PriceListService {
   // Базовый URL вашего NestJS API из файла окружения
   private apiUrl;
+  private itemApiUrl;
 
   private httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
@@ -23,6 +24,7 @@ export class PriceListService {
 
   constructor(private http: HttpClient, private server: ServerService) {
     this.apiUrl = `${this.server.serverAddress}/price-categories`;
+    this.itemApiUrl = `${this.server.serverAddress}/price-items`;
   }
 
   /**
@@ -72,6 +74,27 @@ export class PriceListService {
       );
   }
 
+    /**
+   * Создает новую категорию прайс-листа.
+   * @param dto - DTO с данными для новой категории.
+   * @returns Observable с созданной категорией (возвращенной бэкендом).
+   */
+  createItem(
+    dto: CreatePriceCategoryItemDto
+  ): Observable<PriceListItem> {
+    return this.http
+      .post<PriceListItem>(this.itemApiUrl, dto, this.httpOptions)
+      .pipe(
+        tap((newCategory) =>
+          console.log(
+            `PriceListService: создана категория ID=${newCategory.id}`,
+            newCategory
+          )
+        ),
+        catchError(this.handleError)
+      );
+  }
+
   /**
    * Обновляет существующую категорию прайс-листа.
    * @param id - ID категории для обновления.
@@ -95,6 +118,23 @@ export class PriceListService {
         catchError(this.handleError)
       );
   }
+
+    /**
+   * Обновляет существующую категорию прайс-листа.
+   * @param id - ID категории для обновления.
+   * @param categoryDto - DTO с обновленными данными (может быть частичным).
+   * @returns Observable с обновленной категорией (возвращенной бэкендом).
+   */
+    updateItem(
+      categoryDto: UpdatePriceCategoryItemDto
+    ): Observable<PriceListItem> {
+      const url = `${this.itemApiUrl}/update`;
+      return this.http
+        .post<PriceListItem>(url, categoryDto, this.httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+    }
 
   /**
    * Удаляет категорию прайс-листа по ID.
@@ -184,5 +224,19 @@ export interface CreatePriceCategoryDto {
   name: string;
 }
 
+export interface CreatePriceCategoryItemDto {
+  name: string;
+  sum: number;
+  commission: number;
+  categoryId: number;
+}
+
+export interface UpdatePriceCategoryItemDto {
+  id: string;
+  name: string;
+  sum: number;
+  commission: number;
+  categoryId: number;
+}
 // Интерфейс для DTO обновления категории (можно использовать Partial)
 export type UpdatePriceCategoryDto = Partial<CreatePriceCategoryDto>;

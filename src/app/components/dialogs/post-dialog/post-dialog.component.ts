@@ -196,7 +196,8 @@ export class PostDialogComponent implements OnInit, OnDestroy {
       addresesIn: this.stateService.addresesIn$,
       addresesOut: this.stateService.addressesOut$,
       users: this.stateService.users$,
-      warehouses: this.stateService.warehouses$
+      warehouses: this.stateService.warehouses$,
+      priceList: this.stateService.priceList$
     })
       .pipe(takeUntil(this.unsubscribeAll$))
       .subscribe((res) => {
@@ -230,6 +231,8 @@ export class PostDialogComponent implements OnInit, OnDestroy {
         if (this.currentUser?.id) {
           this.setValidator();
         };
+
+        this.titles = res.priceList;
       });
     if (this.post?.author?.id && (this.isAdmin() || this.isOperator())) {
       this.userApiService
@@ -240,6 +243,15 @@ export class PostDialogComponent implements OnInit, OnDestroy {
           this.driverDataForm.disable();
         });
     }
+
+    this.stateService.priceList$.pipe(takeUntil(this.unsubscribeAll$)).subscribe((res) => {
+      console.log('console',res);
+      if(!res) {
+        return;
+      };
+
+      this.titles = res;
+    })
   }
 
   ngOnDestroy(): void {

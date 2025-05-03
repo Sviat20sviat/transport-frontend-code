@@ -18,7 +18,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogRef } from '@angular/material/dialog';
 import { InfoMessageComponent } from '../shared/info-message/info-message.component';
-import { Subject, finalize, forkJoin, takeUntil } from 'rxjs';
+import { Subject, filter, finalize, firstValueFrom, forkJoin, take, takeUntil } from 'rxjs';
 import { NgxUiLoaderModule, NgxUiLoaderService } from 'ngx-ui-loader';
 import {
   EventNameEnum,
@@ -101,55 +101,56 @@ export class PricelistComponent implements OnInit, OnDestroy {
   // Используем наш интерфейс PriceCategoryForm для строгой типизации
   categoryForm: FormGroup<PriceCategoryForm>;
   loaderId = 'pricelist-loader';
+  private currentUser;
 
   constructor(
     private pricelistService: PriceListService,
     private fb: FormBuilder,
     private ngxService: NgxUiLoaderService,
+    private dialogsManager: DialogsManagerService,
+    private stateService: StateService
   ) {
     console.log('PricelistComponent: Constructor вызван');
-
-    // Инициализируем форму здесь (или в ngOnInit)
-    // Используем FormBuilder для создания группы контролов
     this.categoryForm = this.fb.group({
-      // Создаем FormControl для поля 'name'
-      name: new FormControl<string | null>( // Явно указываем тип FormControl
-        '', // Начальное значение - пустая строка
-        [ // Массив валидаторов
-          Validators.required, // Поле обязательно для заполнения
-          Validators.minLength(3), // Минимальная длина - 3 символа
-          // Можно добавить Validators.maxLength(255), если нужно
+      name: new FormControl<string | null>(
+        '',
+        [
+          Validators.required,
+          Validators.minLength(3),
         ]
       )
-      // Если бы были другие поля, они бы добавлялись здесь
     });
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     console.log('PricelistComponent: ngOnInit вызван');
-    this.loadData(); // Загружаем начальные данные
+    this.loadData();
+    this.currentUser = await firstValueFrom(this.stateService.currentUser$.pipe(filter(user => user !== null && user !== undefined),take(1)));
   }
 
   ngOnDestroy(): void {
     console.log('PricelistComponent: ngOnDestroy вызван');
-    this.destroy$.next(); // Отправляем сигнал
-    this.destroy$.complete(); // Завершаем Subject
+    this.destroy$.next(); 
+    this.destroy$.complete();
     console.log('PricelistComponent: Сигнал destroy$ отправлен');
   }
 
   loadData(): void {
-    this.ngxService.startLoader(this.loaderId); // Запускаем загрузку
-    this.errorMessage = null; // Сбрасываем ошибку
+    this.ngxService.startLoader(this.loaderId);
+    this.errorMessage = null;
     this.pricelistService.getCategories()
       .pipe(takeUntil(this.destroy$), finalize(() => this.ngxService.stopLoader(this.loaderId))) // Отписываемся при уничтожении
       .subscribe({
         next: (res: PriceListCategory[]) => {
           if (!res) {
-            this.pricelist = []; // Если ответ null/undefined, ставим пустой массив
+            this.pricelist = [];
           } else {
             this.pricelist = res;
+            if(this.selectedPrice) {
+              this.selectedPrice = res.find(item => item.id === this.selectedPrice.id);
+            }
           };
-          console.log('Данные загружены:', this.pricelist);
+
         },
         error: (err) => {
           this.errorMessage = err.message || 'Не удалось загрузить прайс-лист.';
@@ -158,56 +159,51 @@ export class PricelistComponent implements OnInit, OnDestroy {
       });
   }
 
-  /**
-   * Метод для создания новой категории прайс-листа.
-   * Вызывается при отправке формы.
-   */
   createPriceCategory(): void {
 
-    // 1. Проверяем валидность формы
     if (this.categoryForm.invalid) {
-      console.warn('Форма невалидна');
-      // Отмечаем все поля как "тронутые", чтобы отобразить ошибки валидации в шаблоне
+
       this.categoryForm.markAllAsTouched();
-      return; // Прерываем выполнение, если форма не валидна
+      this.dialogsManager.openInfoMessageDialog('Ошибка, Форма невалидна. Проверьте введенные данные.');
+      return;
     }
 
-    // 2. Получаем значение из формы и создаем DTO
-    // Используем non-null assertion (!), т.к. Validators.required гарантирует наличие значения
-    const categoryName = this.categoryForm.value.name!.trim(); // Убираем пробелы по краям
+    const categoryName = this.categoryForm.value.name!.trim();
 
-    // Проверяем, не осталось ли имя пустым после trim
     if (!categoryName) {
-        this.categoryForm.get('name')?.setErrors({ 'required': true }); // Устанавливаем ошибку вручную
+        this.categoryForm.get('name')?.setErrors({ 'required': true });
         this.categoryForm.markAllAsTouched();
         console.warn('Имя категории не может состоять только из пробелов');
+        this.dialogsManager.openInfoMessageDialog('Ошибка, Форма невалидна. Проверьте введенные данные.');
         return;
     }
+    this.dialogsManager.openInfoMessageDialog('Вы действительно хотите создать категорию?', true).afterClosed().subscribe(confirm => {
+      if (confirm) {
+        const newCategoryDto: CreatePriceCategoryDto = {
+          name: categoryName
+        };
+    
+        this.pricelistService.createCategory(newCategoryDto)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (createdCategory) => {
+              this.dialogsManager.openInfoMessageDialog('Категория успешно создана.');
+              console.log('Категория успешно создана:', createdCategory);
+              this.isLoading = false;
+    
+              this.categoryForm.reset();
+              this.loadData();
+            },
+            error: (err) => {
+              this.isLoading = false;
+              this.errorMessage = err.message || 'Произошла ошибка при создании категории.';
+            }
+          });
+      }
+    });
 
 
-    const newCategoryDto: CreatePriceCategoryDto = {
-      name: categoryName
-    };
 
-    console.log('Отправка DTO:', newCategoryDto);
-    // 3. Вызываем метод сервиса для создания категории
-    this.pricelistService.createCategory(newCategoryDto)
-      .pipe(takeUntil(this.destroy$)) // Отписываемся при уничтожении
-      .subscribe({
-        next: (createdCategory) => {
-          console.log('Категория успешно создана:', createdCategory);
-          this.isLoading = false; // Выключаем индикатор загрузки
-
-          // 4. Обработка успеха: очищаем форму и перезагружаем список
-          this.categoryForm.reset(); // Сбрасываем значения и статус формы
-          this.loadData(); // Обновляем список категорий
-        },
-        error: (err) => {
-          console.error('Ошибка при создании категории:', err);
-          this.isLoading = false; // Выключаем индикатор загрузки
-          this.errorMessage = err.message || 'Произошла ошибка при создании категории.'; // Показываем ошибку
-        }
-      });
   }
 
   selectPriceListItem(item: PriceListCategory): void {
@@ -215,10 +211,29 @@ export class PricelistComponent implements OnInit, OnDestroy {
   }
 
   openPriceListItem(item) {
-    
+    this.dialogsManager.openPriceListItemDialog(this.selectedPrice, item).afterClosed().subscribe((res) => {
+      if(res) {
+        this.loadData();
+      };
+    });
+  }
+
+  createPriceListItem() {
+    this.dialogsManager.openPriceListItemDialog(this.selectedPrice).afterClosed().subscribe((res) => {
+      if(res) {
+        this.loadData();
+      };
+    });
+  }
+
+  isAdmin(): boolean {
+    if(this.currentUser) {
+      return this.currentUser?.roles?.some((role) => role.value == 'Admin');
+    }
+    return false;
   }
 }
-// Интерфейс, описывающий структуру нашей формы
+
 interface PriceCategoryForm {
-  name: FormControl<string | null>; // Поле 'name', которое будет строкой (или null изначально)
+  name: FormControl<string | null>;
 }

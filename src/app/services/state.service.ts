@@ -16,6 +16,7 @@ import { AddressTypes } from '../components/address-out/address-out.component';
 import { EventNameEnum, WebSocketService } from './api/socket/web-socket.service';
 import { CargoStatusesEnum, DeliveryTypesEnum, PostStatusesEnum } from '../components/dialogs/post-dialog/post-dialog.component';
 import { WarehousesService } from './api/warehouses.service';
+import { PriceListService } from './api/pricelist.service';
 
 @Injectable({
   providedIn: 'root',
@@ -46,6 +47,8 @@ export class StateService implements OnDestroy {
   addressesOut$: Observable<any[]> = this.addressesOutSubject.asObservable();
 
   currentUser$: BehaviorSubject<any> = new BehaviorSubject(null);
+
+  priceList$: BehaviorSubject<any> = new BehaviorSubject(null);
 
   postsUpdatesSignal = new Subject<any>();
   documentsUpdatesSignal = new Subject<any>();
@@ -136,7 +139,8 @@ export class StateService implements OnDestroy {
     private rolesService: RolesService,
     private addressesService: AddressesService,
     private webSocketService: WebSocketService,
-    private warehousesService: WarehousesService
+    private warehousesService: WarehousesService,
+    private priceListService: PriceListService
   ) {
     this.loadRoles();
     this.loadUsers();
@@ -148,6 +152,7 @@ export class StateService implements OnDestroy {
 
     this.loadAddresesIn();
     this.loadAddresesOut();
+    this.loadPriceList();
 
     this.registerListeners();
   }
@@ -263,6 +268,14 @@ export class StateService implements OnDestroy {
       });
   }
 
+  private loadPriceList() {
+    this.priceListService.getCategories().subscribe(res => {
+      if(res) {
+        this.priceList$.next(res);
+      }
+    })
+  }
+
 
   getAllData(): Observable<{
     users: any[];
@@ -341,9 +354,14 @@ export class StateService implements OnDestroy {
       this.loadUsers();
     });
 
+    this.webSocketService.on(EventNameEnum.OnPriceListUpdate).subscribe((data) => {
+      console.log('webSocketService =====>>>>',data);
+      this.loadPriceList();
+    });
+
     this.usersUpdatesSignal.subscribe((data) => {
       console.log('usersUpdatesSignal', data);
-      this.loadUsers();
+      this.loadPriceList();
       
     });
   }

@@ -18,17 +18,17 @@ import { StateService } from '../../services/state.service';
 import { UserRolesEnum } from '../../services/api/roles.service';
 
 @Component({
-    selector: 'users',
-    imports: [
-        CommonModule,
-        NgxUiLoaderModule,
-        InputFieldComponent,
-        FormsModule,
-        ReactiveFormsModule,
-        MatButtonModule,
-    ],
-    templateUrl: './users.component.html',
-    styleUrl: './users.component.scss'
+  selector: 'users',
+  imports: [
+    CommonModule,
+    NgxUiLoaderModule,
+    InputFieldComponent,
+    FormsModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+  ],
+  templateUrl: './users.component.html',
+  styleUrl: './users.component.scss',
 })
 export class UsersComponent implements OnInit, OnDestroy {
   users = [];
@@ -57,9 +57,11 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.stateService.roles$.subscribe((roles) => {
       console.log('roles', roles);
     });
-    this.stateService.usersUpdatesSignal.pipe(takeUntil(this.unsubscribeAll$)).subscribe(() => {
-      this.getFilteredUsers();
-    });
+    this.stateService.usersUpdatesSignal
+      .pipe(takeUntil(this.unsubscribeAll$))
+      .subscribe(() => {
+        this.getFilteredUsers();
+      });
   }
 
   ngOnDestroy(): void {}
@@ -111,14 +113,14 @@ export class UsersComponent implements OnInit, OnDestroy {
             this.getAllUsers();
           });
           return;
-        };
+        }
       });
   }
 
   editUser(user) {
     const dialog = this.dialogsManager.openUserDialog(user);
     dialog.afterClosed().subscribe((res) => {
-      if(res) {
+      if (res) {
         this.getUsersByType();
       }
     });
@@ -127,9 +129,9 @@ export class UsersComponent implements OnInit, OnDestroy {
   addUser() {
     const dialog = this.dialogsManager.openUserDialog();
     dialog.afterClosed().subscribe((res) => {
-      if(res) {
+      if (res) {
         this.getUsersByType();
-      };
+      }
     });
   }
 
@@ -172,6 +174,9 @@ export class UsersComponent implements OnInit, OnDestroy {
         this.getFilteredUsers(UserRolesEnum.Operator);
         break;
       case 4:
+        this.getFilteredUsers(UserRolesEnum.WarehouseWorker);
+        break;
+      case 5:
         this.getFilteredUsers();
         break;
       default:

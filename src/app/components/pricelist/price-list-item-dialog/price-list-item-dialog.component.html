@@ -1,0 +1,57 @@
+<div class="flex flex-col">
+    <div class="flex justify-between px-6 pt-6 dialog-header">
+        <div class="text-xl flex flex-col mb-3">
+            @if(item?.id) {
+            <div class="flex">
+                <span class="font-medium">ПОЗИЦИЯ № {{item?.id}}</span>
+            </div>
+            } @else {
+            НОВАЯ ПОЗИЦИЯ
+            }
+        </div>
+        <div class="flex">
+            @if(item?.id) {
+            <div class="flex">
+                <div class="inline-flex font-medium justify-end mr-4">Создан</div>
+                <div class="flex">{{item?.createdAt | date: 'medium'}}</div>
+            </div>
+            }
+            <div class="flex">
+
+                <div class="flex close-dialog-button" (click)="dialogRef.close()">X</div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+</div>
+<div class="flex flex-col p-3 post-dialog-container h-full justify-between">
+    <div class="flex flex-col" [formGroup]="form">
+        <div class="flex flex-col justify-between mb-3 max-w-[100%] col-items-1">
+            <custom-input-field [label]="'Наименование'" formControlName="name"></custom-input-field>
+        </div>
+        <div class="flex flex-col justify-between mb-3 max-w-[100%] col-items-1">
+            <custom-input-field [label]="'Коммиссия'" formControlName="commission"></custom-input-field>
+        </div>
+        <div class="flex flex-col justify-between mb-3 max-w-[100%] col-items-1">
+            <custom-input-field [label]="'Сумма'" formControlName="sum"></custom-input-field>
+        </div>
+    </div>
+    <div class="flex justify-center items-center flex-col">
+        @if(!item?.id) {
+        <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
+            (click)="create()" [disabled]="!form?.valid">
+            Создать
+        </button>
+        }
+        @else {
+        <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
+            (click)="edit()" [disabled]="!form?.valid">
+            Редактировать
+        </button>
+        }
+
+    </div>
+</div>

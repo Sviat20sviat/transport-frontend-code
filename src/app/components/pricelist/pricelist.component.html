@@ -13,14 +13,17 @@
 
         </div>
     </div>
+    @if(isAdmin()) {
+
+    }
     <div class="flex" [formGroup]="categoryForm">
-        <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold mr-4" (click)="createPriceCategory()">
+        <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold mr-4" [matMenuTriggerFor]="createCategoryMenu">
             Создать Категорию
         </button>
         <!-- <custom-input-field [label]="'Имя Категории'" formControlName="name"></custom-input-field> -->
     </div>
 </div>
-<div class="flex">
+<div class="flex price-container overflow-auto">
     @if(selectedPrice) {
         <table class="w-full">
             <thead class="table-header">
@@ -29,7 +32,13 @@
                         <span class="font-medium text-white pl-2">Номер</span>
                     </th>
                     <th class="py-3">
+                        <span class="font-medium text-white pl-2">ID</span>
+                    </th>
+                    <th class="py-3">
                         <span class="font-medium text-white">Имя</span>
+                    </th>
+                    <th class="py-3">
+                        <span class="font-medium text-white">Цена</span>
                     </th>
                     <th class="py-3">
                         <span class="font-medium text-white">Коммиссия</span>
@@ -40,16 +49,25 @@
                     <th class="py-3">
                         <span class="font-medium text-white">Дата создания</span>
                     </th>
+                    <th class="py-3 w-12">
+                        <img src="/assets/images/icons/svg/plus.svg" alt="p" class="cursor-pointer w-6 h-6" (click)="createPriceListItem()">
+                    </th>
                 </tr>
             </thead>
             <tbody class="table-body">
                 @for (item of selectedPrice?.items; track item.id; let index = $index) {
                 <tr class="cursor-pointer" (click)="openPriceListItem(item)">
                     <td class="pl-2 py-3">
-                        {{index}}
+                        {{index + 1}}
+                    </td>
+                    <td class="pl-2 py-3">
+                        {{item.id}}
                     </td>
                     <td class="py-3">
                         {{item.name}}
+                    </td>
+                    <td class="py-3">
+                        {{item.sum - item.commission}}
                     </td>
                     <td class="py-3">
                         {{item.commission}}
@@ -73,3 +91,13 @@
 </div>
 
 <ngx-ui-loader [fgsColor]="'#ffffff'" [loaderId]="loaderId" [fgsType]="'three-bounce'"></ngx-ui-loader>
+<mat-menu #createCategoryMenu="matMenu" xPosition="before">
+    <div class="flex flex-col px-2" [formGroup]="categoryForm">
+        <custom-input-field [label]="'Имя Категории'" formControlName="name" (click)="$event.stopPropagation()"></custom-input-field>
+        <div class="flex">
+            <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold w-full" (click)="$event.stopPropagation(); createPriceCategory()" [disabled]="!categoryForm.valid">
+                Создать категорию
+            </button>
+        </div>
+    </div>
+</mat-menu>

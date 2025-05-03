@@ -1,0 +1,10 @@
+:host::ng-deep {
+    .price-container {
+        max-height: calc(100vh - 160px);
+    }
+    .price-container th {
+        position: sticky !important;
+        top: 0 !important;
+        background-color: #00774f !important;
+    }
+}

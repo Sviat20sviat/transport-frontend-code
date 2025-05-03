@@ -10,6 +10,7 @@ import { AddressDialogComponent } from '../components/dialogs/address-dialog/add
 import { AddressTypes } from '../components/address-out/address-out.component';
 import { PhotoDialogComponent } from '../components/dialogs/photo-dialog/photo-dialog.component';
 import { WarehouseDialogComponent } from '../components/dialogs/warehouse-dialog/warehouse-dialog.component';
+import { PriceListItemDialogComponent } from '../components/pricelist/price-list-item-dialog/price-list-item-dialog.component';
 
 @Injectable({
   providedIn: 'root'
@@ -97,6 +98,16 @@ export class DialogsManagerService {
       width:  "100%",
       maxWidth: "800px",
       height:  "100%"
+    });
+  }
+
+  openPriceListItemDialog(category, item?): MatDialogRef<PriceListItemDialogComponent> {
+    return this.dialogRef.open(PriceListItemDialogComponent, {
+      data: {category, priceItem: item},
+      maxHeight: "98vh",
+      width:  "100%",
+      maxWidth: "800px",
+      height:  "auto"
     });
   }
 }
