@@ -1,0 +1,8 @@
+:host::ng-deep {
+    .json-container {
+        height: calc(100vh - 110px);
+    }
+    .ngx-json-viewer {
+        overflow: auto !important;
+    }
+}

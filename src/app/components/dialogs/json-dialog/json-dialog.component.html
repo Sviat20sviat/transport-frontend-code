@@ -1,0 +1,21 @@
+<div class="flex flex-col">
+    <div class="flex justify-between px-6 pt-6 dialog-header">
+        <div class="text-xl flex items-center mb-3">
+            Данные
+
+        </div>
+        <div class="flex">
+
+            <div class="flex close-dialog-button" (click)="dialogRef.close()">X</div>
+        </div>
+
+    </div>
+    <div class="overflow-auto json-container p-6">
+        @if(data?.json) {
+            <ngx-json-viewer [json]="data?.json"></ngx-json-viewer>
+        }
+        @else {
+            Нет Данных!
+        }
+    </div>
+</div>
