@@ -11,6 +11,7 @@ import { AddressTypes } from '../components/address-out/address-out.component';
 import { PhotoDialogComponent } from '../components/dialogs/photo-dialog/photo-dialog.component';
 import { WarehouseDialogComponent } from '../components/dialogs/warehouse-dialog/warehouse-dialog.component';
 import { PriceListItemDialogComponent } from '../components/pricelist/price-list-item-dialog/price-list-item-dialog.component';
+import { JsonDialogComponent } from '../components/dialogs/json-dialog/json-dialog.component';
 
 @Injectable({
   providedIn: 'root'
@@ -104,6 +105,16 @@ export class DialogsManagerService {
   openPriceListItemDialog(category, item?): MatDialogRef<PriceListItemDialogComponent> {
     return this.dialogRef.open(PriceListItemDialogComponent, {
       data: {category, priceItem: item},
+      maxHeight: "98vh",
+      width:  "100%",
+      maxWidth: "800px",
+      height:  "auto"
+    });
+  }
+
+  openJsonViewerDialog(data) {
+    return this.dialogRef.open(JsonDialogComponent, {
+      data: {json: data},
       maxHeight: "98vh",
       width:  "100%",
       maxWidth: "800px",

@@ -1,0 +1,111 @@
+<div class="text-xl flex items-center justify-between mb-4">
+    <span>Ayдит</span>
+    <div class="flex">
+        <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold ml-4"
+            (click)="filterUpdated()">
+            Поиск
+        </button>
+        <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold ml-4"
+            [matMenuTriggerFor]="filterMenu">
+            Фильтр
+        </button>
+    </div>
+</div>
+<div class="flex price-container overflow-auto">
+    <table class="w-full">
+        <thead class="table-header">
+            <tr class="sam_row px-2">
+                <th class="py-3">
+                    <span class="font-medium text-white pl-2">Номер</span>
+                </th>
+                <th class="py-3">
+                    <span class="font-medium text-white pl-2">Время действия</span>
+                </th>
+                <th class="py-3">
+                    <span class="font-medium text-white">Сотрудник</span>
+                </th>
+                <th class="py-3">
+                    <span class="font-medium text-white">Действие</span>
+                </th>
+                <th class="py-3">
+                    <span class="font-medium text-white">До</span>
+                </th>
+                <th class="py-3">
+                    <span class="font-medium text-white">После</span>
+                </th>
+            </tr>
+        </thead>
+        <tbody class="table-body">
+            @for (item of auditLog; track item.id; let index = $index) {
+            <tr class="cursor-pointer" (click)="openLog(item)">
+                <td class="pl-2 py-3">
+                    {{index + 1}}
+                </td>
+                <td class="pl-2 py-3">
+                    {{item.createdAt | date:'medium'}}
+                </td>
+                <td class="py-3">
+                    {{item?.userData?.email || 'Система'}}
+                </td>
+                <td class="py-3">
+                    {{ getAuditAction(item.action) }}
+                </td>
+                <td class="py-3 cursor-pointer" (click)="openJsonDialog(item.beforeData)">
+                    {{item.beforeData}}
+                </td>
+                <td class="py-3 cursor-pointer" (click)="openJsonDialog(item.afterData)">
+                    {{item.afterData}}
+                </td>
+
+            </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+
+<ngx-ui-loader [fgsColor]="'#ffffff'" [loaderId]="loaderId" [fgsType]="'three-bounce'"></ngx-ui-loader>
+<mat-menu #createCategoryMenu="matMenu" xPosition="before">
+    <!-- <div class="flex flex-col px-2" [formGroup]="categoryForm">
+        <custom-input-field [label]="'Имя Категории'" formControlName="name" (click)="$event.stopPropagation()"></custom-input-field>
+        <div class="flex">
+        </div>
+    </div> -->
+</mat-menu>
+<mat-menu #filterMenu="matMenu">
+    <div class="flex flex-col px-2" [formGroup]="filterForm">
+        <div class="flex justify-end font-medium text-lg underline my-3 cursor-pointer"
+            (click)="$event.stopPropagation();clearFilter()">
+            Очистить
+        </div>
+        <select-field [label]="'Пользователь'" [options]="users" formControlName="userId"
+            (click)="$event.stopPropagation()" [nameKey]="'email'"></select-field>
+        <select-field [label]="'Операция'" [options]="actions" formControlName="action"
+            (click)="$event.stopPropagation()" [nameKey]="'name'" [valueKey]="'value'"></select-field>
+        <div class="flex w-[288px] date-range-input">
+            <mat-form-field class="w-full" (click)="picker.open();$event.stopPropagation()">
+                <mat-label>За Период</mat-label>
+                <mat-date-range-input formGroupName="createdTime" [rangePicker]="picker">
+                  <input matStartDate formControlName="fromTime" placeholder="Начало Периода">
+                  <input matEndDate formControlName="toTime" placeholder="Конец Периода">
+                </mat-date-range-input>
+
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+              
+                @if (range.controls['fromTime'].hasError('matStartDateInvalid')) {
+                  <mat-error>Введеная дата неправильна!</mat-error>
+                }
+                @if (range.controls['toTime'].hasError('matEndDateInvalid')) {
+                  <mat-error>Введеная дата неправильна!</mat-error>
+                }
+            </mat-form-field>
+        </div>
+        <div class="flex">
+            <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold w-full"
+                (click)="filterUpdated();$event.stopPropagation()">
+                Поиск
+            </button>
+        </div>
+    </div>
+</mat-menu>

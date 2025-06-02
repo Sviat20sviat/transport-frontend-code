@@ -51,6 +51,7 @@ import { SelectFieldComponent } from '../shared/select-field/select-field.compon
 import { WarehousesComponent } from "../warehouses/warehouses.component";
 import { WarehouseComponent } from "../warehouse/warehouse.component";
 import { PricelistComponent } from "../pricelist/pricelist.component";
+import { AuditComponent } from '../audit/audit.component';
 // declare var ymaps:any;
 
 @Component({
@@ -82,7 +83,8 @@ import { PricelistComponent } from "../pricelist/pricelist.component";
     WarehousesComponent,
     WarehouseComponent,
     SelectFieldComponent,
-    PricelistComponent
+    PricelistComponent,
+    AuditComponent
 ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -508,6 +510,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
   }
 
+  showAudit() {
+    this.selectedTab = TabsEnum.Audit;
+    this.leftOpened = false;
+    localStorage.setItem('selectedTab', JSON.stringify(this.selectedTab));
+  }
+
   private async loadMap(): Promise<void> {
     // const ymaps = (window as any).ymaps;
     // await ymaps3.ready;
@@ -597,4 +605,5 @@ export enum TabsEnum {
   Warehouses = 'Warehouses',
   Warehouse = 'Warehouse',
   PriceList = 'PriceList',
+  Audit = 'Audit'
 }

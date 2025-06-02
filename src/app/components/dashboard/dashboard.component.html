@@ -69,6 +69,11 @@
                     matTooltip="Склады">
                 <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Склады</span>
             </div>
+            <div class="flex mt-6 cursor-pointer icon-container" (click)="showAudit()">
+                <img class="ml-3 cursor-pointer w-8 h-8" src="/assets/images/icons/svg/audit.png" alt="i"
+                    matTooltip="Аудит">
+                <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Аудит</span>
+            </div>
             }
             @if(isWarehouseWorker()) {
             <div class="flex mt-6 cursor-pointer icon-container" (click)="showWarehouse()">
@@ -155,6 +160,9 @@
         }
         @case('PriceList') {
         <pricelist></pricelist>
+        }
+        @case('Audit') {
+        <audit></audit>
         }
         @default {
         <ng-container *ngTemplateOutlet="usersDashboard"></ng-container>
