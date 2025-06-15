@@ -141,17 +141,33 @@ export class PriceListService {
    * @param id - ID категории для удаления.
    * @returns Observable<void> (или Observable<object>, если бэкенд возвращает статус).
    */
-  deleteCategory(id: number): Observable<void> {
+  deleteCategory(id: number): Observable<any> {
     // Часто DELETE не возвращает тело
-    const url = `${this.apiUrl}/${id}`;
+    const url = `${this.apiUrl}/delete`;
     // Указываем { responseType: 'json' } если бэкенд что-то возвращает,
     // или оставляем как есть, если тело ответа пустое.
     // Используем <void> если тело точно пустое.
-    return this.http.delete<void>(url, this.httpOptions).pipe(
+    return this.http.post(url, {id: id}).pipe(
       tap(() => console.log(`PriceListService: удалена категория ID=${id}`)),
       catchError(this.handleError)
     );
   }
+
+    /**
+   * Удаляет категорию прайс-листа по ID.
+   * @param id - ID категории для удаления.
+   * @returns Observable<void> (или Observable<object>, если бэкенд возвращает статус).
+   */
+    deleteItem(id: number): Observable<any> {
+      // Часто DELETE не возвращает тело
+      const url = `${this.itemApiUrl}/delete`;
+      // Указываем { responseType: 'json' } если бэкенд что-то возвращает,
+      // или оставляем как есть, если тело ответа пустое.
+      // Используем <void> если тело точно пустое.
+      return this.http.post(url, {id: id}).pipe(
+        catchError(this.handleError)
+      );
+    }
 
   // --- Методы для Элементов (PriceListItem) ---
   // Вы можете добавить сюда методы для управления элементами, например:

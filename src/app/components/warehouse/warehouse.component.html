@@ -19,16 +19,6 @@
     </button>
 </div>
 <div class="content overflow-auto w-full">
-    <!-- <div class="flex flex-row justify-between mb-2">
-        <div class="text-xl flex items-center">
-            Заказы пользователей
-        </div>
-        <button mat-raised-button
-            class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold"
-            (click)="$event.stopPropagation(); openPostDialog()">
-            Создать Заказ
-        </button>
-    </div> -->
     <div class="post-card-container">
         
         @for (post of warehousePosts; track $index) {

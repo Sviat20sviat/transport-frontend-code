@@ -5,13 +5,16 @@ import { NgxUiLoaderModule, NgxUiLoaderService } from 'ngx-ui-loader';
 import { DialogsManagerService } from '../../services/dialogs-manager.service';
 import { WarehousesService } from '../../services/api/warehouses.service';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PostsService } from '../../services/api/posts.service';
 import { CargoStatusesEnum, PostStatusesEnum } from '../dialogs/post-dialog/post-dialog.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatMenuModule } from '@angular/material/menu';
+import { SelectFieldComponent } from '../shared/select-field/select-field.component';
 
 @Component({
   selector: 'warehouse',
@@ -34,13 +37,22 @@ export class WarehouseComponent implements OnInit, OnDestroy {
   loaderId = 'warehouse';
   unsubscribeAll$: Subject<any> = new Subject();
   warehousePosts = [];
+  filterForm: FormGroup;
   constructor(
     private stateService: StateService,
     private ngxService: NgxUiLoaderService,
     private dialogsManager: DialogsManagerService,
     private warehousesService: WarehousesService,
     private postService: PostsService,
-  ) { }
+    private fb: FormBuilder
+  ) { 
+    this.filterForm = this.fb.group({
+      range: {
+        fromTime: '',
+        toTime: ''
+      }
+    })
+  }
 
   ngOnInit(): void {
     // this.filterUpdated();
@@ -138,5 +150,13 @@ export class WarehouseComponent implements OnInit, OnDestroy {
 
   openPostDialog(post) {
     this.dialogsManager.openPostDialog(post);
+  }
+
+  clearFilter() {
+    this.filterForm.reset();
+  }
+
+  get range(): FormGroup {
+    return (this.filterForm.get('range') as FormGroup);
   }
 }

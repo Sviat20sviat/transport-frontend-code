@@ -20,6 +20,7 @@ export class AuditLogService {
 export interface AuditFilterData {
   userId?: number;
   action?: number;
+  tableName?: string;
   createdAt?: {
     fromTime: number;
     toTime: number;

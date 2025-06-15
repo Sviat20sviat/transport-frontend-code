@@ -146,16 +146,17 @@
                             </td>
                                @if (index == 0 || mutualSettlements[index -1]?.user?.documents[settlement?.user?.documents?.length -1]?.userBalanseAfter != settlement?.user?.documents[settlement?.user?.documents?.length -1]?.userBalanseAfter) {
                                 <td class="py-3 px-1 end-saldo text-red-600" [attr.rowspan]="calcUserDataLength(settlement?.user?.id)">
+
                                     @if(getAfterDebtSaldo(settlement?.user) || getAfterDebtSaldo(settlement?.user) === 0) {
                                         {{getAfterDebtSaldo(settlement?.user) || 0}}
                                     } @else if(settlement?.user?.documents[0].userBalanseAfter >= 0) {
-                                        0
+                                       0
                                     }
                                     
                                 </td>
                                 <td class="py-3 px-1 end-saldo text-green-600" [attr.rowspan]="calcUserDataLength(settlement?.user?.id)">
                                     @if(settlement?.user?.documents[0]?.userBalanseAfter > 0) {
-                                        +{{settlement?.user?.documents[0]?.userBalanseAfter || 0}}
+                                       +{{settlement?.user?.documents[0]?.userBalanseAfter || 0}}
                                     } @else if(settlement?.user?.documents[0]?.userBalanseAfter <= 0) {
                                         0
                                     }

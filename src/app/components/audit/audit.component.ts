@@ -94,6 +94,36 @@ export class AuditComponent implements OnInit, OnDestroy {
       value: AuditLogActions.LOGIN,
     },
   ];
+  tableNames = [
+    {
+      name: 'Докумет',
+      value: 'Document'
+    },
+    {
+      name: 'Изображение',
+      value: 'image'
+    },
+    {
+      name: 'Заказ Пользователя',
+      value: 'Post'
+    },
+    {
+      name: 'Категория Прайс Листа',
+      value: 'PriceCategory'
+    },
+    {
+      name: 'Элемент Прайс Листа',
+      value: 'PriceListItem'
+    },
+    {
+      name: 'Пользователь',
+      value: 'User'
+    },
+    {
+      name: 'Логин',
+      value: 'login'
+    },
+  ]
   constructor(
     private auditLogService: AuditLogService,
     private fb: FormBuilder,
@@ -128,6 +158,7 @@ export class AuditComponent implements OnInit, OnDestroy {
     this.filterForm = this.fb.group({
       userId: [null],
       action: [null],
+      tableName: [null],
       createdTime: this.fb.group({
         fromTime: [null],
         toTime: [null],
@@ -148,6 +179,7 @@ export class AuditComponent implements OnInit, OnDestroy {
     const data: AuditFilterData = {
       userId: value.userId,
       action: value.action,
+      tableName: value.tableName,
       createdAt,
     };
     this.auditLogService
@@ -191,11 +223,41 @@ export class AuditComponent implements OnInit, OnDestroy {
     }
   }
 
+  getTableName(name: string): string {
+    switch (name) {
+      case 'Document':
+        return 'Докумет';
+      case 'image':
+        return 'Изображение';
+      case 'Post':
+        return 'Заказ Пользователя';
+      case 'PriceCategory':
+        return 'Категория Прайс Листа';
+      case 'PriceListItem':
+        return 'Элемент Прайс Листа';
+      case 'User':
+        return 'Пользователь';
+      case 'login':
+        return 'Логин';
+      default:
+        return 'Логин';
+    } 
+  }
+
   openJsonDialog(data) {
-    if(!data)  {
+    if(!data?.afterData)  {
       return;
     };
 
-    this.dialogsManager.openJsonViewerDialog(data);
+    this.dialogsManager.openJsonViewerDialog(data, data?.afterData, data?.beforeData);
+  }
+
+  async openUserDialog(data) {
+    const users = await firstValueFrom(this.stateService.users$.pipe(filter(users => !!users)));
+    const user = users?.find(u => u.id === data?.userData?.id);
+    if(!user) {
+      return;
+    };
+    this.dialogsManager.openUserDialog(user);
   }
 }

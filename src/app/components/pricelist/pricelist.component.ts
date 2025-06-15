@@ -232,6 +232,32 @@ export class PricelistComponent implements OnInit, OnDestroy {
     }
     return false;
   }
+
+  deleteCategory() {
+    this.dialogsManager.openInfoMessageDialog("Вы действительно хотите удалить выбранную категорию?", true).afterClosed().subscribe((confirm) => {
+      if(!confirm) {
+        return;
+      };
+      this.ngxService.startLoader(this.loaderId);
+      this.pricelistService.deleteCategory(this.selectedPrice.id).subscribe(() => {
+        this.loadData();
+      });
+    });
+  }
+
+  deletePriceItem(item) {
+    this.dialogsManager.openInfoMessageDialog("Вы действительно хотите удалить выбранную позицию?", true).afterClosed().pipe(finalize(() => this.ngxService.stopLoader(this.loaderId))).subscribe((confirm) => {
+      if(!confirm) {
+        return;
+      };
+      this.ngxService.startLoader(this.loaderId);
+      this.pricelistService.deleteItem(item.id).subscribe(() => {
+        const index = this.selectedPrice.items.findIndex(i => i.id === item.id);
+        this.selectedPrice.items.splice(index, 1);
+        // this.loadData();
+      });
+    });
+  }
 }
 
 interface PriceCategoryForm {

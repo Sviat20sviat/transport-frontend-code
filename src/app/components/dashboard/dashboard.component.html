@@ -19,20 +19,20 @@
             }
 
             @if (isAdmin() || isOperator()) {
-            <div class="flex mt-6 cursor-pointer icon-container" (click)="showDashboard()" matTooltip="Объявления">
+            <div class="flex mt-6 cursor-pointer icon-container" (click)="showDashboard()" matTooltip="Заказы">
                 <img class="ml-3 cursor-pointer w-8 h-8" src="/assets/images/icons/svg/EventsView.svg" alt="i">
-                <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Объявления</span>
+                <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Заказы</span>
             </div>
             } @else if (isDriver()) {
             <div class="flex mt-6 cursor-pointer icon-container" (click)="showDriverDashboard()"
-                matTooltip="Объявления">
+                matTooltip="Заказы">
                 <img class="ml-3 cursor-pointer w-8 h-8" src="/assets/images/icons/svg/EventsView.svg" alt="i">
-                <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Объявления</span>
+                <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Заказы</span>
             </div>
             } @else {
-            <div class="flex mt-6 cursor-pointer icon-container" (click)="showUserDashboard()" matTooltip="Объявления">
+            <div class="flex mt-6 cursor-pointer icon-container" (click)="showUserDashboard()" matTooltip="Заказы">
                 <img class="ml-3 cursor-pointer w-8 h-8" src="/assets/images/icons/svg/EventsView.svg" alt="i">
-                <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Объявления</span>
+                <span class="text-white flex items-center ml-3" [hidden]="!leftOpened">Заказы</span>
             </div>
             }
 

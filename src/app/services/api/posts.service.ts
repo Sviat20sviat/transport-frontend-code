@@ -46,7 +46,7 @@ export class PostsService {
     return this.http.post(this.server.serverAddress + '/posts/update', data);
   }
 
-  getFilteredPosts(filter: {userId?: number, customerId?: number, driverId?: number,  status?: number, warehouseId?: number, cargoStatus?: number, onlyForWarehouse?:boolean}): Observable<any> {
+  getFilteredPosts(filter: PostFilter): Observable<any> {
     return this.http.post(this.server.serverAddress + '/posts/getFilteredPosts', filter);
   }
 
@@ -101,4 +101,18 @@ export interface CreatePostData {
   depth: number;
 
   warehouseId: number | null;
+}
+
+export interface PostFilter {
+  userId?: number, 
+  customerId?: number, 
+  driverId?: number,  
+  status?: number, 
+  warehouseId?: number, 
+  cargoStatus?: number, 
+  onlyForWarehouse?:boolean,
+  arrivedAtWarehouseRange?: {
+    fromTime: number,
+    toTime: number
+  }
 }

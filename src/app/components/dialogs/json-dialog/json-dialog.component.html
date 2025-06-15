@@ -1,8 +1,8 @@
 <div class="flex flex-col">
     <div class="flex justify-between px-6 pt-6 dialog-header">
         <div class="text-xl flex items-center mb-3">
-            Данные
-
+            <span class="mr-3">Данные: {{getTableName(data.data.tableName)}}; </span>
+            <span> Действие: {{getAuditAction(data?.data?.action)}}</span>;
         </div>
         <div class="flex">
 
@@ -10,9 +10,20 @@
         </div>
 
     </div>
-    <div class="overflow-auto json-container p-6">
+    <div class="overflow-auto json-container p-6 flex">
+        @if(data?.prewJson) {
+            <div class="flex flex-col semi-container">
+                <span class="mb-3">Данные до</span>
+                <ngx-json-viewer [json]="data?.prewJson" [expanded]="false"></ngx-json-viewer>
+            </div>
+            
+        }
         @if(data?.json) {
-            <ngx-json-viewer [json]="data?.json"></ngx-json-viewer>
+            <div class="flex flex-col semi-container">
+                <span class="mb-3">Данные после</span>
+                <ngx-json-viewer [json]="data?.json" [expanded]="false"></ngx-json-viewer>
+            </div>
+            
         }
         @else {
             Нет Данных!

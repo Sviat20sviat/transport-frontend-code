@@ -143,7 +143,7 @@ export class AddressInComponent {
           },
           error: (err) => {
             console.error('err',err);
-            this.dialogsManager.openInfoMessageDialog("Не удалось удалить Адрес, возможно он используется в объявлениях");
+            this.dialogsManager.openInfoMessageDialog("Не удалось удалить Адрес, возможно он используется в заказах");
           }
         });
       };

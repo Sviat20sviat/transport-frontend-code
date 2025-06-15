@@ -22,7 +22,7 @@ import { InputFieldComponent } from '../../shared/input-field/input-field.compon
 import { MatButtonModule } from '@angular/material/button';
 import { ValidatorsService } from '../../../services/validators.service';
 import { StateService } from '../../../services/state.service';
-import { Subject, combineLatest, finalize, take, takeUntil } from 'rxjs';
+import { Subject, combineLatest, filter, finalize, firstValueFrom, take, takeUntil } from 'rxjs';
 import { AuthService } from '../../../services/api/auth.service';
 import { MatExpansionModule } from '@angular/material/expansion';
 @Component({
@@ -53,6 +53,8 @@ export class EditUserDialogComponent implements OnInit, OnDestroy {
   user;
   loaderId: string = 'edit-user-dialog';
   unsubscribeAll$: Subject<any> = new Subject();
+  currentUser;
+  changePassForm: FormGroup;
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { user },
     public dialogRef: MatDialogRef<EditUserDialogComponent>,
@@ -68,10 +70,14 @@ export class EditUserDialogComponent implements OnInit, OnDestroy {
     this.user = data?.user;
     this.initForm();
     this.initPasswordForm();
+    this.changePassForm = fb.group({
+      password: fb.control('', [Validators.minLength(6), Validators.maxLength(16), Validators.required]),
+      repeatPassword: fb.control('', [Validators.minLength(6), Validators.maxLength(16), Validators.required]),
+    });
   }
 
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     if(this.user?.id) {
       this.userService.getUserById(this.user.id).subscribe((user) => {
         this.user = user;
@@ -94,6 +100,31 @@ export class EditUserDialogComponent implements OnInit, OnDestroy {
         this.user = {...this.user, ...user};
       };
     });
+
+    this.changePassForm.get('repeatPassword').valueChanges.subscribe((repeatPass: string) => {
+      const pass = this.changePassForm.get('password').value;
+      if (pass !== repeatPass) {
+        this.changePassForm.setErrors({ notSamePass: true });
+        this.changePassForm.get('repeatPassword').setErrors({ notSamePass: true });
+      } else {
+        this.changePassForm.setErrors({ notSamePass: false });
+        this.changePassForm.get('repeatPassword').setErrors(null);
+      };
+      console.log('CONSOLE!', this.changePassForm.errors);
+    });
+    this.changePassForm.get('password').valueChanges.subscribe((pass: string) => {
+      const repeatPass = this.changePassForm.get('repeatPassword').value;
+      if (pass !== repeatPass) {
+        this.changePassForm.setErrors({ notSamePass: true });
+        this.changePassForm.get('repeatPassword').setErrors({ notSamePass: true });
+      } else {
+        this.changePassForm.setErrors({ notSamePass: false });
+        this.changePassForm.get('repeatPassword').setErrors(null);
+      };
+      console.log('CONSOLE!', this.changePassForm.errors);
+    });
+
+    this.currentUser = await firstValueFrom(this.stateService.currentUser$.pipe(filter((user) => user?.id)));
   }
 
   ngOnDestroy(): void {
@@ -290,5 +321,25 @@ export class EditUserDialogComponent implements OnInit, OnDestroy {
       this.dialogsManager.openPostDialog(fullPost);
     };
 
+  }
+
+  isAdmin(): boolean {
+    return this.currentUser?.roles?.some((role) => role.value == 'Admin');
+  }
+
+  changePassword() {
+    const values = this.changePassForm.value;
+    this.dialogsManager.openInfoMessageDialog("Вы действительно хотите изменить пароль?", true).afterClosed().subscribe((confirm) => {
+      if(!confirm) {
+        return;
+      };
+      this.ngxService.startLoader(this.loaderId);
+      this.userService.changePassword({userId: this.user.id, password: values.password}).pipe(finalize(() =>this.ngxService.stopLoader(this.loaderId))).subscribe((res) => {
+        if(!res) {
+          return;
+        };
+        this.dialogsManager.openInfoMessageDialog("Успешно!");
+      });
+    });
   }
 }

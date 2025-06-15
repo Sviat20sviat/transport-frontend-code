@@ -81,7 +81,7 @@ export class DriverInfoComponent implements OnInit, OnDestroy {
 
 
   setDoneByDriver(post) {
-    const message = post?.warehouseId ? 'Вы подтверждаете что доставили груз на назначенный Склад ? Ваше объявление закроется после подтверждения приема груза работником Склада' :'Вы действительно хотите завершить работу с объявлением? После нажатия ДА вы подтверждаете что доставили товар в место назначения.';
+    const message = post?.warehouseId ? 'Вы подтверждаете что доставили груз на назначенный Склад ? Ваше Заказ закроется после подтверждения приема груза работником Склада' :'Вы действительно хотите завершить работу с Заказом? После нажатия ДА вы подтверждаете что доставили товар в место назначения.';
     this.dialogsManager
       .openInfoMessageDialog(
         message,
@@ -147,7 +147,7 @@ export class DriverInfoComponent implements OnInit, OnDestroy {
   setCancelByDriver(post) {
     this.dialogsManager
     .openInfoMessageDialog(
-      'Вы действительно хотите завершить работу с объявлением? После нажатия ДА с Вы отменяете работу с объявлением.',
+      'Вы действительно хотите завершить работу с Заказом? После нажатия ДА с Вы отменяете работу с Заказом.',
       true
     )
     .afterClosed()
@@ -166,7 +166,7 @@ export class DriverInfoComponent implements OnInit, OnDestroy {
         .subscribe((res) => {
           console.log('res', res);
           this.dialogsManager.openInfoMessageDialog(
-            'Вы успешно отказались от объявления!'
+            'Вы успешно отказались от Заказа!'
           );
           this.getDriverPosts();
         });
@@ -176,7 +176,7 @@ export class DriverInfoComponent implements OnInit, OnDestroy {
   setSosDriver(post) {
     this.dialogsManager
     .openInfoMessageDialog(
-      'Вы действительно хотите завершить работу с объявлением? После нажатия ДА с Вами свяжется оператор для уточнения деталей.',
+      'Вы действительно хотите завершить работу с Заказом? После нажатия ДА с Вами свяжется оператор для уточнения деталей.',
       true
     )
     .afterClosed()

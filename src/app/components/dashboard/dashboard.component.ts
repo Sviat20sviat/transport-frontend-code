@@ -298,7 +298,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   deletePost(post: any) {
     const dialog = this.openConfirmDialog(
-      'Вы действительно хотите удалить объявление?'
+      'Вы действительно хотите удалить Заказ?'
     );
     console.log('post!', post);
     dialog
@@ -364,14 +364,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   setInProgressByDriver(post) {
     if (!post) {
       this.dialogsManager.openInfoMessageDialog(
-        'ОШИБКА! ОБЪЯВЛЕНИЕ НЕ НАЙДЕНО.'
+        'ОШИБКА! Заказ НЕ НАЙДЕН.'
       );
       return;
     }
     console.log('currentUser!', this.currentUser);
     this.dialogsManager
       .openInfoMessageDialog(
-        'Вы действительно хотите взять на выполение это объявление?',
+        'Вы действительно хотите взять на выполение этот Заказ?',
         true
       )
       .afterClosed()
@@ -391,7 +391,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
           .subscribe((res) => {
             console.log('res', res);
             this.dialogsManager.openInfoMessageDialog(
-              'Вы успешно взяли объявление! Пожалуйста, ознакомтесь детальнее с объявлением в списке Ваших Объявлений'
+              'Вы успешно взяли Заказ! Пожалуйста, ознакомтесь детальнее с Заказом в списке Ваших Объявлений'
             );
             this.getAll();
           });
@@ -580,7 +580,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       });
       return;
     }
-    this.dialogsManager.openInfoMessageDialog("Для отмены вашего объявления, пожалуйста, свяжитесь с Оператором по телефону +7 (000) 123-45-67");
+    this.dialogsManager.openInfoMessageDialog("Для отмены вашего заказа, пожалуйста, свяжитесь с Оператором по телефону +7 (000) 123-45-67");
   }
 
   clearFilter() {

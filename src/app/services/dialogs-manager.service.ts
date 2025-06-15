@@ -112,12 +112,12 @@ export class DialogsManagerService {
     });
   }
 
-  openJsonViewerDialog(data) {
+  openJsonViewerDialog(data, json, prewJson?) {
     return this.dialogRef.open(JsonDialogComponent, {
-      data: {json: data},
+      data: {data, json: json, prewJson},
       maxHeight: "98vh",
       width:  "100%",
-      maxWidth: "800px",
+      maxWidth: "1320px",
       height:  "auto"
     });
   }

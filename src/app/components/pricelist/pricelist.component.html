@@ -3,9 +3,9 @@
 </div>
 <div class="flex justify-between">
     <div class="flex flex-row justify-between">
-        <div class="tab-group-header flex mb-4">
+        <div class="tab-group-header pricelist-item-list flex mb-4">
             @for (item of pricelist; track item.id) {
-                <div class="flex tab-group-header-item cursor-pointer p-3" [ngClass]="{'selected-tab': selectedPrice?.id == item?.id}" (click)="selectPriceListItem(item)">
+                <div class="flex tab-group-header-item cursor-pointer p-3 whitespace-nowrap" [ngClass]="{'selected-tab': selectedPrice?.id == item?.id}" (click)="selectPriceListItem(item)">
                     {{item?.name}}
                 </div>
             }
@@ -17,6 +17,10 @@
 
     }
     <div class="flex" [formGroup]="categoryForm">
+        @if(selectedPrice && isAdmin() && !selectedPrice?.items?.length) {
+            <img src="/assets/images/icons/svg/delete_.svg" alt="del" class="mr-4 mt-1 cursor-pointer w-6 h-6" [matTooltip]="'Удалить Категорию'" (click)="deleteCategory()">
+        }
+        
         <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold mr-4" [matMenuTriggerFor]="createCategoryMenu">
             Создать Категорию
         </button>
@@ -77,6 +81,9 @@
                     </td>
                     <td class="py-3">
                         {{item?.createdAt | date: 'shortDate'}}
+                    </td>
+                    <td class="py-3">
+                        <img src="/assets/images/icons/svg/delete_.svg" alt="del" class="mr-4 mt-1 cursor-pointer w-6 h-6" [matTooltip]="'Удалить Элемент'" (click)="$event.stopPropagation();deletePriceItem(item)">
                     </td>
                 </tr>
                 }

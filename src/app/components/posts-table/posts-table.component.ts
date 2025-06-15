@@ -40,7 +40,7 @@ export class PostsTableComponent implements OnInit, OnDestroy {
   @Input() posts: Array<any>;
   @Input() currentUser;
   @Input() isShowTitle: boolean = true;
-  @Input() title: string = 'Объявления пользователей';
+  @Input() title: string = 'Заказы пользователей';
   @Input() isDashboard: boolean = false;
   @Output() postsUpdated$ = new EventEmitter<any>();
   unsubscribeAll$: Subject<any> = new Subject();
@@ -103,7 +103,7 @@ export class PostsTableComponent implements OnInit, OnDestroy {
   }
 
   deletePost(post: any) {
-    const dialog = this.openConfirmDialog("Вы действительно хотите удалить объявление?");
+    const dialog = this.openConfirmDialog("Вы действительно хотите удалить Заказ?");
     console.log('post!', post);
     dialog.afterClosed().pipe(takeUntil(this.unsubscribeAll$)).subscribe((confirmed: boolean) => {
       if (confirmed && post?.id) {

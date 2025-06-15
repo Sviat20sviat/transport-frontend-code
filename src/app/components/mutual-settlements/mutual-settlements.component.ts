@@ -56,6 +56,7 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
   selectedTabIndex = 1;
   filterForm: FormGroup;
 
+
   usersUsers = [];
   usersDrivers = [];
   documents = [];
@@ -79,7 +80,7 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
     private stateService: StateService,
     private documentsService: DocumentsService,
     private ngxService: NgxUiLoaderService,
-    private dialogsManager: DialogsManagerService
+    private dialogsManager: DialogsManagerService,
   ) {
     this.filterForm = fb.group({
       userId: [null, []],
@@ -89,6 +90,7 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
         toTime: [null, []],
       }),
     });
+
     this.getSettlements();
   }
 
@@ -292,7 +294,7 @@ export class MutualSettlementsComponent implements OnInit, OnDestroy {
   }
 
   getAfterDebtSaldo(user) {
-    return user?.documents[0]?.userBalanseAfter;
+    return Number(user?.documents[0]?.userBalanseAfter) < 0 ? user?.documents[0]?.userBalanseAfter : 0  ;
     let credit = 0;
     let debt = 0;
 

@@ -25,6 +25,9 @@
                     <span class="font-medium text-white">Сотрудник</span>
                 </th>
                 <th class="py-3">
+                    <span class="font-medium text-white">Таблица</span>
+                </th>
+                <th class="py-3">
                     <span class="font-medium text-white">Действие</span>
                 </th>
                 <th class="py-3">
@@ -45,16 +48,34 @@
                     {{item.createdAt | date:'medium'}}
                 </td>
                 <td class="py-3">
-                    {{item?.userData?.email || 'Система'}}
+                    @if(item?.userData?.email) {
+                        <span class="hover:underline" (click)="$event.stopPropagation(); openUserDialog(item)">{{item?.userData?.email}}</span>
+                    }
+                    @else {
+                        Система
+                    }
+                </td>
+                <td class="py-3">
+                    {{ getTableName(item.tableName) }}
                 </td>
                 <td class="py-3">
                     {{ getAuditAction(item.action) }}
                 </td>
-                <td class="py-3 cursor-pointer" (click)="openJsonDialog(item.beforeData)">
-                    {{item.beforeData}}
+                <td class="py-3 cursor-pointer" (click)="openJsonDialog(item)">
+                    @if(item.beforeData) {
+                        <span class="hover:underline">Просмотреть Данные</span>
+                    }
+                    @else {
+                        --
+                    }
                 </td>
-                <td class="py-3 cursor-pointer" (click)="openJsonDialog(item.afterData)">
-                    {{item.afterData}}
+                <td class="py-3 cursor-pointer" (click)="openJsonDialog(item)">
+                    @if(item.afterData) {
+                        <span class="hover:underline">Просмотреть Данные</span>
+                    }
+                    @else {
+                        --
+                    }
                 </td>
 
             </tr>
@@ -81,6 +102,8 @@
         <select-field [label]="'Пользователь'" [options]="users" formControlName="userId"
             (click)="$event.stopPropagation()" [nameKey]="'email'"></select-field>
         <select-field [label]="'Операция'" [options]="actions" formControlName="action"
+            (click)="$event.stopPropagation()" [nameKey]="'name'" [valueKey]="'value'"></select-field>
+            <select-field [label]="'Тип Таблицы'" [options]="tableNames" formControlName="tableName"
             (click)="$event.stopPropagation()" [nameKey]="'name'" [valueKey]="'value'"></select-field>
         <div class="flex w-[288px] date-range-input">
             <mat-form-field class="w-full" (click)="picker.open();$event.stopPropagation()">

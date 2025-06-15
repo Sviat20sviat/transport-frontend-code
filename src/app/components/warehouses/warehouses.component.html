@@ -1,6 +1,8 @@
+@if(!selectedWarehouse) {
 <div class="flex flex-row justify-between mb-2">
     <!-- @if(isShowTitle) { -->
     <div class="text-xl flex items-center">
+
         Склады
     </div>
     <!-- } -->
@@ -27,8 +29,8 @@
                     <span class="font-medium text-white">Адрес</span>
                 </th>
                 <!-- <th class="py-3 px-1">
-                    <span class="font-medium text-white">Координаты</span>
-                </th> -->
+                        <span class="font-medium text-white">Координаты</span>
+                    </th> -->
                 <th class="py-3 px-1">
                     <span class="font-medium text-white">Телефон</span>
                 </th>
@@ -51,7 +53,8 @@
         </thead>
         <tbody class="table-body">
             @for (warehouse of warehouses; track warehouse.id; let index = $index) {
-            <tr class="cursor-pointer" (click)="$event.stopPropagation(); openWarehousePostDialog(warehouse)" [matTooltip]="'Открыть список товаров на складе'">
+            <tr class="cursor-pointer" (click)="$event.stopPropagation(); openWarehousePostDialog(warehouse)"
+                [matTooltip]="'Открыть список товаров на складе'">
                 <td class="pl-2">
                     {{index+1}}
                 </td>
@@ -65,12 +68,13 @@
                     {{warehouse?.address}}
                 </td>
                 <!-- <td class="px-1">
-                    {{warehouse?.coordinates?.lat}}, {{warehouse?.coordinates?.lng}}
-                </td> -->
+                        {{warehouse?.coordinates?.lat}}, {{warehouse?.coordinates?.lng}}
+                    </td> -->
                 <td class="px-1">
                     {{warehouse?.phoneNumber || '-'}}
                 </td>
-                <td class="px-1 text-link" (click)="$event.stopPropagation(); openUserDialog(warehouse?.supervisor)" matTooltip="Показать полную информацию по руководителю">
+                <td class="px-1 text-link" (click)="$event.stopPropagation(); openUserDialog(warehouse?.supervisor)"
+                    matTooltip="Показать полную информацию по руководителю">
                     {{warehouse?.supervisor?.firstName || '-'}} {{warehouse?.supervisor?.lastName || '-'}}
                 </td>
                 <td class="px-1">
@@ -84,10 +88,12 @@
                 </td>
                 <td class="pr-2">
                     <div class="flex flex-row">
-                        <img src="/assets/images/icons/svg/edit__.svg" alt="i" class="cursor-pointer w-8 h-8 mr-3 bg-gray-300 rounded-md"
-                        (click)="$event.stopPropagation(); editWarehouse(warehouse)" [matTooltip]="'Редактировать'" />
+                        <img src="/assets/images/icons/svg/edit__.svg" alt="i"
+                            class="cursor-pointer w-8 h-8 mr-3 bg-gray-300 rounded-md"
+                            (click)="$event.stopPropagation(); editWarehouse(warehouse)"
+                            [matTooltip]="'Редактировать'" />
                         <img src="/assets/images/icons/svg/delete_.svg" alt="i" class="cursor-pointer w-8 h-8"
-                            (click)="$event.stopPropagation(); deleteWarehouse(warehouse)" [matTooltip]="'Удалить'">                        
+                            (click)="$event.stopPropagation(); deleteWarehouse(warehouse)" [matTooltip]="'Удалить'">
                     </div>
 
 
@@ -97,4 +103,157 @@
         </tbody>
     </table>
 </div>
+}
+@else {
+<div class="flex flex-row justify-between mb-2 ">
+
+    <div class="text-xl flex items-center">
+        <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold w-12 mr-4"
+            (click)="clearSelected()" [matTooltip]="'Назад'">
+            <img src="assets/images/icons/svg/reply.svg" alt="back" class="w-8 h-8">
+        </button>
+
+        Склад: {{selectedWarehouse?.name}}
+    </div>
+
+    <div class="flex">
+        <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold mr-3"
+            (click)="getData()">
+            Поиск
+        </button>
+        <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold" [matMenuTriggerFor]="filterMenu">
+            Фильтр
+        </button>
+    </div>
+</div>
+<div class="content overflow-auto w-full">
+    <div class="post-card-container">
+
+        @for (post of warehousePosts; track $index) {
+        <div class="post-card-item cursor-pointer" (click)="openPostDialog(post)">
+            <div class="flex justify-between">
+                <span class="post-card-title">Статус Груза:</span>
+                <div class="cargo-status-badge" [ngClass]="'status-' +(post?.cargoStatus)">
+                    {{getCargoStatus((post?.cargoStatus))}}
+                </div>
+            </div>
+            @if(post?.trackCode) {
+            <div class="flex justify-between mb-2">
+                <span class="post-card-title">Трек-код, номер посылки:</span>
+                <span>{{post?.trackCode}}</span>
+            </div>
+            }
+            <div class="flex justify-between mb-2">
+                <span class="post-card-title">Наименование:</span>
+                <span>{{post?.title}}</span>
+            </div>
+            <div class="flex justify-between mb-2">
+                <span class="post-card-title">Номер:</span>
+                <span>{{post?.id}}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="post-card-title">Заказчик:</span>
+                <span>{{post?.customer?.firstName + ' ' + post?.customer?.lastName}} </span>
+            </div>
+
+            <div class="flex justify-between">
+                <span class="post-card-title">Автор:</span>
+                <span>
+                    {{post?.author?.firstName + ' ' + post?.author?.lastName}}
+                </span>
+            </div>
+
+            <div class="flex justify-between">
+                <span class="post-card-title">Создано:</span>
+                <span>{{post?.createdAt | date: 'medium'}}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="post-card-title">Откуда, адрес:</span>
+                <span>{{post?.addressFrom}}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="post-card-title">Куда, адрес:</span>
+                <span>{{post?.addressTo}}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="post-card-title">Описание:</span>
+                <span class="single-line-text">{{post?.content}}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="post-card-title">Статус Заказа:</span>
+                <div class="executing-status-badge" [ngClass]="'status-' +(post?.status)">
+                    {{getPostExecutingStatus((post?.status))}}</div>
+            </div>
+
+            <!-- <div class="flex items-center mt-auto">
+                    @if(post?.status == 0) {
+                    <button mat-raised-button
+                        class="d-button h-[52px] w-[200px] text-base  uppercase font-semibold"
+                        (click)="$event.stopPropagation(); cancelPostByUser(post)">
+                        Отменить Заказ
+                    </button>
+                    }
+                </div> -->
+            <div class="flex items-center mt-auto">
+                <button mat-raised-button class="s-button h-[52px] w-[200px] text-base  uppercase font-semibold">
+                    Открыть Заказ
+                </button>
+            </div>
+            @if(post?.cargoStatus == 3) {
+            <div class="flex items-center mt-auto">
+                <button mat-raised-button class="s-button h-[52px] w-[380px] text-base  uppercase font-semibold"
+                    (click)="$event.stopPropagation(); confirmCargoInPost(post)">
+                    Подтвердить Получение заказа на Склад
+                </button>
+            </div>
+            }
+            @if(post?.cargoStatus == 4) {
+            <div class="flex items-center mt-auto">
+                <button mat-raised-button class="s-button h-[52px] w-[380px] text-base  uppercase font-semibold"
+                    (click)="$event.stopPropagation(); confirmOrderIssue(post)">
+                    Подтвердить Выдачу Заказа
+                </button>
+            </div>
+            }
+        </div>
+        }
+    </div>
+</div>
+}
+
 <ngx-ui-loader [fgsColor]="'#ffffff'" [loaderId]="loaderId" [fgsType]="'three-bounce'"></ngx-ui-loader>
+<mat-menu #filterMenu="matMenu">
+    <div class="flex flex-col px-2" [formGroup]="filterForm">
+        <div class="flex justify-end font-medium text-lg underline my-3 cursor-pointer" (click)="$event.stopPropagation();clearFilter()">
+            Очистить
+        </div>
+        <select-field [label]="'Статус Заказа'" [options]="statuses" formControlName="status"
+            (click)="$event.stopPropagation()" [nameKey]="'value'"></select-field>
+        <select-field [label]="'Статус Груза по Заказу'" [options]="cargoStatuses" formControlName="cargoStatus"
+            (click)="$event.stopPropagation()" [nameKey]="'name'"></select-field>
+        <div class="flex w-[388px] date-range-input">
+            <mat-form-field class="w-full" (click)="picker.open();$event.stopPropagation()">
+                <mat-label>За Период Поступления на Склад</mat-label>
+                <mat-date-range-input formGroupName="range" [rangePicker]="picker">
+                  <input matStartDate formControlName="fromTime" placeholder="Начало Периода">
+                  <input matEndDate formControlName="toTime" placeholder="Конец Периода">
+                </mat-date-range-input>
+                <!-- <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint> -->
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+              
+                @if (range.controls['fromTime'].hasError('matStartDateInvalid')) {
+                  <mat-error>Invalid start date</mat-error>
+                }
+                @if (range.controls['toTime'].hasError('matEndDateInvalid')) {
+                  <mat-error>Invalid end date</mat-error>
+                }
+            </mat-form-field>
+        </div>
+        <div class="flex">
+            <button mat-raised-button class="s-button h-[52px] text-base  uppercase font-semibold w-full" (click)="getData();$event.stopPropagation()">
+                Сформировать
+            </button>
+        </div>
+    </div>
+</mat-menu>

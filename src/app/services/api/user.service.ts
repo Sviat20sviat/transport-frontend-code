@@ -62,6 +62,10 @@ export class UserService {
   unblockUser(userId) {
     return this.http.post(this.server.serverAddress + '/users/unban', {userId});
   }
+
+  changePassword(data:{userId: number, password: string}) {
+    return this.http.post(this.server.serverAddress + '/users/changePassword', data);
+  }
 }
 
 export interface createUserDto {

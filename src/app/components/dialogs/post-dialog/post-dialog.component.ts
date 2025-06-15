@@ -518,11 +518,11 @@ export class PostDialogComponent implements OnInit, OnDestroy {
           !this.userService.isUserOperator(this.currentUser)
         ) {
           this.dialogsManager.openInfoMessageDialog(
-            'Объявление успешно создано. Вы увидите стоимость услуги и Водитель сможет приступить к заказу после его подтверждения Оператором.'
+            'Заказ успешно создано. Вы увидите стоимость услуги и Водитель сможет приступить к заказу после его подтверждения Оператором.'
           );
         } else {
           this.dialogsManager.openInfoMessageDialog(
-            'Объявление успешно создано'
+            'Заказ успешно создано'
           );
         }
 
@@ -678,7 +678,6 @@ export enum CargoStatusesEnum {
   OnTheWayOnOurDelivery = 2,
   WaitConfirmation = 3,
   WaitInWarehouse = 4,
-  // WaitInOurWarehouse = 4,
   ReadyForPickup = 5,
   Issued = 6,
   Cancelled = 7,

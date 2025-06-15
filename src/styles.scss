@@ -124,7 +124,7 @@ select {
   border: 1px solid #cecece;
   height: 52px;
   max-width: calc(100vw - 75px);
-  overflow: auto;
+  overflow-x: auto;
 }
 .tab-group-header-item {
   transition: 0.3s;
